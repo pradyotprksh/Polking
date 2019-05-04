@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "900212402814",
+    "firebase_url": "https://polking-7e041.firebaseio.com",
+    "project_id": "polking-7e041",
+    "storage_bucket": "polking-7e041.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900212402814:android:687989f7828040a2",
+        "android_client_info": {
+          "package_name": "com.project.pradyotprakash.polking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900212402814-ihpf834ef7sk3qmb2qlkdtg7q1ku823s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.pradyotprakash.polking",
+            "certificate_hash": "0a41178fcc066ba2635a0b7974659e29f7d35029"
+          }
+        },
+        {
+          "client_id": "900212402814-o8k2hfuk8inpkaojtsc2fepn6s8qmamt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsDsAdRpVIoXcrau42tsd7ySd_xmAhhcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900212402814-o8k2hfuk8inpkaojtsc2fepn6s8qmamt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

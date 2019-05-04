@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Polking</string>
+    <string name="detect_my_location">Detect My Location</string>
+    <string name="set_location">Set Location</string>
+    <string name="manually">Manually</string>
+    <string name="sign_in">Sign In</string>
+    <string name="backspace">Backspace</string>
+    <string name="phone_number">Phone Number…</string>
+    <string name="google_sign_in">Sign In With Google</string>
+    <string name="continue_txt">Continue</string>
+    <string name="imagedescription">imageDescription</string>
+    <string name="or">Or</string>
 </resources>
