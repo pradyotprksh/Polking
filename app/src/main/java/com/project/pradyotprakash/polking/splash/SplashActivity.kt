@@ -1,11 +1,11 @@
 package com.project.pradyotprakash.polking.splash
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.signin.SignInActivity
+import com.project.pradyotprakash.polking.utility.openActivity
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     override fun showLoading() {
         Handler().postDelayed({
-            startActivity(Intent(this, SignInActivity::class.java))
+            openActivity(SignInActivity::class.java)
             finish()
         }, 1000)
     }

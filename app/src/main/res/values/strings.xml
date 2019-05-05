@@ -10,4 +10,6 @@
     <string name="continue_txt">Continue</string>
     <string name="imagedescription">imageDescription</string>
     <string name="or">Or</string>
+    <string name="verify_phone_number">Verify Phone Number</string>
+    <string name="otp_hint">1</string>
 </resources>

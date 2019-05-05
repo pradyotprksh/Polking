@@ -12,7 +12,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-
+        <activity android:name=".verifyOTP.VerifyOTPActivity">
+        </activity>
         <activity android:name=".splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -20,12 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <activity android:name=".home.MainActivity"/>
-
-        <activity android:name=".signin.SignInActivity"
-                  android:windowSoftInputMode="stateHidden"/>
-
+        <activity
+                android:name=".signin.SignInActivity"
+                android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

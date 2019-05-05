@@ -3,9 +3,9 @@ package com.project.pradyotprakash.polking.signin
 import android.annotation.SuppressLint
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.utility.openActivity
+import com.project.pradyotprakash.polking.verifyOTP.VerifyOTPActivity
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import javax.inject.Inject
@@ -67,15 +67,15 @@ class SignInActivity : AppCompatActivity(), SignInView {
         }
 
         backSpaceTv.setOnClickListener {
-            var phoneNum = phoneNumEt.text.toString()
+            var phoneNum = otpTv.text.toString()
             if (phoneNum.isNotEmpty()) {
                 phoneNum = phoneNum.substring(0, phoneNum.length - 1)
             }
-            phoneNumEt.setText(phoneNum)
+            otpTv.setText(phoneNum)
         }
 
         continueTv.setOnClickListener {
-
+            openActivity(VerifyOTPActivity::class.java)
         }
 
         googleSignInCl.setOnClickListener {
@@ -85,7 +85,7 @@ class SignInActivity : AppCompatActivity(), SignInView {
 
     @SuppressLint("SetTextI18n")
     private fun changePhoneNumber(num: String) {
-        phoneNumEt.setText("${phoneNumEt.text}$num")
+        otpTv.setText("${otpTv.text}$num")
     }
 
     override fun showLoading() {
