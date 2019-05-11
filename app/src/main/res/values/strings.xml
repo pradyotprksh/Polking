@@ -12,4 +12,6 @@
     <string name="or">Or</string>
     <string name="verify_phone_number">Verify Phone Number</string>
     <string name="otp_hint">1</string>
+    <string name="welcome_home">Welcome Home,</string>
+    <string name="home">Home</string>
 </resources>

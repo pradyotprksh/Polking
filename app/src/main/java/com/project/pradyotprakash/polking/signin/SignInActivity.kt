@@ -3,7 +3,10 @@ package com.project.pradyotprakash.polking.signin
 import android.annotation.SuppressLint
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowManager
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
 import com.project.pradyotprakash.polking.verifyOTP.VerifyOTPActivity
 import dagger.android.AndroidInjection
@@ -14,12 +17,17 @@ class SignInActivity : AppCompatActivity(), SignInView {
 
     @Inject
     lateinit var presenter: SignInPresenter
-    private var phoneNumber: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
+        // Make full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         setContentView(R.layout.activity_sign_in)
+        logd("Create")
         initialize()
     }
 

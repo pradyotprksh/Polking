@@ -3,8 +3,12 @@ package com.project.pradyotprakash.polking.splash
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.view.Window
+import android.view.WindowManager
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.signin.SignInActivity
+import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -17,7 +21,13 @@ class SplashActivity : AppCompatActivity(), SplashView {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
+
+        // Make full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         setContentView(R.layout.activity_splash)
+        logd("Create")
         initialize()
     }
 
@@ -25,9 +35,11 @@ class SplashActivity : AppCompatActivity(), SplashView {
         presenter.start()
     }
 
+
+
     override fun showLoading() {
         Handler().postDelayed({
-            openActivity(SignInActivity::class.java)
+            openActivity(MainActivity::class.java)
             finish()
         }, 1000)
     }
