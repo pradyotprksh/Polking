@@ -13,7 +13,7 @@
     <string name="or">Or</string>
     <string name="verify_phone_number">Verify Phone Number</string>
     <string name="otp_hint">1</string>
-    <string name="welcome_home">Welcome Home,</string>
+    <string name="welcome_home">Welcome Home, User</string>
     <string name="home">Home</string>
     <string name="ok_string">Fine</string>
     <string name="cancel_string">Nope</string>
