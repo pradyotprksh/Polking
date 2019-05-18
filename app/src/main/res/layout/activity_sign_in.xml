@@ -83,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="phone"
                     android:background="@color/white"
-                    android:id="@+id/otpTv"
+                    android:id="@+id/phoneEt"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginLeft="15dp"
@@ -96,7 +96,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:textSize="12sp"
-                    android:fontFamily="@font/muli_semi_bold"
+                    app:fontFamily="@font/muli_semi_bold"
                     android:hint="@string/phone_number"
                     tools:ignore="Autofill"/>
 
@@ -273,7 +273,7 @@
                 android:paddingRight="70dp"
                 android:paddingBottom="7dp"
                 app:fontFamily="@font/muli_bold"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white" android:visibility="gone"/>
 
     </android.support.constraint.ConstraintLayout>
 

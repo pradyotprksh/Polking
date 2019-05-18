@@ -1,4 +1,5 @@
 <resources>
+    <string name="readSMSPermission">Please allow Polking to read SMS</string>
     <string name="app_name">Polking</string>
     <string name="detect_my_location">Detect My Location</string>
     <string name="set_location">Set Location</string>
@@ -14,4 +15,6 @@
     <string name="otp_hint">1</string>
     <string name="welcome_home">Welcome Home,</string>
     <string name="home">Home</string>
+    <string name="ok_string">Fine</string>
+    <string name="cancel_string">Nope</string>
 </resources>

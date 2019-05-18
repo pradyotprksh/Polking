@@ -33,4 +33,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     override fun stopAct() {
 
     }
+
+    override fun showMessage(message: String) {
+
+    }
 }

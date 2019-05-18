@@ -7,7 +7,6 @@ import android.view.Window
 import android.view.WindowManager
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
-import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
 import dagger.android.AndroidInjection
@@ -35,8 +34,6 @@ class SplashActivity : AppCompatActivity(), SplashView {
         presenter.start()
     }
 
-
-
     override fun showLoading() {
         Handler().postDelayed({
             openActivity(MainActivity::class.java)
@@ -49,6 +46,10 @@ class SplashActivity : AppCompatActivity(), SplashView {
     }
 
     override fun stopAct() {
+
+    }
+
+    override fun showMessage(message: String) {
 
     }
 

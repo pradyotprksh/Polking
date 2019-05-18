@@ -3,6 +3,8 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.project.pradyotprakash.polking">
 
+    <uses-permission android:name="android.permission.READ_SMS"/>
+
     <application
             android:name=".ApplicationManager"
             android:allowBackup="true"
@@ -12,8 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".verifyOTP.VerifyOTPActivity">
-        </activity>
+
         <activity android:name=".splash.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -21,10 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".home.MainActivity"/>
+
+        <activity android:name=".home.MainActivity"
+                  android:screenOrientation="portrait"/>
+
         <activity
                 android:name=".signin.SignInActivity"
+                android:screenOrientation="portrait"
                 android:windowSoftInputMode="stateHidden"/>
+
+        <activity android:name=".verifyOTP.VerifyOTPActivity"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>
