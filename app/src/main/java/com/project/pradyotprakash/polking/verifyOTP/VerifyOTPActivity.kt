@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import com.google.firebase.auth.PhoneAuthProvider
@@ -46,7 +47,7 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
 
         callPhoneNumberValidation()
 
-        continueTv.setOnClickListener {
+        saveTv.setOnClickListener {
             if (presenter.getStoredVerificationId()!=null) {
                 val code = otp1Tv.text.toString() + "" + otp2Tv.text.toString() + "" + otp3Tv.text.toString() + "" + otp4Tv.text.toString() + "" + otp5Tv.text.toString() + "" + otp6Tv.text.toString()
                 val credential = PhoneAuthProvider.getCredential(presenter.getStoredVerificationId()!!, code)
@@ -159,6 +160,7 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
 
     override fun onResume() {
         super.onResume()
+        logd("Resume")
         presenter.checkForSMSPermission()
     }
 
@@ -207,18 +209,18 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
     }
 
     override fun showLoading() {
-
+        progressBar2.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-
+        progressBar2.visibility = View.GONE
     }
 
     override fun stopAct() {
-
+        finish()
     }
 
-    override fun showMessage(message: String) {
+    override fun showMessage(message: String, type: Int) {
 
     }
 

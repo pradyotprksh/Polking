@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content">
+
+    <View android:layout_width="match_parent" android:layout_height="50dp"
+          android:background="@drawable/top_round_appcolor" app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+          android:id="@+id/view5"/>
+    <TextView
+            android:text="Can't Close This"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView2" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/view5" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp" android:layout_marginTop="14dp" android:textSize="15sp"
+            android:textColor="@color/white" android:fontFamily="@font/muli"/>
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/appcolor_background" app:layout_constraintTop_toTopOf="@+id/profile_iv"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_iv"
+            app:layout_constraintStart_toStartOf="@+id/profile_iv" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginLeft="40dp" android:layout_marginStart="40dp" android:layout_marginRight="36dp"
+            android:layout_marginEnd="36dp">
+
+        <TextView
+                android:text="Choose A Profile Picture"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" android:id="@+id/textView3" android:layout_marginEnd="10dp"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginRight="10dp" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="54dp"
+                android:layout_marginStart="54dp" android:textSize="15sp" android:textColor="@color/white"
+                android:layout_marginTop="10dp" android:layout_marginBottom="10dp"
+                android:fontFamily="@font/muli_bold"/>
+    </android.support.constraint.ConstraintLayout>
+    <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp" app:srcCompat="@drawable/ic_default_appcolor"
+            android:id="@+id/profile_iv" android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/view5" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="36dp" android:layout_marginStart="36dp" tools:ignore="VectorDrawableCompat"/>
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:background="@drawable/white_round_borders"
+            android:elevation="3dp"
+            android:id="@+id/name_et" android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/profile_iv" android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="20dp" android:paddingLeft="15dp"
+            android:paddingTop="10dp" android:paddingRight="15dp" android:paddingBottom="10dp"
+            android:hint="What's Your Name?" android:textSize="12sp" android:fontFamily="@font/muli_light"
+            android:textColor="@color/black"/>
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:background="@drawable/white_round_borders"
+            android:elevation="3dp"
+            android:id="@+id/age_et"
+            app:layout_constraintTop_toBottomOf="@+id/name_et" android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="20dp" android:paddingLeft="15dp"
+            android:paddingTop="10dp" android:paddingRight="15dp" android:paddingBottom="10dp"
+            android:hint="What's Your age?" android:textSize="12sp" android:fontFamily="@font/muli_light"
+            android:layout_marginTop="20dp" android:textColor="@color/black"/>
+
+    <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                 android:layout_height="wrap_content"
+                                                 android:elevation="3dp"
+                                                 app:layout_constraintTop_toBottomOf="@+id/age_et"
+                                                 app:layout_constraintStart_toStartOf="parent"
+                                                 app:layout_constraintEnd_toEndOf="parent"
+                                                 android:background="@drawable/white_round_borders"
+                                                 android:layout_marginTop="20dp" android:layout_marginLeft="20dp"
+                                                 android:layout_marginStart="20dp" android:layout_marginRight="20dp"
+                                                 android:layout_marginEnd="20dp" android:id="@+id/constraintLayout2">
+
+        <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editText3"
+                app:layout_constraintStart_toStartOf="parent"
+                android:paddingLeft="15dp"
+                android:paddingTop="10dp" android:paddingRight="15dp" android:paddingBottom="10dp"
+                android:hint="What's Your gender?" android:textSize="12sp" android:fontFamily="@font/muli_light"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="8dp" app:layout_constraintEnd_toStartOf="@+id/male_tv"
+                android:layout_marginRight="8dp"/>
+        <TextView
+                android:text="MALE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/male_tv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" android:fontFamily="@font/muli_bold"
+                android:textColor="@color/colorPrimary" android:textSize="15sp" android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" app:layout_constraintEnd_toStartOf="@+id/female_tv"/>
+        <TextView
+                android:text="FEMALE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/female_tv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" android:fontFamily="@font/muli_bold"
+                android:textColor="@color/black" android:textSize="15sp" android:layout_marginRight="10dp"
+                android:layout_marginEnd="10dp" app:layout_constraintEnd_toStartOf="@+id/other_tv"/>
+        <TextView
+                android:text="OTHER"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/other_tv"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" android:fontFamily="@font/muli_bold"
+                android:textColor="@color/black" android:textSize="15sp" android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+            android:text="Save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/saveTv"
+            android:background="@drawable/appcolor_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="15sp"
+            android:layout_marginBottom="20dp"
+            android:paddingLeft="70dp"
+            android:paddingTop="7dp"
+            android:paddingRight="70dp"
+            android:paddingBottom="7dp"
+            app:fontFamily="@font/muli_bold"
+            android:textColor="@color/white" android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"/>
+
+</android.support.constraint.ConstraintLayout>

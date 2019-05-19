@@ -49,7 +49,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
 
     }
 
-    override fun showMessage(message: String) {
+    override fun showMessage(message: String, type: Int) {
 
     }
 

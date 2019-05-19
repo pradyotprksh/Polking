@@ -17,4 +17,19 @@
     <string name="home">Home</string>
     <string name="ok_string">Fine</string>
     <string name="cancel_string">Nope</string>
+    <string name="back">Back</string>
+    <string name="welcome_string">Good Morning, Rachel Green. Welcome to POLKING.</string>
+    <string name="zero_string">0</string>
+    <string name="questions">Questions</string>
+    <string name="or_string">|</string>
+    <string name="friends">Friends</string>
+    <string name="best_friends">Best Friends</string>
+    <string name="more_coming_soon">More Coming Soon</string>
+    <string name="options">Options</string>
+    <string name="about_us">About Us</string>
+    <string name="faqs">FAQs</string>
+    <string name="review_polking">Review Polking</string>
+    <string name="see_your_best_friends">See Your Best Friends</string>
+    <string name="see_your_friends">See Your Friends</string>
+    <string name="see_your_questions">See Your Questions</string>
 </resources>

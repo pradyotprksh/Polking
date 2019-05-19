@@ -2,6 +2,9 @@ package com.project.pradyotprakash.polking.dagger
 
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.home.MainActivityModule
+import com.project.pradyotprakash.polking.profile.ProfileActivity
+import com.project.pradyotprakash.polking.profile.ProfileActivityModule
+import com.project.pradyotprakash.polking.profileDetails.ProfileEditModule
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.signin.SignInActivityModule
 import com.project.pradyotprakash.polking.splash.SplashActivity
@@ -29,4 +32,8 @@ abstract class BuildersModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = [VerifyOTPModule::class])
     abstract fun verifyOTPActivity(): VerifyOTPActivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = [ProfileActivityModule::class])
+    abstract fun profileActivity(): ProfileActivity
 }

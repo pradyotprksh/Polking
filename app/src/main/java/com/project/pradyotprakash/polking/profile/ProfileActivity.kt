@@ -6,11 +6,18 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.utility.logd
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_profile.*
+import javax.inject.Inject
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : AppCompatActivity(), ProfileActivityView {
+
+    @Inject
+    lateinit var presenter: ProfileActivityPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         // Make full screen
@@ -19,10 +26,11 @@ class ProfileActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_profile)
 
-        initilise()
+        logd("Create")
+        initialize()
     }
 
-    private fun initilise() {
+    private fun initialize() {
         options_tv.setOnClickListener {
             optionList_cl.visibility = View.VISIBLE
         }
@@ -30,5 +38,25 @@ class ProfileActivity : AppCompatActivity() {
         iv_close.setOnClickListener {
             optionList_cl.visibility = View.GONE
         }
+
+        back_tv.setOnClickListener {
+            finish()
+        }
+    }
+
+    override fun showLoading() {
+
+    }
+
+    override fun hideLoading() {
+
+    }
+
+    override fun stopAct() {
+
+    }
+
+    override fun showMessage(message: String, type: Int) {
+
     }
 }

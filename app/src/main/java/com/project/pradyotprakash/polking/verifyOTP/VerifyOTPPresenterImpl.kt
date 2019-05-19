@@ -56,9 +56,9 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
 
             override fun onVerificationFailed(e: FirebaseException?) {
                 if (e is FirebaseAuthInvalidCredentialsException) {
-                    mView.showMessage("Invalid Credential. Please Try Again.")
+                    mView.showMessage("Invalid Credential. Please Try Again.", 1)
                 } else if (e is FirebaseTooManyRequestsException) {
-                    mView.showMessage("To many request. Please Try Again.")
+                    mView.showMessage("To many request. Please Try Again.", 1)
                 }
             }
 
@@ -68,7 +68,7 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
             }
 
             override fun onCodeAutoRetrievalTimeOut(p0: String?) {
-                mView.showMessage("TimeOut. Please Try Again.")
+                mView.showMessage("TimeOut. Please Try Again.", 1)
             }
         }
 
@@ -87,9 +87,8 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
                 if (task.isSuccessful) {
                     mView.hideLoading()
                 } else {
-                    mView.showMessage("Oops Something Went Wrong. Please Try Again.")
                     mView.hideLoading()
-                    mView.stopAct()
+                    mView.showMessage("Oops Something Went Wrong. Please Try Again.", 1)
                 }
             }
         }

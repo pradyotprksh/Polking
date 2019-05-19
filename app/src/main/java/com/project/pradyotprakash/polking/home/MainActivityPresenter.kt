@@ -6,4 +6,7 @@ interface MainActivityPresenter: BasePresenter {
 
     // check if user is logged in
     fun isLoggedIn()
+
+    // get profile data
+    fun getProfileData()
 }

@@ -17,7 +17,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import kotlinx.android.synthetic.main.activity_sign_in.backSpaceTv
 import kotlinx.android.synthetic.main.activity_sign_in.closeIv
-import kotlinx.android.synthetic.main.activity_sign_in.continueTv
+import kotlinx.android.synthetic.main.activity_sign_in.saveTv
 import kotlinx.android.synthetic.main.activity_sign_in.eightDial
 import kotlinx.android.synthetic.main.activity_sign_in.fiveDial
 import kotlinx.android.synthetic.main.activity_sign_in.fourDial
@@ -102,9 +102,9 @@ class SignInActivity : AppCompatActivity(), SignInView {
             override fun onTextChanged(s: CharSequence, start: Int,
                                        before: Int, count: Int) {
                 if (s.isNotEmpty() && s.toString().isValidPhone()) {
-                    continueTv.visibility = View.VISIBLE
+                    saveTv.visibility = View.VISIBLE
                 } else {
-                    continueTv.visibility = View.GONE
+                    saveTv.visibility = View.GONE
                 }
             }
         })
@@ -117,12 +117,12 @@ class SignInActivity : AppCompatActivity(), SignInView {
             phoneEt.setText(phoneNum)
         }
 
-        continueTv.setOnClickListener {
+        saveTv.setOnClickListener {
             val phoneNum = phoneEt.text.toString()
             if (phoneNum.isNotEmpty() && phoneNum.isValidPhone()) {
                 openOTPScreen()
             } else {
-                showMessage("Enter a valid phone number. This is the lest you can do for us.")
+                showMessage("Enter a valid phone number. This is the lest you can do for us.", 1)
             }
         }
 
@@ -148,18 +148,18 @@ class SignInActivity : AppCompatActivity(), SignInView {
     }
 
     override fun showLoading() {
-
+        progressBar3.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-
+        progressBar3.visibility = View.GONE
     }
 
     override fun stopAct() {
 
     }
 
-    override fun showMessage(message: String) {
+    override fun showMessage(message: String, type: Int) {
 
     }
 

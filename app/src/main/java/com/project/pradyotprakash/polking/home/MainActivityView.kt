@@ -9,4 +9,7 @@ interface MainActivityView: BaseView {
 
     // start login act
     fun startLogin()
+
+    // open profile edits
+    fun openAddProfileDetails()
 }

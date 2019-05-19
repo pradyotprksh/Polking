@@ -5,6 +5,8 @@ interface BaseView {
     fun showLoading()
     fun hideLoading()
     fun stopAct()
-    fun showMessage(message: String)
+
+    // type = 1-> error 2->information 3-> success
+    fun showMessage(message: String, type: Int)
 
 }
