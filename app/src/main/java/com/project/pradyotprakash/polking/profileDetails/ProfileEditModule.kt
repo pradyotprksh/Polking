@@ -1,18 +1,17 @@
 package com.project.pradyotprakash.polking.profileDetails
 
-import com.project.pradyotprakash.polking.dagger.ActivityScoped
 import com.project.pradyotprakash.polking.dagger.FragmentScoped
 import dagger.Binds
 import dagger.Module
+import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class ProfileEditModule {
 
     @FragmentScoped
-    @Binds
-    internal abstract fun provideProfileEditActivty(profileEditBtmSheet: ProfileEditBtmSheet): ProfileEditBtmSheet
+    @ContributesAndroidInjector
+    internal abstract fun provideProfileEditActivty(): ProfileEditBtmSheet
 
-    @ActivityScoped
     @Binds
     internal abstract fun profileEditPresenter(presenter: ProfileEditPresenterImpl): ProfileEditPresenter
 

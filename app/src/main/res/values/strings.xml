@@ -1,5 +1,7 @@
 <resources>
     <string name="readSMSPermission">Please allow Polking to read SMS</string>
+    <string name="readStoragePermission">Please allow Polking to read storage</string>
+    <string name="writeStoragePermission">Please allow Polking to write to storage</string>
     <string name="app_name">Polking</string>
     <string name="detect_my_location">Detect My Location</string>
     <string name="set_location">Set Location</string>

@@ -167,7 +167,7 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
             AppConstants.PERMISSIONS_REQUEST_READ_SMS -> {
-                if (grantResults.isNotEmpty() && grantResults[0] === PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(
                             this,
                             Manifest.permission.READ_SMS
@@ -199,7 +199,6 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
                 return
             }
         }
-
     }
 
     private fun showMessageOKCancel(message: String, okListener: (Any, Any) -> Unit) {

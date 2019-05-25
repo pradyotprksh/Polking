@@ -4,6 +4,7 @@ import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.home.MainActivityModule
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivityModule
+import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditModule
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.signin.SignInActivityModule
@@ -18,7 +19,7 @@ import dagger.android.ContributesAndroidInjector
 abstract class BuildersModule {
 
     @ActivityScoped
-    @ContributesAndroidInjector(modules = [MainActivityModule::class])
+    @ContributesAndroidInjector(modules = [MainActivityModule::class, ProfileEditModule::class])
     abstract fun mainActivity(): MainActivity
 
     @ActivityScoped
