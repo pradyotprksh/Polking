@@ -1,6 +1,7 @@
 package com.project.pradyotprakash.polking.profileDetails
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,15 +10,19 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.AppConstants
 import com.project.pradyotprakash.polking.utility.RoundBottomSheet
+import com.project.pradyotprakash.polking.utility.logd
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
@@ -27,9 +32,18 @@ import javax.inject.Inject
 
 class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
 
-    @Inject lateinit var presenter: ProfileEditPresenter
     private var count = 0
     private var count1 = 0
+    private var userMainImageURI: Uri? = null
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
+
+    /*
+    0 - Male
+    1 - Female
+    2 - Others
+     */
+    private var genderType = -1
 
     companion object {
         fun newInstance(): ProfileEditBtmSheet =
@@ -50,14 +64,18 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
             }
         }
 
+        activity!!.logd("ProfileEditBtmSheet onCreateView")
+
         initView(view)
         return view
     }
 
     private fun initView(view: View) {
-        presenter.attachView(this)
+        mAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+
         view.profile_iv.setOnClickListener {
-            if (presenter.checkReadPermission() && presenter.checkWritePermission()) {
+            if (checkReadPermission() && checkWritePermission()) {
                 openCamera()
             }
         }
@@ -66,18 +84,43 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
             male_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))
             female_tv.setTextColor(resources.getColor(R.color.black))
             other_tv.setTextColor(resources.getColor(R.color.black))
+            genderType = 0
         }
 
         view.female_tv.setOnClickListener {
             male_tv.setTextColor(resources.getColor(R.color.black))
             female_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))
             other_tv.setTextColor(resources.getColor(R.color.black))
+            genderType = 1
         }
 
         view.other_tv.setOnClickListener {
             male_tv.setTextColor(resources.getColor(R.color.black))
             female_tv.setTextColor(resources.getColor(R.color.black))
             other_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+            genderType = 2
+        }
+
+        view.saveTv.setOnClickListener {
+            if (userMainImageURI!=null) {
+                if (view.name_et.text.toString().length > 3) {
+                    if (view.age_et.text.toString().isNotEmpty()) {
+                        if (view.age_et.text.toString().toInt() > 13) {
+                            if (genderType != -1) {
+
+                            } else {
+                                showMessage("Please Select A Gender.", 1)
+                            }
+                        } else {
+                            showMessage("To Use This App You Must Be 13+. Sorry.", 1)
+                        }
+                    } else {
+                        showMessage("Please Enter Your Age.", 1)
+                    }
+                } else {
+                    showMessage("Your Name Must Be Greater Than 3 Characters.", 1)
+                }
+            }
         }
     }
 
@@ -95,6 +138,13 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
     override fun showMessage(message: String, type: Int) {
 
+    }
+
+    fun getImageUri(imageUri: Uri?) {
+        this.userMainImageURI = imageUri
+        profile_iv.setImageURI(userMainImageURI)
+        profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
+        profile_iv.borderWidth = 4
     }
 
     private fun openCamera() {
@@ -116,10 +166,10 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                     ) {
                         openCamera()
                     } else {
-                        presenter.checkReadPermission()
+                        checkReadPermission()
                     }
                 } else {
-                    presenter.checkReadPermission()
+                    checkReadPermission()
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                             count1++
@@ -149,10 +199,10 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                     ) {
                         openCamera()
                     } else {
-                        presenter.checkWritePermission()
+                        checkWritePermission()
                     }
                 } else {
-                    presenter.checkWritePermission()
+                    checkWritePermission()
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             count++
@@ -172,6 +222,56 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                 }
                 return
             }
+
+
+        }
+    }
+
+    private fun checkReadPermission() : Boolean {
+        return if (ContextCompat.checkSelfPermission(context!!,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(
+                    activity!!,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_READ_STORAGE
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    activity!!,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_READ_STORAGE
+                )
+            }
+            false
+        } else {
+            true
+        }
+    }
+
+    private fun checkWritePermission() : Boolean {
+        return if (ContextCompat.checkSelfPermission(activity!!,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(
+                    activity!!,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_WRITE_STORAGE
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    activity!!,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_WRITE_STORAGE
+                )
+            }
+            false
+        } else {
+            true
         }
     }
 

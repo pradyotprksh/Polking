@@ -1,5 +1,7 @@
 package com.project.pradyotprakash.polking.home
 
+import android.app.Activity
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -11,6 +13,7 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
+import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -19,7 +22,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     @Inject
     lateinit var presenter: MainActivityPresenter
-    @Inject
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +44,9 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         bg_iv.setOnClickListener {
             presenter.isLoggedIn()
         }
+
+        profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
+        profileEditBtmSheet.isCancelable = false
     }
 
     override fun onResume() {
@@ -74,13 +79,25 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun openAddProfileDetails() {
         if (!profileEditBtmSheet.isAdded) {
-            profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
-            profileEditBtmSheet.isCancelable = false
             profileEditBtmSheet.show(supportFragmentManager, "btmSheet")
         }
     }
 
     override fun showMessage(message: String, type: Int) {
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            val result = CropImage.getActivityResult(data)
+            if (resultCode == Activity.RESULT_OK) {
+                if (profileEditBtmSheet.isAdded) {
+                    profileEditBtmSheet.getImageUri(result.uri)
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                showMessage("Something Went Wrong While Uploading Image. Please Try Again.", 1)
+            }
+        }
     }
 }
