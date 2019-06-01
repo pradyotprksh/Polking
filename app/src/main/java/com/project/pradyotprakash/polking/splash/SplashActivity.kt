@@ -1,8 +1,8 @@
 package com.project.pradyotprakash.polking.splash
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AppCompatActivity
 import android.view.Window
 import android.view.WindowManager
 import com.project.pradyotprakash.polking.R
@@ -26,7 +26,7 @@ class SplashActivity : AppCompatActivity(), SplashView {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_splash)
-        logd("Create")
+        logd(getString(R.string.create))
         initialize()
     }
 

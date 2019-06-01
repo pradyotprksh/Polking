@@ -1,9 +1,9 @@
 package com.project.pradyotprakash.polking.profileDetails
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,12 +17,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.utility.AppConstants
-import com.project.pradyotprakash.polking.utility.RoundBottomSheet
-import com.project.pradyotprakash.polking.utility.logd
+import com.project.pradyotprakash.polking.utility.*
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
@@ -64,7 +72,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
             }
         }
 
-        activity!!.logd("ProfileEditBtmSheet onCreateView")
+        activity!!.logd(getString(R.string.profilebottomsheet))
 
         initView(view)
         return view
@@ -74,9 +82,15 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
         mAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        getUserData(view)
+
+        DatePicker(view.age_et).listen()
+
         view.profile_iv.setOnClickListener {
             if (checkReadPermission() && checkWritePermission()) {
                 openCamera()
+            } else {
+                showMessage(getString(R.string.permission_not_granted), 2)
             }
         }
 
@@ -102,38 +116,200 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
         }
 
         view.saveTv.setOnClickListener {
-            if (userMainImageURI!=null) {
-                if (view.name_et.text.toString().length > 3) {
-                    if (view.age_et.text.toString().isNotEmpty()) {
-                        if (view.age_et.text.toString().toInt() > 13) {
-                            if (genderType != -1) {
+            if (mAuth.currentUser != null) {
+                if (userMainImageURI != null) {
+                    if (view.name_et.text.toString().length > 3) {
+                        if (view.age_et.text.toString().isNotEmpty()) {
+                            if (Utility().getAge(view.age_et.text.toString()) > 13) {
+                                if (genderType != -1) {
 
+                                    showLoading()
+
+                                    val storage = FirebaseStorage.getInstance().reference
+                                    val imagePath: StorageReference =
+                                        storage.child("user_profile_image").child("${mAuth.currentUser!!.uid}.jpg")
+                                    imagePath.putFile(userMainImageURI!!)
+                                        .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                                            if (!task.isSuccessful) {
+                                                task.exception?.let { exception ->
+                                                    showMessage(
+                                                        "Something Went Wrong. ${exception.localizedMessage}",
+                                                        1
+                                                    )
+                                                    hideLoading()
+                                                    throw exception
+                                                }
+                                            }
+                                            return@Continuation imagePath.downloadUrl
+                                        }).addOnCanceledListener {
+                                        showMessage(getString(R.string.not_uploaded), 4)
+                                        hideLoading()
+                                    }.addOnFailureListener { exception ->
+                                        showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
+                                        hideLoading()
+                                    }.addOnCompleteListener { task ->
+
+                                        if (task.isComplete) {
+                                            if (task.isSuccessful) {
+
+                                                imagePath.downloadUrl.addOnSuccessListener { uri ->
+
+                                                    val imageUrl = uri.toString()
+
+                                                    val userData = HashMap<String, Any>()
+                                                    userData["imageUrl"] = imageUrl
+                                                    userData["name"] = view.name_et.text.toString()
+                                                    userData["age"] = Utility().getAge(view.age_et.text.toString())
+                                                    userData["birthDay"] = view.age_et.text.toString()
+                                                    userData["gender"] = genderType.toString()
+
+                                                    firestore.collection("users").document(mAuth.currentUser!!.uid)
+                                                        .update(userData).addOnSuccessListener {
+
+                                                        hideLoading()
+                                                        stopAct()
+
+                                                    }.addOnFailureListener { exception ->
+                                                        showMessage(
+                                                            "Something Went Wrong. ${exception.localizedMessage}",
+                                                            1
+                                                        )
+                                                        hideLoading()
+                                                    }.addOnCanceledListener {
+                                                        showMessage(getString(R.string.not_uploaded), 4)
+                                                        hideLoading()
+                                                    }
+
+                                                }.addOnFailureListener { exception ->
+                                                    showMessage(
+                                                        "Something Went Wrong. ${exception.localizedMessage}",
+                                                        1
+                                                    )
+                                                    hideLoading()
+                                                }.addOnCanceledListener {
+                                                    showMessage(getString(R.string.not_uploaded), 4)
+                                                    hideLoading()
+                                                }
+
+                                            } else if (task.isCanceled) {
+                                                showMessage(getString(R.string.not_uploaded), 4)
+                                                hideLoading()
+                                            }
+                                        } else {
+                                            showMessage(getString(R.string.something_went_wrong), 1)
+                                            hideLoading()
+                                        }
+
+                                    }.addOnSuccessListener {
+                                        showMessage(getString(R.string.save_properly), 3)
+                                    }
+
+                                } else {
+                                    showMessage(getString(R.string.select_gender), 1)
+                                }
                             } else {
-                                showMessage("Please Select A Gender.", 1)
+                                showMessage(getString(R.string.above_thirteen_msg), 1)
                             }
                         } else {
-                            showMessage("To Use This App You Must Be 13+. Sorry.", 1)
+                            showMessage(getString(R.string.enter_birthdate), 1)
                         }
                     } else {
-                        showMessage("Please Enter Your Age.", 1)
+                        showMessage(getString(R.string.name_length_restriction), 1)
                     }
                 } else {
-                    showMessage("Your Name Must Be Greater Than 3 Characters.", 1)
+                    showMessage(getString(R.string.select_picture), 1)
                 }
+            } else {
+                showMessage(getString(R.string.user_not_found), 1)
             }
         }
     }
 
-    override fun showLoading() {
+    private fun getUserData(view: View) {
+        showLoading()
+        view.imagePrgBsr.visibility = View.VISIBLE
+        firestore.collection("users").document(mAuth.currentUser!!.uid).get().addOnSuccessListener { result ->
 
+            if (result.exists()) {
+
+                Glide.with(this).load(result.getString("imageUrl")).listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        exception: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        view.imagePrgBsr.visibility = View.GONE
+                        showMessage("Something Went Wrong. ${exception?.localizedMessage}", 1)
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        view.imagePrgBsr.visibility = View.GONE
+                        return false
+                    }
+                }).into(view.profile_iv)
+
+                view.name_et.setText(result.getString("name"))
+                view.age_et.setText(result.getString("birthDay"))
+
+                /*
+                    0 - Male
+                    1 - Female
+                    2 - Others
+                */
+                when {
+                    Integer.parseInt(result.get("gender").toString()) == 0 -> {
+                        male_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+                        female_tv.setTextColor(resources.getColor(R.color.black))
+                        other_tv.setTextColor(resources.getColor(R.color.black))
+                        genderType = 0
+                    }
+                    Integer.parseInt(result.get("gender").toString()) == 1 -> {
+                        male_tv.setTextColor(resources.getColor(R.color.black))
+                        female_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+                        other_tv.setTextColor(resources.getColor(R.color.black))
+                        genderType = 1
+                    }
+                    else -> {
+                        male_tv.setTextColor(resources.getColor(R.color.black))
+                        female_tv.setTextColor(resources.getColor(R.color.black))
+                        other_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+                        genderType = 2
+                    }
+                }
+
+                hideLoading()
+
+            } else {
+                hideLoading()
+            }
+
+        }.addOnFailureListener { exception ->
+            showMessage("Something Went Wrong. {${exception.localizedMessage}}", 1)
+            hideLoading()
+        }.addOnCanceledListener {
+            showMessage(getString(R.string.getting_details), 4)
+            hideLoading()
+        }
+    }
+
+    override fun showLoading() {
+        mainProgressBar.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-
+        mainProgressBar.visibility = View.GONE
     }
 
     override fun stopAct() {
-
+        dismiss()
     }
 
     override fun showMessage(message: String, type: Int) {
@@ -151,7 +327,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
         if (activity != null) {
             CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).start(activity!!)
         } else {
-            showMessage("Unable To Start. Check Permission. Please.", 1)
+            showMessage(getString(R.string.check_permission), 1)
         }
     }
 

@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.AppConstants
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -56,9 +57,9 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
 
             override fun onVerificationFailed(e: FirebaseException?) {
                 if (e is FirebaseAuthInvalidCredentialsException) {
-                    mView.showMessage("Invalid Credential. Please Try Again.", 1)
+                    mView.showMessage(mContext.getString(R.string.invalid_creds), 1)
                 } else if (e is FirebaseTooManyRequestsException) {
-                    mView.showMessage("To many request. Please Try Again.", 1)
+                    mView.showMessage(mContext.getString(R.string.too_many_req), 1)
                 }
             }
 
@@ -68,7 +69,7 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
             }
 
             override fun onCodeAutoRetrievalTimeOut(p0: String?) {
-                mView.showMessage("TimeOut. Please Try Again.", 1)
+                mView.showMessage(mContext.getString(R.string.time_out), 1)
             }
         }
 
@@ -88,8 +89,11 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
                     mView.hideLoading()
                 } else {
                     mView.hideLoading()
-                    mView.showMessage("Oops Something Went Wrong. Please Try Again.", 1)
+                    mView.showMessage(mContext.getString(R.string.something_went_wring_oops), 1)
                 }
+            }.addOnFailureListener { exception ->
+                mView.hideLoading()
+                mView.showMessage("Oops Something Went Wrong. ${exception.localizedMessage}", 1)
             }
         }
     }

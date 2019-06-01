@@ -2,8 +2,8 @@ package com.project.pradyotprakash.polking.home
 
 import android.app.Activity
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         setContentView(R.layout.activity_main)
 
-        logd("Create")
+        logd(getString(R.string.create))
         initialize()
     }
 
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun onResume() {
         super.onResume()
-        logd("Resume")
+        logd(getString(R.string.resume))
         presenter.getProfileData()
     }
 
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                     profileEditBtmSheet.getImageUri(result.uri)
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                showMessage("Something Went Wrong While Uploading Image. Please Try Again.", 1)
+                showMessage(getString(R.string.went_wrong_image), 1)
             }
         }
     }

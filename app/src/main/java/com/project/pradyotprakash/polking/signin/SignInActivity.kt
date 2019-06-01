@@ -1,8 +1,8 @@
 package com.project.pradyotprakash.polking.signin
 
 import android.annotation.SuppressLint
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -15,19 +15,6 @@ import com.project.pradyotprakash.polking.utility.openActivity
 import com.project.pradyotprakash.polking.verifyOTP.VerifyOTPActivity
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_sign_in.*
-import kotlinx.android.synthetic.main.activity_sign_in.backSpaceTv
-import kotlinx.android.synthetic.main.activity_sign_in.closeIv
-import kotlinx.android.synthetic.main.activity_sign_in.saveTv
-import kotlinx.android.synthetic.main.activity_sign_in.eightDial
-import kotlinx.android.synthetic.main.activity_sign_in.fiveDial
-import kotlinx.android.synthetic.main.activity_sign_in.fourDial
-import kotlinx.android.synthetic.main.activity_sign_in.nineDial
-import kotlinx.android.synthetic.main.activity_sign_in.oneDial
-import kotlinx.android.synthetic.main.activity_sign_in.sevenDial
-import kotlinx.android.synthetic.main.activity_sign_in.sixDial
-import kotlinx.android.synthetic.main.activity_sign_in.threeDial
-import kotlinx.android.synthetic.main.activity_sign_in.twoDial
-import kotlinx.android.synthetic.main.activity_sign_in.zeroDial
 import javax.inject.Inject
 
 class SignInActivity : AppCompatActivity(), SignInView {
@@ -44,7 +31,7 @@ class SignInActivity : AppCompatActivity(), SignInView {
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         setContentView(R.layout.activity_sign_in)
-        logd("Create")
+        logd(getString(R.string.create))
         initialize()
     }
 
@@ -122,7 +109,7 @@ class SignInActivity : AppCompatActivity(), SignInView {
             if (phoneNum.isNotEmpty() && phoneNum.isValidPhone()) {
                 openOTPScreen()
             } else {
-                showMessage("Enter a valid phone number. This is the lest you can do for us.", 1)
+                showMessage(getString(R.string.enter_valid_phone), 1)
             }
         }
 

@@ -3,9 +3,9 @@ package com.project.pradyotprakash.polking.home
 import android.app.Activity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import javax.inject.Inject
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.project.pradyotprakash.polking.R
+import javax.inject.Inject
 
 
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
@@ -56,10 +56,10 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     mView.hideLoading()
                 }
             }.addOnFailureListener {
-                mView.showMessage("Oops Something Went Wrong. Please Try Again.", 1)
+                mView.showMessage(mContext.getString(R.string.something_went_wring_oops), 1)
                 mView.hideLoading()
             }.addOnCanceledListener {
-                mView.showMessage("Request was cancelled in between.", 1)
+                mView.showMessage(mContext.getString(R.string.getting_details), 4)
                 mView.hideLoading()
             }
         }

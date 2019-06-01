@@ -34,4 +34,37 @@
     <string name="see_your_best_friends">See Your Best Friends</string>
     <string name="see_your_friends">See Your Friends</string>
     <string name="see_your_questions">See Your Questions</string>
+    <string name="can_t_close_this">Can\'t Close This</string>
+    <string name="choose_a_profile_picture">Choose A Profile Picture</string>
+    <string name="what_s_your_name">What\'s Your Name?</string>
+    <string name="what_s_your_birthday">What\'s Your Birthday?</string>
+    <string name="what_s_your_gender">What\'s Your gender?</string>
+    <string name="male">MALE</string>
+    <string name="female">FEMALE</string>
+    <string name="other">OTHER</string>
+    <string name="save">Save</string>
+    <string name="permission_not_granted">Unable to enable permissions. Please give permission manually to add profile
+        image. Profile Image is a must
+    </string>
+    <string name="not_uploaded">Uploading Details was Cancelled somehow. Was that you?</string>
+    <string name="something_went_wrong">Something Went Wrong.</string>
+    <string name="save_properly">Your details where saved properly.</string>
+    <string name="select_gender">Please Select A Gender.</string>
+    <string name="above_thirteen_msg">To Use This App You Must Be 13+. Sorry.</string>
+    <string name="enter_birthdate">Please Enter Your Birthdate.</string>
+    <string name="name_length_restriction">Your Name Must Be Greater Than 3 Characters.</string>
+    <string name="select_picture">Something went wrong. Please select your profile picture again.</string>
+    <string name="user_not_found">User not found. Please kill the application and try again. Sorry for inconvenience.
+    </string>
+    <string name="getting_details">Getting Details was Cancelled somehow. Was that you?</string>
+    <string name="check_permission">Unable To Start. Check Permission. Please.</string>
+    <string name="profilebottomsheet">ProfileEditBtmSheet onCreateView</string>
+    <string name="create">Create</string>
+    <string name="resume">Resume</string>
+    <string name="went_wrong_image">Something Went Wrong While Getting Image. Please Try Again.</string>
+    <string name="something_went_wring_oops">Oops Something Went Wrong. Please Try Again.</string>
+    <string name="enter_valid_phone">Enter a valid phone number. This is the lest you can do for us.</string>
+    <string name="invalid_creds">Invalid Credential. Please Try Again.</string>
+    <string name="too_many_req">To many request. Please Try Again.</string>
+    <string name="time_out">TimeOut. Please Try Again.</string>
 </resources>
