@@ -37,7 +37,7 @@
     <string name="can_t_close_this">Can\'t Close This</string>
     <string name="choose_a_profile_picture">Choose A Profile Picture</string>
     <string name="what_s_your_name">What\'s Your Name?</string>
-    <string name="what_s_your_birthday">What\'s Your Birthday?</string>
+    <string name="what_s_your_birthday">What\'s Your Birthday? DD/MM/YYYY</string>
     <string name="what_s_your_gender">What\'s Your gender?</string>
     <string name="male">MALE</string>
     <string name="female">FEMALE</string>
@@ -67,4 +67,5 @@
     <string name="invalid_creds">Invalid Credential. Please Try Again.</string>
     <string name="too_many_req">To many request. Please Try Again.</string>
     <string name="time_out">TimeOut. Please Try Again.</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>

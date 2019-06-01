@@ -50,6 +50,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         if (currentUser!=null) {
             dataBase.collection("users").document(currentUser!!.uid).get().addOnSuccessListener { result ->
                 if (result.exists()) {
+                    mView.setUserProfileImage(result.getString("imageUrl"))
                     mView.hideLoading()
                 } else {
                     mView.openAddProfileDetails()

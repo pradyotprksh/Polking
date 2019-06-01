@@ -12,4 +12,7 @@ interface MainActivityView: BaseView {
 
     // open profile edits
     fun openAddProfileDetails()
+
+    // set user profile data
+    fun setUserProfileImage(imageUrl: String?)
 }

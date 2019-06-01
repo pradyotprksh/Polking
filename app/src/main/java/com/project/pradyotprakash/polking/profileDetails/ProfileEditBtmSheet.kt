@@ -42,6 +42,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
     private var count = 0
     private var count1 = 0
+    private var imageUrl: String? = null
     private var userMainImageURI: Uri? = null
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -123,7 +124,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                             if (Utility().getAge(view.age_et.text.toString()) > 13) {
                                 if (genderType != -1) {
 
-                                    showLoading()
+                                    view.mainProgressBar.visibility = View.VISIBLE
 
                                     val storage = FirebaseStorage.getInstance().reference
                                     val imagePath: StorageReference =
@@ -136,73 +137,86 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                                                         "Something Went Wrong. ${exception.localizedMessage}",
                                                         1
                                                     )
-                                                    hideLoading()
+                                                    view.mainProgressBar.visibility = View.GONE
                                                     throw exception
                                                 }
                                             }
                                             return@Continuation imagePath.downloadUrl
                                         }).addOnCanceledListener {
-                                        showMessage(getString(R.string.not_uploaded), 4)
-                                        hideLoading()
-                                    }.addOnFailureListener { exception ->
-                                        showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
-                                        hideLoading()
-                                    }.addOnCompleteListener { task ->
+                                            showMessage(getString(R.string.not_uploaded), 4)
+                                            view.mainProgressBar.visibility = View.GONE
+                                        }.addOnFailureListener { exception ->
+                                            showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
+                                            view.mainProgressBar.visibility = View.GONE
+                                        }.addOnCompleteListener { task ->
 
-                                        if (task.isComplete) {
-                                            if (task.isSuccessful) {
+                                            if (task.isComplete) {
+                                                if (task.isSuccessful) {
 
-                                                imagePath.downloadUrl.addOnSuccessListener { uri ->
+                                                    imagePath.downloadUrl.addOnSuccessListener { uri ->
 
-                                                    val imageUrl = uri.toString()
+                                                        imageUrl = uri.toString()
 
-                                                    val userData = HashMap<String, Any>()
-                                                    userData["imageUrl"] = imageUrl
-                                                    userData["name"] = view.name_et.text.toString()
-                                                    userData["age"] = Utility().getAge(view.age_et.text.toString())
-                                                    userData["birthDay"] = view.age_et.text.toString()
-                                                    userData["gender"] = genderType.toString()
+                                                        if (imageUrl != null) {
 
-                                                    firestore.collection("users").document(mAuth.currentUser!!.uid)
-                                                        .update(userData).addOnSuccessListener {
+                                                            val userData = HashMap<String, Any>()
+                                                            userData["imageUrl"] = imageUrl!!
+                                                            userData["name"] = view.name_et.text.toString()
+                                                            userData["age"] =
+                                                                Utility().getAge(view.age_et.text.toString())
+                                                            userData["birthDay"] = view.age_et.text.toString()
+                                                            userData["gender"] = genderType.toString()
+                                                            userData["questions"] = "0"
+                                                            userData["friends"] = "0"
+                                                            userData["best_friends"] = "0"
+                                                            userData["bg_option"] = "1"
 
-                                                        hideLoading()
-                                                        stopAct()
+                                                            firestore.collection("users")
+                                                                .document(mAuth.currentUser!!.uid)
+                                                                .set(userData).addOnSuccessListener {
+
+                                                                    view.mainProgressBar.visibility = View.GONE
+                                                                    stopAct()
+
+                                                                }.addOnFailureListener { exception ->
+                                                                    showMessage(
+                                                                        "Something Went Wrong. ${exception.localizedMessage}",
+                                                                        1
+                                                                    )
+                                                                    view.mainProgressBar.visibility = View.GONE
+                                                                }.addOnCanceledListener {
+                                                                    showMessage(getString(R.string.not_uploaded), 4)
+                                                                    view.mainProgressBar.visibility = View.GONE
+                                                                }
+
+                                                        } else {
+                                                            showMessage(getString(R.string.not_uploaded), 4)
+                                                            view.mainProgressBar.visibility = View.GONE
+                                                        }
 
                                                     }.addOnFailureListener { exception ->
                                                         showMessage(
                                                             "Something Went Wrong. ${exception.localizedMessage}",
                                                             1
                                                         )
-                                                        hideLoading()
+                                                        view.mainProgressBar.visibility = View.GONE
                                                     }.addOnCanceledListener {
                                                         showMessage(getString(R.string.not_uploaded), 4)
-                                                        hideLoading()
+                                                        view.mainProgressBar.visibility = View.GONE
                                                     }
 
-                                                }.addOnFailureListener { exception ->
-                                                    showMessage(
-                                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                                        1
-                                                    )
-                                                    hideLoading()
-                                                }.addOnCanceledListener {
+                                                } else if (task.isCanceled) {
                                                     showMessage(getString(R.string.not_uploaded), 4)
-                                                    hideLoading()
+                                                    view.mainProgressBar.visibility = View.GONE
                                                 }
-
-                                            } else if (task.isCanceled) {
-                                                showMessage(getString(R.string.not_uploaded), 4)
-                                                hideLoading()
+                                            } else {
+                                                showMessage(getString(R.string.something_went_wrong), 1)
+                                                view.mainProgressBar.visibility = View.GONE
                                             }
-                                        } else {
-                                            showMessage(getString(R.string.something_went_wrong), 1)
-                                            hideLoading()
-                                        }
 
-                                    }.addOnSuccessListener {
-                                        showMessage(getString(R.string.save_properly), 3)
-                                    }
+                                        }.addOnSuccessListener {
+                                            showMessage(getString(R.string.save_properly), 3)
+                                        }
 
                                 } else {
                                     showMessage(getString(R.string.select_gender), 1)
@@ -226,11 +240,13 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
     }
 
     private fun getUserData(view: View) {
-        showLoading()
+        view.mainProgressBar.visibility = View.VISIBLE
         view.imagePrgBsr.visibility = View.VISIBLE
         firestore.collection("users").document(mAuth.currentUser!!.uid).get().addOnSuccessListener { result ->
 
             if (result.exists()) {
+
+                imageUrl = result.getString("imageUrl")
 
                 Glide.with(this).load(result.getString("imageUrl")).listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -285,27 +301,28 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                     }
                 }
 
-                hideLoading()
+                view.mainProgressBar.visibility = View.GONE
 
             } else {
-                hideLoading()
+                view.mainProgressBar.visibility = View.GONE
+                view.imagePrgBsr.visibility = View.GONE
             }
 
         }.addOnFailureListener { exception ->
             showMessage("Something Went Wrong. {${exception.localizedMessage}}", 1)
-            hideLoading()
+            view.mainProgressBar.visibility = View.GONE
         }.addOnCanceledListener {
             showMessage(getString(R.string.getting_details), 4)
-            hideLoading()
+            view.mainProgressBar.visibility = View.GONE
         }
     }
 
     override fun showLoading() {
-        mainProgressBar.visibility = View.VISIBLE
+
     }
 
     override fun hideLoading() {
-        mainProgressBar.visibility = View.GONE
+
     }
 
     override fun stopAct() {
