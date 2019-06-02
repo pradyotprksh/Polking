@@ -62,6 +62,10 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             optionList_cl.visibility = View.VISIBLE
         }
 
+        edit_tv.setOnClickListener {
+            openAddProfileDetails()
+        }
+
         profile_iv.setOnClickListener {
             openAddProfileDetails()
         }
