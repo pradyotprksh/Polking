@@ -1,7 +1,10 @@
 package com.project.pradyotprakash.polking.profile
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -15,9 +18,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
+import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.utility.BgModel
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
+import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_profile.*
 import java.util.*
@@ -27,8 +32,10 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
     @Inject
     lateinit var presenter: ProfileActivityPresenter
-    var allBgAdapter: BackgroundAdapter? = null
-    val allBgList = ArrayList<BgModel>()
+    private var allBgAdapter: BackgroundAdapter? = null
+    private val allBgList = ArrayList<BgModel>()
+    private var bgDocId: String? = null
+    lateinit var profileEditBtmSheet: ProfileEditBtmSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -45,7 +52,6 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     }
 
     private fun initialize() {
-        presenter.getUserData()
 
         allBgAdapter = BackgroundAdapter(allBgList, this, this)
         rv_bgOption.setHasFixedSize(true)
@@ -56,40 +62,66 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             optionList_cl.visibility = View.VISIBLE
         }
 
+        profile_iv.setOnClickListener {
+            openAddProfileDetails()
+        }
+
         iv_close.setOnClickListener {
             optionList_cl.visibility = View.GONE
         }
 
         back_tv.setOnClickListener {
-            finish()
+            if (!bgDocId.isNullOrEmpty()) {
+                presenter.changeBgId(bgDocId!!)
+            }
         }
+
+        profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
         if (imageUrl != null) {
-            Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    exception: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    showMessage("Something Went Wrong. ${exception?.localizedMessage}", 1)
-                    return false
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                if (!this.isDestroyed) {
+                    Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            exception: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            showMessage("Something Went Wrong. ${exception?.localizedMessage}", 1)
+                            return false
+                        }
 
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            return false
+                        }
+                    }).into(profile_iv)
                 }
-            }).into(profile_iv)
+            }
         } else {
             showMessage(getString(R.string.something_went_wrong), 1)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            val result = CropImage.getActivityResult(data)
+            if (resultCode == Activity.RESULT_OK) {
+                if (profileEditBtmSheet.isAdded) {
+                    profileEditBtmSheet.getImageUri(result.uri)
+                }
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                showMessage(getString(R.string.went_wrong_image), 1)
+            }
         }
     }
 
@@ -101,7 +133,9 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     }
 
     override fun openAddProfileDetails() {
-
+        if (!profileEditBtmSheet.isAdded) {
+            profileEditBtmSheet.show(supportFragmentManager, "btmSheet")
+        }
     }
 
     override fun setBgList(allBgList: ArrayList<BgModel>) {
@@ -117,8 +151,8 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
     override fun onResume() {
         super.onResume()
-
         logd(getString(R.string.resume))
+        presenter.getUserData()
         presenter.getBackgroundImages()
     }
 
@@ -127,22 +161,34 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     }
 
     override fun showLoading() {
-
+        progressBar.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-
+        progressBar.visibility = View.GONE
     }
 
     override fun stopAct() {
-
+        finish()
     }
 
     override fun showMessage(message: String, type: Int) {
 
     }
 
-    override fun setBgImage(imageUrl: String) {
+    override fun setUserDetails(question: String?, friends: String?, bestFriends: String?) {
+        if (!question.isNullOrEmpty()) {
+            questionVal_tv.text = question
+        }
+        if (!friends.isNullOrEmpty()) {
+            friendsVal_tv.text = friends
+        }
+        if (!bestFriends.isNullOrEmpty()) {
+            bestFrndVal_tv.text = bestFriends
+        }
+    }
+
+    override fun setBgImage(imageUrl: String, docId: String) {
         Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 exception: GlideException?,
@@ -163,5 +209,6 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
                 return false
             }
         }).into(bg_iv)
+        bgDocId = docId
     }
 }

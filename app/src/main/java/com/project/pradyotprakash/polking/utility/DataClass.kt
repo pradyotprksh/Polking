@@ -1,4 +1,4 @@
 package com.project.pradyotprakash.polking.utility
 
 // Profile Page Background List
-data class BgModel(val imageUrl: String = "", val imageSelected: Boolean = false) : GetId()
+data class BgModel(val imageUrl: String = "") : GetId()

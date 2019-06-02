@@ -9,4 +9,7 @@ interface ProfileActivityPresenter: BasePresenter {
 
     // get background images
     fun getBackgroundImages()
+
+    // change doc id of bg
+    fun changeBgId(bgDocId: String)
 }

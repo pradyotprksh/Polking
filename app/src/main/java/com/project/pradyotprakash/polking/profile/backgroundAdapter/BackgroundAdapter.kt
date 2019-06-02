@@ -56,15 +56,9 @@ class BackgroundAdapter(
             }
         }).into(p0.bgImage)
 
-        if (bgList[p1].imageSelected) {
-            if (activity is ProfileActivity) {
-                activity.setBgImage(bgList[p1].imageUrl)
-            }
-        }
-
         p0.itemView.setOnClickListener {
             if (activity is ProfileActivity) {
-                activity.setBgImage(bgList[p1].imageUrl)
+                activity.setBgImage(bgList[p1].imageUrl, bgList[p1].docId)
             }
         }
     }

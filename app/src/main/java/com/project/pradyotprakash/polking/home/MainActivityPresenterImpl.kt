@@ -4,7 +4,6 @@ import android.app.Activity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.project.pradyotprakash.polking.R
 import javax.inject.Inject
 
 
@@ -48,21 +47,23 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     override fun getProfileData() {
         mView.showLoading()
         if (currentUser!=null) {
-            dataBase.collection("users").document(currentUser!!.uid).get().addOnSuccessListener { result ->
-                if (result.exists()) {
-                    mView.setUserProfileImage(result.getString("imageUrl"))
-                    mView.hideLoading()
-                } else {
-                    mView.openAddProfileDetails()
-                    mView.hideLoading()
+
+            dataBase.collection("users").document(currentUser!!.uid)
+                .addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
+                        mView.hideLoading()
+                    } else {
+                        mView.openAddProfileDetails()
+                        mView.hideLoading()
+                    }
                 }
-            }.addOnFailureListener {
-                mView.showMessage(mContext.getString(R.string.something_went_wring_oops), 1)
-                mView.hideLoading()
-            }.addOnCanceledListener {
-                mView.showMessage(mContext.getString(R.string.getting_details), 4)
-                mView.hideLoading()
-            }
         }
     }
 

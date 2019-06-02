@@ -118,120 +118,148 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
         view.saveTv.setOnClickListener {
             if (mAuth.currentUser != null) {
-                if (userMainImageURI != null) {
-                    if (view.name_et.text.toString().length > 3) {
-                        if (view.age_et.text.toString().isNotEmpty()) {
-                            if (Utility().getAge(view.age_et.text.toString()) > 13) {
-                                if (genderType != -1) {
+                if (imageUrl == null) {
+                    if (userMainImageURI != null) {
+                        if (view.name_et.text.toString().length > 3) {
+                            if (view.age_et.text.toString().isNotEmpty()) {
+                                if (Utility().getAge(view.age_et.text.toString()) > 13) {
+                                    if (genderType != -1) {
 
-                                    view.mainProgressBar.visibility = View.VISIBLE
+                                        view.mainProgressBar.visibility = View.VISIBLE
 
-                                    val storage = FirebaseStorage.getInstance().reference
-                                    val imagePath: StorageReference =
-                                        storage.child("user_profile_image").child("${mAuth.currentUser!!.uid}.jpg")
-                                    imagePath.putFile(userMainImageURI!!)
-                                        .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                                            if (!task.isSuccessful) {
-                                                task.exception?.let { exception ->
-                                                    showMessage(
-                                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                                        1
-                                                    )
-                                                    view.mainProgressBar.visibility = View.GONE
-                                                    throw exception
-                                                }
-                                            }
-                                            return@Continuation imagePath.downloadUrl
-                                        }).addOnCanceledListener {
-                                            showMessage(getString(R.string.not_uploaded), 4)
-                                            view.mainProgressBar.visibility = View.GONE
-                                        }.addOnFailureListener { exception ->
-                                            showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
-                                            view.mainProgressBar.visibility = View.GONE
-                                        }.addOnCompleteListener { task ->
-
-                                            if (task.isComplete) {
-                                                if (task.isSuccessful) {
-
-                                                    imagePath.downloadUrl.addOnSuccessListener { uri ->
-
-                                                        imageUrl = uri.toString()
-
-                                                        if (imageUrl != null) {
-
-                                                            val userData = HashMap<String, Any>()
-                                                            userData["imageUrl"] = imageUrl!!
-                                                            userData["name"] = view.name_et.text.toString()
-                                                            userData["age"] =
-                                                                Utility().getAge(view.age_et.text.toString())
-                                                            userData["birthDay"] = view.age_et.text.toString()
-                                                            userData["gender"] = genderType.toString()
-                                                            userData["questions"] = "0"
-                                                            userData["friends"] = "0"
-                                                            userData["best_friends"] = "0"
-                                                            userData["bg_option"] = "1"
-
-                                                            firestore.collection("users")
-                                                                .document(mAuth.currentUser!!.uid)
-                                                                .set(userData).addOnSuccessListener {
-
-                                                                    view.mainProgressBar.visibility = View.GONE
-                                                                    stopAct()
-
-                                                                }.addOnFailureListener { exception ->
-                                                                    showMessage(
-                                                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                                                        1
-                                                                    )
-                                                                    view.mainProgressBar.visibility = View.GONE
-                                                                }.addOnCanceledListener {
-                                                                    showMessage(getString(R.string.not_uploaded), 4)
-                                                                    view.mainProgressBar.visibility = View.GONE
-                                                                }
-
-                                                        } else {
-                                                            showMessage(getString(R.string.not_uploaded), 4)
-                                                            view.mainProgressBar.visibility = View.GONE
-                                                        }
-
-                                                    }.addOnFailureListener { exception ->
+                                        val storage = FirebaseStorage.getInstance().reference
+                                        val imagePath: StorageReference =
+                                            storage.child("user_profile_image").child("${mAuth.currentUser!!.uid}.jpg")
+                                        imagePath.putFile(userMainImageURI!!)
+                                            .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                                                if (!task.isSuccessful) {
+                                                    task.exception?.let { exception ->
                                                         showMessage(
                                                             "Something Went Wrong. ${exception.localizedMessage}",
                                                             1
                                                         )
                                                         view.mainProgressBar.visibility = View.GONE
-                                                    }.addOnCanceledListener {
+                                                        throw exception
+                                                    }
+                                                }
+                                                return@Continuation imagePath.downloadUrl
+                                            }).addOnCanceledListener {
+                                                showMessage(getString(R.string.not_uploaded), 4)
+                                                view.mainProgressBar.visibility = View.GONE
+                                            }.addOnFailureListener { exception ->
+                                                showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
+                                                view.mainProgressBar.visibility = View.GONE
+                                            }.addOnCompleteListener { task ->
+
+                                                if (task.isComplete) {
+                                                    if (task.isSuccessful) {
+
+                                                        imagePath.downloadUrl.addOnSuccessListener { uri ->
+
+                                                            imageUrl = uri.toString()
+
+                                                            if (imageUrl != null) {
+
+                                                                val userData = HashMap<String, Any>()
+                                                                userData["imageUrl"] = imageUrl!!
+                                                                userData["name"] = view.name_et.text.toString()
+                                                                userData["age"] =
+                                                                    Utility().getAge(view.age_et.text.toString())
+                                                                userData["birthDay"] = view.age_et.text.toString()
+                                                                userData["gender"] = genderType.toString()
+                                                                userData["questions"] = "0"
+                                                                userData["friends"] = "0"
+                                                                userData["best_friends"] = "0"
+                                                                userData["bg_option"] = "bg_one"
+
+                                                                firestore.collection("users")
+                                                                    .document(mAuth.currentUser!!.uid)
+                                                                    .set(userData).addOnSuccessListener {
+
+                                                                        view.mainProgressBar.visibility = View.GONE
+                                                                        stopAct()
+
+                                                                    }.addOnFailureListener { exception ->
+                                                                        showMessage(
+                                                                            "Something Went Wrong. ${exception.localizedMessage}",
+                                                                            1
+                                                                        )
+                                                                        view.mainProgressBar.visibility = View.GONE
+                                                                    }.addOnCanceledListener {
+                                                                        showMessage(getString(R.string.not_uploaded), 4)
+                                                                        view.mainProgressBar.visibility = View.GONE
+                                                                    }
+
+                                                            } else {
+                                                                showMessage(getString(R.string.not_uploaded), 4)
+                                                                view.mainProgressBar.visibility = View.GONE
+                                                            }
+
+                                                        }.addOnFailureListener { exception ->
+                                                            showMessage(
+                                                                "Something Went Wrong. ${exception.localizedMessage}",
+                                                                1
+                                                            )
+                                                            view.mainProgressBar.visibility = View.GONE
+                                                        }.addOnCanceledListener {
+                                                            showMessage(getString(R.string.not_uploaded), 4)
+                                                            view.mainProgressBar.visibility = View.GONE
+                                                        }
+
+                                                    } else if (task.isCanceled) {
                                                         showMessage(getString(R.string.not_uploaded), 4)
                                                         view.mainProgressBar.visibility = View.GONE
                                                     }
-
-                                                } else if (task.isCanceled) {
-                                                    showMessage(getString(R.string.not_uploaded), 4)
+                                                } else {
+                                                    showMessage(getString(R.string.something_went_wrong), 1)
                                                     view.mainProgressBar.visibility = View.GONE
                                                 }
-                                            } else {
-                                                showMessage(getString(R.string.something_went_wrong), 1)
-                                                view.mainProgressBar.visibility = View.GONE
+
+                                            }.addOnSuccessListener {
+                                                showMessage(getString(R.string.save_properly), 3)
                                             }
 
-                                        }.addOnSuccessListener {
-                                            showMessage(getString(R.string.save_properly), 3)
-                                        }
-
+                                    } else {
+                                        showMessage(getString(R.string.select_gender), 1)
+                                    }
                                 } else {
-                                    showMessage(getString(R.string.select_gender), 1)
+                                    showMessage(getString(R.string.above_thirteen_msg), 1)
                                 }
                             } else {
-                                showMessage(getString(R.string.above_thirteen_msg), 1)
+                                showMessage(getString(R.string.enter_birthdate), 1)
                             }
                         } else {
-                            showMessage(getString(R.string.enter_birthdate), 1)
+                            showMessage(getString(R.string.name_length_restriction), 1)
                         }
                     } else {
-                        showMessage(getString(R.string.name_length_restriction), 1)
+                        showMessage(getString(R.string.select_picture), 1)
                     }
                 } else {
-                    showMessage(getString(R.string.select_picture), 1)
+                    val userData = HashMap<String, Any>()
+                    userData["imageUrl"] = imageUrl!!
+                    userData["name"] = view.name_et.text.toString()
+                    userData["age"] =
+                        Utility().getAge(view.age_et.text.toString())
+                    userData["birthDay"] = view.age_et.text.toString()
+                    userData["gender"] = genderType.toString()
+
+                    firestore.collection("users")
+                        .document(mAuth.currentUser!!.uid)
+                        .update(userData).addOnSuccessListener {
+
+                            view.mainProgressBar.visibility = View.GONE
+                            stopAct()
+
+                        }.addOnFailureListener { exception ->
+                            showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}",
+                                1
+                            )
+                            view.mainProgressBar.visibility = View.GONE
+                        }.addOnCanceledListener {
+                            showMessage(getString(R.string.not_uploaded), 4)
+                            view.mainProgressBar.visibility = View.GONE
+                        }
                 }
             } else {
                 showMessage(getString(R.string.user_not_found), 1)
@@ -271,6 +299,9 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                         return false
                     }
                 }).into(view.profile_iv)
+
+                view.profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                view.profile_iv.borderWidth = 4
 
                 view.name_et.setText(result.getString("name"))
                 view.age_et.setText(result.getString("birthDay"))
@@ -338,6 +369,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
         profile_iv.setImageURI(userMainImageURI)
         profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
         profile_iv.borderWidth = 4
+        imageUrl = null
     }
 
     private fun openCamera() {
