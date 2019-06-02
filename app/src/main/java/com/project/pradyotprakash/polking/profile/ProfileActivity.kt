@@ -60,6 +60,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
         options_tv.setOnClickListener {
             optionList_cl.visibility = View.VISIBLE
+            optionList_cl.startAnimation(Utility().inFromDownAnimation())
         }
 
         edit_tv.setOnClickListener {
@@ -71,6 +72,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
 
         iv_close.setOnClickListener {
+            optionList_cl.startAnimation(Utility().outToDownAnimation())
             optionList_cl.visibility = View.GONE
         }
 
