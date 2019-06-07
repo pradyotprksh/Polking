@@ -58,12 +58,23 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
                     if (snapshot != null && snapshot.exists()) {
                         mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
+                        mView.setUserName(snapshot.data!!["name"].toString())
                         mView.hideLoading()
                     } else {
                         mView.openAddProfileDetails()
                         mView.hideLoading()
                     }
                 }
+        }
+    }
+
+    override fun getBestFrndQuestions() {
+        mView.showLoading()
+        if (currentUser != null) {
+
+
+        } else {
+
         }
     }
 

@@ -20,6 +20,185 @@
             android:scaleType="fitXY"
             tools:ignore="VectorDrawableCompat"/>
 
+    <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <android.support.design.widget.AppBarLayout
+                android:background="@android:color/transparent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:id="@+id/appBarLayout">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
+                    app:expandedTitleTextAppearance="@android:color/transparent"
+                    app:layout_scrollFlags="scroll|snap">
+
+                <android.support.constraint.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_collapseMode="parallax"
+                        android:paddingTop="30dp"
+                        android:paddingBottom="20dp">
+
+                    <TextView
+                            android:text="@string/home"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/back_tv"
+                            app:fontFamily="@font/muli_bold"
+                            android:textSize="18sp"
+                            android:textColor="@android:color/white"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginStart="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginLeft="20dp"/>
+
+                    <TextView
+                            android:text="@string/welcome_home"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/welcome_tv"
+                            android:textSize="12sp"
+                            android:textColor="@android:color/white"
+                            app:fontFamily="@font/muli_light"
+                            android:layout_marginTop="15dp"
+                            app:layout_constraintTop_toBottomOf="@+id/back_tv"
+                            android:layout_marginStart="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginLeft="20dp"/>
+
+                    <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapWords"
+                            android:ems="10"
+                            android:background="@drawable/white_round_borders"
+                            android:elevation="3dp"
+                            android:id="@+id/addQuestion_et"
+                            android:layout_marginStart="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginRight="20dp"
+                            android:paddingLeft="15dp"
+                            android:paddingTop="10dp"
+                            android:paddingRight="15dp"
+                            android:paddingBottom="10dp"
+                            android:hint="@string/enter_your_question"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/muli_light"
+                            android:textColor="@color/black"
+                            android:layout_marginTop="30dp"
+                            app:layout_constraintTop_toBottomOf="@+id/welcome_tv"/>
+
+                    <android.support.v7.widget.RecyclerView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/addQuestion_et"
+                            android:layout_marginTop="5dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:id="@+id/bestFrndQuestion_rv"
+                            android:visibility="visible"/>
+
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill_vertical"
+                android:clipToPadding="false"
+                android:fillViewport="true"
+                android:scrollbars="none"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:layout_marginTop="@dimen/cardview_default_elevation">
+
+            <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                <EditText
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:ems="10"
+                        android:background="@drawable/white_round_borders"
+                        android:elevation="3dp"
+                        android:id="@+id/addQuestion_et2"
+                        android:paddingLeft="15dp"
+                        android:paddingTop="10dp"
+                        android:paddingRight="15dp"
+                        android:paddingBottom="10dp"
+                        android:hint="@string/enter_your_question"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/muli_light"
+                        android:textColor="@color/black"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginTop="35dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginRight="85dp"
+                        android:layout_marginEnd="85dp"/>
+
+                <TextView
+                        android:text="@string/recent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView6"
+                        android:textColor="@color/black"
+                        android:textSize="26sp"
+                        android:fontFamily="@font/muli_bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/addQuestion_et2"
+                        android:layout_marginTop="20dp"/>
+
+                <android.support.v7.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/textView6"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:id="@+id/recentQ_rv"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginBottom="20dp"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.design.widget.CoordinatorLayout>
+
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="0dp"
@@ -27,44 +206,27 @@
             android:id="@+id/imageProgressBar"
             app:layout_constraintEnd_toEndOf="@+id/bg_iv"
             app:layout_constraintStart_toStartOf="@+id/bg_iv"
-            app:layout_constraintBottom_toBottomOf="@+id/bg_iv" app:layout_constraintTop_toTopOf="@+id/bg_iv"
-            android:indeterminate="true" android:visibility="gone"/>
+            app:layout_constraintBottom_toBottomOf="@+id/bg_iv"
+            app:layout_constraintTop_toTopOf="@+id/bg_iv"
+            android:indeterminate="true"
+            android:visibility="gone"/>
+
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/progressBar" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="8dp" android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="parent" android:visibility="gone"/>
-    <TextView
-            android:text="@string/home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/back_tv"
-            app:fontFamily="@font/muli_bold"
-            android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="30dp"
+            android:id="@+id/progressBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="20dp"/>
-
-    <TextView
-            android:text="@string/welcome_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/welcome_tv"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            app:fontFamily="@font/muli_light"
-            android:layout_marginTop="15dp"
-            app:layout_constraintTop_toBottomOf="@+id/back_tv"
-            android:layout_marginStart="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="20dp"/>
+            android:visibility="gone"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="45dp"

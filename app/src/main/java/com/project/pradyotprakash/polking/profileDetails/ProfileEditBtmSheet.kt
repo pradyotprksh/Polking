@@ -120,7 +120,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
             if (mAuth.currentUser != null) {
                 if (imageUrl == null) {
                     if (userMainImageURI != null) {
-                        if (view.name_et.text.toString().length > 3) {
+                        if (view.addQuestion_et.text.toString().length > 3) {
                             if (view.age_et.text.toString().isNotEmpty()) {
                                 if (Utility().getAge(view.age_et.text.toString()) > 13) {
                                     if (genderType != -1) {
@@ -162,7 +162,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
                                                                 val userData = HashMap<String, Any>()
                                                                 userData["imageUrl"] = imageUrl!!
-                                                                userData["name"] = view.name_et.text.toString()
+                                                                userData["name"] = view.addQuestion_et.text.toString()
                                                                 userData["age"] =
                                                                     Utility().getAge(view.age_et.text.toString())
                                                                 userData["birthDay"] = view.age_et.text.toString()
@@ -237,7 +237,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                 } else {
                     val userData = HashMap<String, Any>()
                     userData["imageUrl"] = imageUrl!!
-                    userData["name"] = view.name_et.text.toString()
+                    userData["name"] = view.addQuestion_et.text.toString()
                     userData["age"] =
                         Utility().getAge(view.age_et.text.toString())
                     userData["birthDay"] = view.age_et.text.toString()
@@ -303,7 +303,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                 view.profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
                 view.profile_iv.borderWidth = 4
 
-                view.name_et.setText(result.getString("name"))
+                view.addQuestion_et.setText(result.getString("name"))
                 view.age_et.setText(result.getString("birthDay"))
 
                 /*

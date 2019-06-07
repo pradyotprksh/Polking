@@ -1,9 +1,11 @@
 package com.project.pradyotprakash.polking.home
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.Window
@@ -17,6 +19,7 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
+import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
 import com.theartofdev.edmodo.cropper.CropImage
@@ -53,12 +56,30 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         profileEditBtmSheet.isCancelable = false
+
+        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout: AppBarLayout, i: Int ->
+            when {
+                Math.abs(i) == appBarLayout.totalScrollRange -> {
+                    if (addQuestion_et2.visibility != View.VISIBLE) {
+                        addQuestion_et2.visibility = View.VISIBLE
+                        addQuestion_et2.startAnimation(Utility().inFromLeftAnimation())
+                    }
+                }
+                i == 0 -> {
+                    addQuestion_et2.visibility = View.INVISIBLE
+                }
+                else -> {
+                    addQuestion_et2.visibility = View.INVISIBLE
+                }
+            }
+        })
     }
 
     override fun onResume() {
         super.onResume()
         logd(getString(R.string.resume))
         presenter.getProfileData()
+        presenter.getBestFrndQuestions()
     }
 
     override fun startProfileAct() {
@@ -112,6 +133,11 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         } else {
             showMessage(getString(R.string.something_went_wrong), 1)
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun setUserName(name: String) {
+        welcome_tv.text = "Welcome Home, $name"
     }
 
     override fun openAddProfileDetails() {

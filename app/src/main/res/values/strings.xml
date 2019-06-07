@@ -70,4 +70,6 @@
     <string name="edit_profile">Edit Profile</string>
     <string name="loading_image_cancel">Loading Background Image was cancelled somehow. Was that you?</string>
     <string name="not_found_bg">Background Image Not Found. Select Another One.</string>
+    <string name="enter_your_question">Enter Your Question</string>
+    <string name="recent">RECENT</string>
 </resources>

@@ -9,4 +9,7 @@ interface MainActivityPresenter: BasePresenter {
 
     // get profile data
     fun getProfileData()
+
+    // get best friend questions
+    fun getBestFrndQuestions()
 }

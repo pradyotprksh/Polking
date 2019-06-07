@@ -85,6 +85,13 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (!bgDocId.isNullOrEmpty()) {
+            presenter.changeBgId(bgDocId!!)
+        }
+    }
+
     override fun setUserProfileImage(imageUrl: String?) {
         if (imageUrl != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

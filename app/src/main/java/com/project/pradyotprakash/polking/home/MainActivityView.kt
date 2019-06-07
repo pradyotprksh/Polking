@@ -15,4 +15,7 @@ interface MainActivityView: BaseView {
 
     // set user profile data
     fun setUserProfileImage(imageUrl: String?)
+
+    // set user name
+    fun setUserName(name: String)
 }
