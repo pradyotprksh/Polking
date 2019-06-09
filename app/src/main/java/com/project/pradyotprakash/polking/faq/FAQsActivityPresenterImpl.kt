@@ -3,7 +3,10 @@ package com.project.pradyotprakash.polking.faq
 import android.app.Activity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
 import javax.inject.Inject
 
 class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
@@ -14,6 +17,10 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
     private lateinit var mAuth: FirebaseAuth
     private var currentUser: FirebaseUser? = null
     private lateinit var dataBase: FirebaseFirestore
+    private val questionResponseModelList = ArrayList<FAQsQuestionModel>()
+    private val friendBestFriendModelList = ArrayList<FAQsQuestionModel>()
+    private val blockReportModelList = ArrayList<FAQsQuestionModel>()
+    private val topQuestionModelList = ArrayList<FAQsQuestionModel>()
 
     @Inject
     internal fun FAQsActivityPresenterImpl(activity: Activity) {
@@ -33,5 +40,79 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
 
     override fun isNetworkAvailable(): Boolean {
         return true
+    }
+
+    override fun getQuestions() {
+        if (mAuth.currentUser != null) {
+            mView.showLoading()
+
+            dataBase.collection("faqs").addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
+                }
+
+                questionResponseModelList.clear()
+                friendBestFriendModelList.clear()
+                blockReportModelList.clear()
+                topQuestionModelList.clear()
+
+                for (doc in snapshot!!.documentChanges) {
+                    mView.showLoading()
+                    if (doc.type == DocumentChange.Type.ADDED ||
+                        doc.type == DocumentChange.Type.MODIFIED ||
+                        doc.type == DocumentChange.Type.REMOVED
+                    ) {
+
+                        val docId = doc.document.id
+                        val quesList: FAQsQuestionModel =
+                            doc.document.toObject<FAQsQuestionModel>(FAQsQuestionModel::class.java).withId(docId)
+                        if (quesList.isTopQuestion) {
+                            topQuestionModelList.add(quesList)
+                        }
+                        when {
+                            quesList.type == "queRes" -> {
+                                questionResponseModelList.add(quesList)
+                            }
+                            quesList.type == "friendBestFriend" -> {
+                                friendBestFriendModelList.add(quesList)
+                            }
+                            quesList.type == "blockReport" -> {
+                                blockReportModelList.add(quesList)
+                            }
+                        }
+                    }
+                }
+
+                if (questionResponseModelList.size > 0) {
+                    mView.loadQuestionResponse(questionResponseModelList)
+                } else {
+                    mView.hideQuestionResponse()
+                }
+                if (friendBestFriendModelList.size > 0) {
+                    mView.loadFriendBestFriend(friendBestFriendModelList)
+                } else {
+                    mView.hideFriendBestFriend()
+                }
+                if (blockReportModelList.size > 0) {
+                    mView.loadBlockReport(blockReportModelList)
+                } else {
+                    mView.hideBlockReport()
+                }
+                if (topQuestionModelList.size > 0) {
+                    mView.loadTopQuestion(topQuestionModelList)
+                } else {
+                    mView.hideTopQuestion()
+                }
+
+                mView.hideLoading()
+
+            }
+
+        } else {
+            mView.hideLoading()
+            mView.showMessage(mContext.getString(R.string.user_not_found), 1)
+        }
     }
 }

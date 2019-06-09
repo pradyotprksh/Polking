@@ -75,4 +75,15 @@
     <string name="recent">RECENT</string>
     <string name="post">Post</string>
     <string name="not_uploaded_question">Uploading Question was Somehow Cancelled. Was that you?</string>
+    <string name="search">Search</string>
+    <string name="top_questions">Top Questions</string>
+    <string name="questions_and_response">Questions and Response</string>
+    <string name="friends_and_best_friends">Friends And Best Friends</string>
+    <string name="block_and_report">Block and Report</string>
+    <string name="not_found">Didn\'t Find Your Question? Add Here. We Will Reach You Shortly.</string>
+    <string name="close">Close</string>
+    <string name="select_a_category">Select A Category</string>
+    <string name="select_category">Select Anyone categories. Its compulsory.</string>
+    <string name="ask_doubt">Enter your doubt related to application.</string>
+    <string name="ask_something">ASK SOMETHING</string>
 </resources>

@@ -12,3 +12,16 @@ data class QuestionModel(
     val yesVote: String = "",
     val noVote: String = ""
 ) : GetId()
+
+// FAQs Questions
+data class FAQsQuestionModel(
+    val question: String = "",
+    val askedBy: String = "",
+    val askedOn: String = "",
+    val openedBy: String = "",
+    val helpFullYes: String = "",
+    val helpFullNo: String = "",
+    val type: String = "",
+    val answer: String = "",
+    val isTopQuestion: Boolean = false
+) : GetId()

@@ -139,41 +139,38 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     }
 
     override fun getQuestions() {
-        if (currentUser != null) {
 
-            dataBase.collection("question")
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    allQuestionList.clear()
-
-                    for (doc in snapshot!!.documentChanges) {
-                        mView.showLoading()
-                        if (doc.type == DocumentChange.Type.ADDED ||
-                            doc.type == DocumentChange.Type.MODIFIED ||
-                            doc.type == DocumentChange.Type.REMOVED
-                        ) {
-
-                            val docId = doc.document.id
-                            val quesList: QuestionModel =
-                                doc.document.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
-                            this.allQuestionList.add(quesList)
-
-                        }
-                    }
-
-                    mView.loadQuestions(allQuestionList)
-
-                    mView.hideLoading()
-
+        dataBase.collection("question")
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
                 }
-        } else {
-            mView.hideOptions()
-        }
+
+                allQuestionList.clear()
+
+                for (doc in snapshot!!.documentChanges) {
+                    mView.showLoading()
+                    if (doc.type == DocumentChange.Type.ADDED ||
+                        doc.type == DocumentChange.Type.MODIFIED ||
+                        doc.type == DocumentChange.Type.REMOVED
+                    ) {
+
+                        val docId = doc.document.id
+                        val quesList: QuestionModel =
+                            doc.document.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
+                        this.allQuestionList.add(quesList)
+
+                    }
+                }
+
+                mView.loadQuestions(allQuestionList)
+
+                mView.hideLoading()
+
+            }
+
     }
 
 }
