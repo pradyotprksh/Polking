@@ -86,4 +86,9 @@
     <string name="select_category">Select Anyone categories. Its compulsory.</string>
     <string name="ask_doubt">Enter your doubt related to application.</string>
     <string name="ask_something">ASK SOMETHING</string>
+    <string name="how_to">How To? / Why To?</string>
+    <string name="friends_txt">Friends?</string>
+    <string name="block_report">Block / Report</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
