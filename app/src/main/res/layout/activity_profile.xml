@@ -309,13 +309,11 @@
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/iv_close"
-                android:layout_marginTop="50dp"
                 app:layout_constraintTop_toBottomOf="@+id/textView14"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:scrollbars="none"
-                android:layout_marginBottom="40dp">
+                app:layout_constraintBottom_toBottomOf="parent">
 
             <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
@@ -335,7 +333,7 @@
                         android:textSize="20sp"
                         android:textColor="@color/white"
                         android:fontFamily="@font/muli_semi_bold"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="40dp"/>
 
                 <TextView
                         android:text="@string/see_your_friends"
@@ -448,7 +446,8 @@
                         android:textSize="20sp"
                         android:textColor="@color/white"
                         android:fontFamily="@font/muli_semi_bold"
-                        android:layout_marginTop="40dp" app:layout_constraintBottom_toBottomOf="parent"/>
+                        android:layout_marginTop="40dp" app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginBottom="40dp"/>
 
             </android.support.constraint.ConstraintLayout>
 

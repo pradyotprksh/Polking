@@ -17,11 +17,13 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.faq.FAQsActvity
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.utility.BgModel
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
+import com.project.pradyotprakash.polking.utility.openActivity
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -67,13 +69,21 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             openAddProfileDetails()
         }
 
-        profile_iv.setOnClickListener {
-            openAddProfileDetails()
-        }
-
         iv_close.setOnClickListener {
             optionList_cl.startAnimation(Utility().outToDownAnimation())
             optionList_cl.visibility = View.GONE
+        }
+
+        review_tv.setOnClickListener {
+
+        }
+
+        faq_tv.setOnClickListener {
+            openActivity(FAQsActvity::class.java)
+        }
+
+        aboutUs_tv.setOnClickListener {
+
         }
 
         back_tv.setOnClickListener {

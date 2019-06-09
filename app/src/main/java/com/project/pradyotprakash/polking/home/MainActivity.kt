@@ -70,10 +70,10 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                     }
                 }
                 i == 0 -> {
-                    addQuestion_et2.visibility = View.INVISIBLE
+                    addQuestion_et2.visibility = View.GONE
                 }
                 else -> {
-                    addQuestion_et2.visibility = View.INVISIBLE
+                    addQuestion_et2.visibility = View.GONE
                 }
             }
         })

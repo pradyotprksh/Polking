@@ -16,6 +16,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".faq.FAQsActvity">
+        </activity>
         <activity android:name=".profile.ProfileActivity">
         </activity>
         <activity android:name=".splash.SplashActivity">
