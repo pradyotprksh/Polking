@@ -17,7 +17,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.faq.FAQsActvity
+import com.project.pradyotprakash.polking.faq.FAQsActivity
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.utility.BgModel
@@ -79,7 +79,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
 
         faq_tv.setOnClickListener {
-            openActivity(FAQsActvity::class.java)
+            openActivity(FAQsActivity::class.java)
         }
 
         aboutUs_tv.setOnClickListener {

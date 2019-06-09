@@ -90,7 +90,7 @@
                             android:layout_marginLeft="20dp"
                             android:paddingLeft="15dp"
                             android:paddingTop="10dp"
-                            android:focusable="false"
+                            android:focusable="auto"
                             android:paddingRight="15dp"
                             android:paddingBottom="10dp"
                             android:hint="@string/enter_your_question"
