@@ -1,6 +1,8 @@
 package com.project.pradyotprakash.polking.home
 
 import com.project.pradyotprakash.polking.BaseView
+import com.project.pradyotprakash.polking.utility.QuestionModel
+import java.util.*
 
 interface MainActivityView: BaseView {
 
@@ -18,4 +20,16 @@ interface MainActivityView: BaseView {
 
     // set user name
     fun setUserName(name: String)
+
+    // hide options if not logged in
+    fun hideOptions()
+
+    // upload success
+    fun showUploadedSuccess()
+
+    // all question list
+    fun loadQuestions(allQuestionList: ArrayList<QuestionModel>)
+
+    // show options if logged in
+    fun showOptions()
 }

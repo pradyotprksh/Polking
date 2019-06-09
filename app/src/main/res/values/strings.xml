@@ -61,6 +61,7 @@
     <string name="profilebottomsheet">ProfileEditBtmSheet onCreateView</string>
     <string name="create">Create</string>
     <string name="resume">Resume</string>
+    <string name="stop">Stop</string>
     <string name="went_wrong_image">Something Went Wrong While Getting Image. Please Try Again.</string>
     <string name="something_went_wring_oops">Oops Something Went Wrong. Please Try Again.</string>
     <string name="enter_valid_phone">Enter a valid phone number. This is the lest you can do for us.</string>
@@ -72,4 +73,6 @@
     <string name="not_found_bg">Background Image Not Found. Select Another One.</string>
     <string name="enter_your_question">Enter Your Question</string>
     <string name="recent">RECENT</string>
+    <string name="post">Post</string>
+    <string name="not_uploaded_question">Uploading Question was Somehow Cancelled. Was that you?</string>
 </resources>

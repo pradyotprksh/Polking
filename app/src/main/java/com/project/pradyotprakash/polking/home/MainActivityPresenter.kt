@@ -12,4 +12,16 @@ interface MainActivityPresenter: BasePresenter {
 
     // get best friend questions
     fun getBestFrndQuestions()
+
+    // upload the entered question
+    fun uploadQuestion(question: String)
+
+    // get questions
+    fun getQuestions()
+
+    // set auth state listener
+    fun addAuthStateListener()
+
+    // remove listener
+    fun removeListener()
 }

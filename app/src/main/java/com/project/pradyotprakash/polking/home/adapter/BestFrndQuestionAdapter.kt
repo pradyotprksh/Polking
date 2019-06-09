@@ -10,10 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.utility.BestFrndQuesModel
+import com.project.pradyotprakash.polking.utility.QuestionModel
 
 class BestFrndQuestionAdapter(
-    private val allBestFrndQues: List<BestFrndQuesModel>,
+    private val allBestFrndQues: List<QuestionModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<BestFrndQuestionAdapter.ViewAdapter>() {

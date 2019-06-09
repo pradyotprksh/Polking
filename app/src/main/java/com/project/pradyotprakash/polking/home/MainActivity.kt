@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -19,12 +21,14 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
+import com.project.pradyotprakash.polking.utility.QuestionModel
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), MainActivityView {
@@ -73,13 +77,44 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 }
             }
         })
+
+        addQuestion_et.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s != null) {
+                    if (s.length > 5) {
+                        if (post_Tv.visibility == View.GONE) {
+                            post_Tv.startAnimation(Utility().inFromRightAnimation())
+                        }
+                        post_Tv.visibility = View.VISIBLE
+                    } else {
+                        if (post_Tv.visibility != View.GONE) {
+                            post_Tv.startAnimation(Utility().outToRightAnimation())
+                            post_Tv.visibility = View.GONE
+                        }
+                    }
+                } else {
+                    if (post_Tv.visibility != View.GONE) {
+                        post_Tv.startAnimation(Utility().outToRightAnimation())
+                        post_Tv.visibility = View.GONE
+                    }
+                }
+            }
+        })
+
+        post_Tv.setOnClickListener {
+            presenter.uploadQuestion(addQuestion_et.text.toString())
+        }
     }
 
     override fun onResume() {
         super.onResume()
         logd(getString(R.string.resume))
+        presenter.addAuthStateListener()
         presenter.getProfileData()
         presenter.getBestFrndQuestions()
+        presenter.getQuestions()
     }
 
     override fun startProfileAct() {
@@ -102,6 +137,10 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun stopAct() {
         finish()
+    }
+
+    override fun showUploadedSuccess() {
+        addQuestion_et.setText("")
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
@@ -163,4 +202,23 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             }
         }
     }
+
+    override fun hideOptions() {
+
+    }
+
+    override fun showOptions() {
+
+    }
+
+    override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        logd(getString(R.string.stop))
+        presenter.removeListener()
+    }
+
 }

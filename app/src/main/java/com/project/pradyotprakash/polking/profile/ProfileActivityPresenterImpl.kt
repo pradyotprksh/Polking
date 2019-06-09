@@ -101,6 +101,11 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
         if (currentUser != null) {
             mView.showLoading()
             dataBase.collection("background_images").addSnapshotListener { documentSnapshot, e ->
+
+                if (e != null) {
+                    mView.showMessage("Something went wrong. ${e.localizedMessage}", 1)
+                }
+
                 for (doc in documentSnapshot!!.documentChanges) {
                     if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.MODIFIED) {
                         val docId = doc.document.id
