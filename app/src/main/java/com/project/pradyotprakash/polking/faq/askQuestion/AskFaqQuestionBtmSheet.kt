@@ -99,8 +99,8 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
                         questionData["askedBy"] = mAuth.currentUser!!.uid
                         questionData["askedOn"] = dateFormat.format(date)
                         questionData["openedBy"] = "0"
-                        questionData["helpFullYes"] = "0"
-                        questionData["helpFullNo"] = "0"
+                        questionData["helpFullYes"] = "0.0"
+                        questionData["helpFullNo"] = "0.0"
                         questionData["isTopQuestion"] = "false"
                         questionData["type"] = type
 

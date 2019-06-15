@@ -20,7 +20,7 @@ class TopQuestionAdapter(
 ) : RecyclerView.Adapter<TopQuestionAdapter.ViewAdapter>() {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
-        val view = LayoutInflater.from(p0.context).inflate(R.layout.question_response_layout, p0, false)
+        val view = LayoutInflater.from(p0.context).inflate(R.layout.top_question_response_layout, p0, false)
         return ViewAdapter(view)
     }
 
@@ -30,6 +30,19 @@ class TopQuestionAdapter(
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onBindViewHolder(holder: ViewAdapter, pos: Int) {
+
+        when {
+            topQuestionModelList[pos].type == "queRes" -> {
+                holder.type_tv.text = context.getString(R.string.how_to)
+            }
+            topQuestionModelList[pos].type == "friendBestFriend" -> {
+                holder.type_tv.text = context.getString(R.string.friends_txt)
+            }
+            topQuestionModelList[pos].type == "blockReport" -> {
+                holder.type_tv.text = context.getString(R.string.block_report)
+            }
+        }
+
         holder.question_tv.text = topQuestionModelList[pos].question
 
         holder.itemView.setOnClickListener {
@@ -41,6 +54,7 @@ class TopQuestionAdapter(
 
     inner class ViewAdapter(mView: View) : RecyclerView.ViewHolder(mView) {
         val question_tv: TextView = mView.findViewById(R.id.question_tv)
+        val type_tv: TextView = mView.findViewById(R.id.type_tv)
     }
 
 }

@@ -62,34 +62,36 @@
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp" tools:ignore="VectorDrawableCompat"/>
     <TextView
-            android:text="Was it helpful?"
-            android:layout_width="wrap_content"
+            android:text="@string/was_it_helpful"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/textView12" android:layout_marginTop="10dp"
+            android:id="@+id/helpful_tv" android:layout_marginTop="10dp"
             app:layout_constraintTop_toBottomOf="@+id/imageView3" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="20dp" android:layout_marginStart="20dp" android:textSize="12sp"
-            android:textColor="@color/black" android:fontFamily="@font/muli_light"/>
+            android:textColor="@color/black" android:fontFamily="@font/muli_light" android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="20dp"/>
     <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/green_bg" app:layout_constraintTop_toBottomOf="@+id/textView12"
+            android:background="@drawable/green_bg" app:layout_constraintTop_toBottomOf="@+id/helpful_tv"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="20dp" android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp" android:id="@+id/yes_cl">
+            android:layout_marginTop="10dp" android:id="@+id/yes_cl"
+            android:visibility="visible">
 
         <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:srcCompat="@drawable/ic_happy"
-                android:id="@+id/imageView5" android:layout_marginTop="5dp"
+                android:id="@+id/iv_happy" android:layout_marginTop="5dp"
                 app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginLeft="5dp" android:layout_marginStart="5dp"
                 app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="5dp"
-                tools:ignore="VectorDrawableCompat"/>
+                tools:ignore="VectorDrawableCompat" android:visibility="gone"/>
         <TextView
                 android:text="@string/yes"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textView13"
-                app:layout_constraintStart_toEndOf="@+id/imageView5"
+                android:layout_height="wrap_content" android:id="@+id/yes_tv"
+                app:layout_constraintStart_toEndOf="@+id/iv_happy"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginRight="10dp" android:layout_marginEnd="10dp" android:layout_marginTop="10dp"
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="10dp"
@@ -100,24 +102,25 @@
     <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/red_bg" app:layout_constraintTop_toBottomOf="@+id/textView12"
-            android:layout_marginTop="10dp" app:layout_constraintStart_toEndOf="@+id/yes_cl"
-            android:layout_marginLeft="30dp" android:layout_marginStart="30dp" android:id="@+id/no_cl"
-    >
+            android:background="@drawable/red_bg"
+            android:id="@+id/no_cl"
+            app:layout_constraintStart_toEndOf="@+id/yes_cl" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp" android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/helpful_tv">
 
         <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:srcCompat="@drawable/ic_sad"
-                android:id="@+id/imageView6" android:layout_marginTop="5dp"
+                android:id="@+id/iv_sad" android:layout_marginTop="5dp"
                 app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginLeft="5dp" android:layout_marginStart="5dp"
                 app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="5dp"
-                tools:ignore="VectorDrawableCompat"/>
+                tools:ignore="VectorDrawableCompat" android:visibility="gone"/>
         <TextView
                 android:text="@string/no"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textView14"
-                app:layout_constraintStart_toEndOf="@+id/imageView6"
+                android:layout_height="wrap_content" android:id="@+id/no_tv"
+                app:layout_constraintStart_toEndOf="@+id/iv_sad"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginRight="10dp" android:layout_marginEnd="10dp" android:layout_marginTop="10dp"
                 app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="10dp"

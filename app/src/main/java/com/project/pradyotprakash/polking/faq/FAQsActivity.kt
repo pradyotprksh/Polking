@@ -14,6 +14,7 @@ import com.project.pradyotprakash.polking.faq.adapter.QuestionResponseAdapter
 import com.project.pradyotprakash.polking.faq.adapter.TopQuestionAdapter
 import com.project.pradyotprakash.polking.faq.askQuestion.AskFaqQuestionBtmSheet
 import com.project.pradyotprakash.polking.faq.questionDetails.QuestionDetailsBtmSheet
+import com.project.pradyotprakash.polking.utility.CustomLayoutManager
 import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
@@ -87,7 +88,7 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
 
         topQuestionAdapter = TopQuestionAdapter(topQuestionModelList, this, this)
         topQues_rv.setHasFixedSize(true)
-        topQues_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        topQues_rv.layoutManager = CustomLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         topQues_rv.adapter = topQuestionAdapter
         snapHelper.attachToRecyclerView(topQues_rv)
     }

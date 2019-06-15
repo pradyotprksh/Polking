@@ -12,10 +12,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
+import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.question_details_btm_sheet.*
 import kotlinx.android.synthetic.main.question_details_btm_sheet.view.*
+import java.util.*
 import javax.inject.Inject
 
 class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(), ProfileEditView {
@@ -23,6 +25,10 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private var docId: String? = null
+    private var helpFullYes: Float = 0.0f
+    private var helpFullNo: Float = 0.0f
+    private var yesPercent: Float = 0.0f
+    private var noPercent: Float = 0.0f
 
     companion object {
         fun newInstance(): QuestionDetailsBtmSheet =
@@ -77,13 +83,10 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                                 view.type_tv.text = getString(R.string.block_report)
                             }
                         }
-                        if (result.getString("isTopQuestion") == "true") {
-                            view.lottieAnimationView.visibility = View.VISIBLE
-                        } else {
-                            view.lottieAnimationView.visibility = View.GONE
-                        }
+
                         view.question_tv.text = result.getString("question")!!
                         view.answer_tv.text = result.getString("answer")!!
+
                         hideLoading()
                     } else {
                         showMessage(getString(R.string.something_went_wring_oops), 1)
@@ -99,8 +102,102 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                     showMessage(getString(R.string.loading_image_cancel), 4)
                     hideLoading()
                 }
+
+                firestore.collection("faqs").document(docId!!)
+                    .addSnapshotListener { snapshot, exception ->
+                        if (exception != null) {
+                            showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}", 1
+                            )
+                        }
+
+                        if (snapshot != null && snapshot.exists()) {
+
+                            if (snapshot.getString("isTopQuestion") == "true") {
+                                view.lottieAnimationView.visibility = View.VISIBLE
+                                view.lottieAnimationView.startAnimation(Utility().inFromDownAnimation())
+                            } else {
+                                view.lottieAnimationView.startAnimation(Utility().outToDownAnimation())
+                                view.lottieAnimationView.visibility = View.GONE
+                            }
+
+                            helpFullYes = snapshot.getString("helpFullYes")!!.toFloat()
+                            helpFullNo = snapshot.getString("helpFullNo")!!.toFloat()
+
+                            yesPercent = if (helpFullYes != 0f && helpFullNo != 0f) {
+                                ((helpFullYes / (helpFullYes + helpFullNo)) * 100.0).toFloat()
+                            } else {
+                                0.0f
+                            }
+                            noPercent = if (helpFullYes != 0f && helpFullNo != 0f) {
+                                ((helpFullNo / (helpFullYes + helpFullNo)) * 100.0).toFloat()
+                            } else {
+                                0.0f
+                            }
+
+                            view.helpful_tv.text =
+                                """${getString(R.string.was_it_helpful)}  $yesPercent% Agreed & $noPercent% Disagreed"""
+                        } else {
+                            view.helpful_tv.text =
+                                """${getString(R.string.was_it_helpful)}  0.0% Agreed & 0.0% Disagreed"""
+                        }
+                    }
             } else {
                 showMessage(getString(R.string.user_not_found), 1)
+            }
+        }
+
+        view.yes_cl.setOnClickListener {
+            if (view.no_cl.visibility == View.VISIBLE) {
+                view.no_cl.startAnimation(Utility().outToRightAnimation())
+                view.no_cl.visibility = View.GONE
+                view.iv_happy.visibility = View.VISIBLE
+
+                val questionData = HashMap<String, Any>()
+                questionData["helpFullYes"] = (++helpFullYes).toString()
+                questionData["helpFullNo"] = helpFullNo.toString()
+
+                if (yesPercent - noPercent > 30.0f) {
+                    questionData["isTopQuestion"] = "true"
+                } else {
+                    questionData["isTopQuestion"] = "false"
+                }
+
+                firestore.collection("faqs").document(docId!!).update(questionData).addOnFailureListener { exception ->
+                    showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                }.addOnCanceledListener {
+                    showMessage(getString(R.string.not_uploaded_question), 4)
+                }
+            }
+        }
+
+        view.no_cl.setOnClickListener {
+            if (view.yes_cl.visibility == View.VISIBLE) {
+                view.yes_cl.startAnimation(Utility().outToLeftAnimation())
+                view.yes_cl.visibility = View.GONE
+                view.iv_sad.visibility = View.VISIBLE
+
+                val questionData = HashMap<String, Any>()
+                questionData["helpFullYes"] = helpFullYes.toString()
+                questionData["helpFullNo"] = (++helpFullNo).toString()
+
+                if (yesPercent - noPercent > 30.0f) {
+                    questionData["isTopQuestion"] = "true"
+                } else {
+                    questionData["isTopQuestion"] = "false"
+                }
+
+                firestore.collection("faqs").document(docId!!).update(questionData).addOnFailureListener { exception ->
+                    showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                }.addOnCanceledListener {
+                    showMessage(getString(R.string.not_uploaded_question), 4)
+                }
             }
         }
     }
