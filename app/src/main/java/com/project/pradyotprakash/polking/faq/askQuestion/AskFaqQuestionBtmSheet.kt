@@ -60,7 +60,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
         firestore = FirebaseFirestore.getInstance()
         view.optionOne_Cb.isChecked = true
 
-        view.optionOne_Cb.setOnCheckedChangeListener { buttonView, isChecked ->
+        view.optionOne_Cb.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 view.optionOne_Cb.isChecked = true
                 view.optionTwo_Cb.isChecked = false
@@ -69,7 +69,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
             }
         }
 
-        view.optionTwo_Cb.setOnCheckedChangeListener { buttonView, isChecked ->
+        view.optionTwo_Cb.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 view.optionOne_Cb.isChecked = false
                 view.optionTwo_Cb.isChecked = true
@@ -78,7 +78,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
             }
         }
 
-        view.optionThree_Cb.setOnCheckedChangeListener { buttonView, isChecked ->
+        view.optionThree_Cb.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 view.optionOne_Cb.isChecked = false
                 view.optionTwo_Cb.isChecked = false

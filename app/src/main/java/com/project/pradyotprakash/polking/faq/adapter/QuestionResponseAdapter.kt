@@ -8,16 +8,19 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.faq.FAQsActivity
 import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
 
 class QuestionResponseAdapter(
-    private val questionResponseModelList: List<FAQsQuestionModel>,
+    private val questionResponseModelList: ArrayList<FAQsQuestionModel>,
+    private var questionResponseModelListFiltered: ArrayList<FAQsQuestionModel>,
     private val context: Context,
     private val activity: Activity
-) : RecyclerView.Adapter<QuestionResponseAdapter.ViewAdapter>() {
+) : RecyclerView.Adapter<QuestionResponseAdapter.ViewAdapter>(), Filterable {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.question_response_layout, p0, false)
@@ -25,22 +28,50 @@ class QuestionResponseAdapter(
     }
 
     override fun getItemCount(): Int {
-        return questionResponseModelList.size
+        return questionResponseModelListFiltered.size
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onBindViewHolder(holder: ViewAdapter, pos: Int) {
-        holder.question_tv.text = questionResponseModelList[pos].question
+        holder.questionTv.text = questionResponseModelListFiltered[pos].question
 
         holder.itemView.setOnClickListener {
             if (activity is FAQsActivity) {
-                activity.openQuestionDetails(questionResponseModelList[pos].docId)
+                activity.openQuestionDetails(questionResponseModelListFiltered[pos].docId)
+            }
+        }
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                questionResponseModelListFiltered = if (charString.isEmpty()) {
+                    questionResponseModelList
+                } else {
+                    val filteredList = ArrayList<FAQsQuestionModel>()
+                    for (row in questionResponseModelList) {
+                        if (row.question.toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row)
+                        }
+                    }
+                    filteredList
+                }
+
+                val filterResults = FilterResults()
+                filterResults.values = questionResponseModelListFiltered
+                return filterResults
+            }
+
+            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+                questionResponseModelListFiltered = filterResults.values as ArrayList<FAQsQuestionModel>
+                notifyDataSetChanged()
             }
         }
     }
 
     inner class ViewAdapter(mView: View) : RecyclerView.ViewHolder(mView) {
-        val question_tv: TextView = mView.findViewById(R.id.question_tv)
+        val questionTv: TextView = mView.findViewById(R.id.question_tv)
     }
 
 }

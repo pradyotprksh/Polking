@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PagerSnapHelper
+import android.support.v7.widget.SearchView
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -25,8 +26,8 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
 
     @Inject
     lateinit var presenter: FAQsActivityPresenter
-    lateinit var askFaqQuestionBtmSheet: AskFaqQuestionBtmSheet
-    lateinit var questionDetailsBtmSheet: QuestionDetailsBtmSheet
+    private lateinit var askFaqQuestionBtmSheet: AskFaqQuestionBtmSheet
+    private lateinit var questionDetailsBtmSheet: QuestionDetailsBtmSheet
 
     private var questionResponseAdapter: QuestionResponseAdapter? = null
     private var friendBestFriendAdapter: FriendBestFriendAdapter? = null
@@ -68,41 +69,68 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
 
         val snapHelper = PagerSnapHelper()
 
-        questionResponseAdapter = QuestionResponseAdapter(questionResponseModelList, this, this)
+        questionResponseAdapter =
+            QuestionResponseAdapter(questionResponseModelList, questionResponseModelList, this, this)
         questionRes_rv.setHasFixedSize(true)
         questionRes_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         questionRes_rv.adapter = questionResponseAdapter
         snapHelper.attachToRecyclerView(questionRes_rv)
 
-        friendBestFriendAdapter = FriendBestFriendAdapter(friendBestFriendModelList, this, this)
+        friendBestFriendAdapter =
+            FriendBestFriendAdapter(friendBestFriendModelList, friendBestFriendModelList, this, this)
         frnBest_rv.setHasFixedSize(true)
         frnBest_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         frnBest_rv.adapter = friendBestFriendAdapter
         snapHelper.attachToRecyclerView(frnBest_rv)
 
-        blockReportAdapter = BlockReportAdapter(blockReportModelList, this, this)
+        blockReportAdapter = BlockReportAdapter(blockReportModelList, blockReportModelList, this, this)
         blockRpt_rv.setHasFixedSize(true)
         blockRpt_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         blockRpt_rv.adapter = blockReportAdapter
         snapHelper.attachToRecyclerView(blockRpt_rv)
 
-        topQuestionAdapter = TopQuestionAdapter(topQuestionModelList, this, this)
+        topQuestionAdapter = TopQuestionAdapter(topQuestionModelList, topQuestionModelList, this, this)
         topQues_rv.setHasFixedSize(true)
         topQues_rv.layoutManager = CustomLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         topQues_rv.adapter = topQuestionAdapter
         snapHelper.attachToRecyclerView(topQues_rv)
+
+        back_tv.setOnClickListener {
+            stopAct()
+        }
+
+        search_et.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                questionResponseAdapter!!.filter.filter(p0)
+                friendBestFriendAdapter!!.filter.filter(p0)
+                blockReportAdapter!!.filter.filter(p0)
+                topQuestionAdapter!!.filter.filter(p0)
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                questionResponseAdapter!!.filter.filter(p0)
+                friendBestFriendAdapter!!.filter.filter(p0)
+                blockReportAdapter!!.filter.filter(p0)
+                topQuestionAdapter!!.filter.filter(p0)
+                return false
+            }
+
+
+        })
+
     }
 
     override fun showLoading() {
-
+        progressBar4.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-
+        progressBar4.visibility = View.GONE
     }
 
     override fun stopAct() {
-
+        finish()
     }
 
     override fun showMessage(message: String, type: Int) {

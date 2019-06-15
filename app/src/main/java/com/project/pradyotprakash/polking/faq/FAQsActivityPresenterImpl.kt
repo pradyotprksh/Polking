@@ -64,12 +64,12 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
                         val helpFullYes = quesList.helpFullYes.toFloat()
                         val helpFullNo = quesList.helpFullNo.toFloat()
 
-                        val yesPercent = if (helpFullYes != 0f && helpFullNo != 0f) {
+                        val yesPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
                             ((helpFullYes / (helpFullYes + helpFullNo)) * 100.0).toFloat()
                         } else {
                             0.0f
                         }
-                        val noPercent = if (helpFullYes != 0f && helpFullNo != 0f) {
+                        val noPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
                             ((helpFullNo / (helpFullYes + helpFullNo)) * 100.0).toFloat()
                         } else {
                             0.0f

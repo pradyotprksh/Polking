@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.faq.questionDetails
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
@@ -59,6 +60,7 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
         return view
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initView(view: View) {
         mAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -124,12 +126,12 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                             helpFullYes = snapshot.getString("helpFullYes")!!.toFloat()
                             helpFullNo = snapshot.getString("helpFullNo")!!.toFloat()
 
-                            yesPercent = if (helpFullYes != 0f && helpFullNo != 0f) {
+                            yesPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
                                 ((helpFullYes / (helpFullYes + helpFullNo)) * 100.0).toFloat()
                             } else {
                                 0.0f
                             }
-                            noPercent = if (helpFullYes != 0f && helpFullNo != 0f) {
+                            noPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
                                 ((helpFullNo / (helpFullYes + helpFullNo)) * 100.0).toFloat()
                             } else {
                                 0.0f

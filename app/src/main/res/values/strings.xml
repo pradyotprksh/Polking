@@ -94,4 +94,5 @@
     <string name="thankyou_txt">Thank You For Your Feedback. We Are Glad That You Like It.</string>
     <string name="nofeedback_txt">Thank you for your feedback. We will make the answers more understandable.</string>
     <string name="was_it_helpful">Was it helpful?</string>
+    <string name="search_here">Search Here</string>
 </resources>
