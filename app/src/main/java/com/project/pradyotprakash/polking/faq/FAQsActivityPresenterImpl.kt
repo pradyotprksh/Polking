@@ -60,15 +60,12 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
 
                 for (doc in snapshot!!.documentChanges) {
                     mView.showLoading()
-                    if (doc.type == DocumentChange.Type.ADDED ||
-                        doc.type == DocumentChange.Type.MODIFIED ||
-                        doc.type == DocumentChange.Type.REMOVED
-                    ) {
+                    if (doc.type == DocumentChange.Type.ADDED) {
 
                         val docId = doc.document.id
                         val quesList: FAQsQuestionModel =
                             doc.document.toObject<FAQsQuestionModel>(FAQsQuestionModel::class.java).withId(docId)
-                        if (quesList.isTopQuestion) {
+                        if (quesList.helpFullYes.toInt() >= 100 && quesList.helpFullNo.toInt() <= 20) {
                             topQuestionModelList.add(quesList)
                         }
                         when {
@@ -85,6 +82,11 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
                     }
                 }
 
+                if (topQuestionModelList.size > 0) {
+                    mView.loadTopQuestion(topQuestionModelList)
+                } else {
+                    mView.hideTopQuestion()
+                }
                 if (questionResponseModelList.size > 0) {
                     mView.loadQuestionResponse(questionResponseModelList)
                 } else {
@@ -99,11 +101,6 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
                     mView.loadBlockReport(blockReportModelList)
                 } else {
                     mView.hideBlockReport()
-                }
-                if (topQuestionModelList.size > 0) {
-                    mView.loadTopQuestion(topQuestionModelList)
-                } else {
-                    mView.hideTopQuestion()
                 }
 
                 mView.hideLoading()

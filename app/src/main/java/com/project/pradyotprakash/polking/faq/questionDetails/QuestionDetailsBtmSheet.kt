@@ -77,7 +77,7 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                                 view.type_tv.text = getString(R.string.block_report)
                             }
                         }
-                        if (result.getBoolean("isTopQuestion") == true) {
+                        if (result.getString("isTopQuestion") == "true") {
                             view.lottieAnimationView.visibility = View.VISIBLE
                         } else {
                             view.lottieAnimationView.visibility = View.GONE

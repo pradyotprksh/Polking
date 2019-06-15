@@ -61,7 +61,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     override fun getProfileData() {
         mView.showLoading()
         if (currentUser!=null) {
-
             dataBase.collection("users").document(currentUser!!.uid)
                 .addSnapshotListener { snapshot, exception ->
                     if (exception != null) {
@@ -87,10 +86,35 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     override fun addAuthStateListener() {
         mAuth.addAuthStateListener { mAuth ->
             if (mAuth.currentUser != null) {
+                currentUser = mAuth.currentUser
+                getUserData()
                 mView.showOptions()
             } else {
                 mView.hideOptions()
             }
+        }
+    }
+
+    private fun getUserData() {
+        dataBase.collection("users").document(currentUser!!.uid).get().addOnSuccessListener { result ->
+
+            if (result.exists()) {
+                mView.setUserProfileImage(result.data!!["imageUrl"].toString())
+                mView.setUserName(result.data!!["name"].toString())
+                mView.hideLoading()
+            } else {
+                mView.hideOptions()
+            }
+
+        }.addOnFailureListener { exception ->
+            mView.showMessage(
+                "Something Went Wrong. ${exception.localizedMessage}",
+                1
+            )
+            mView.hideLoading()
+        }.addOnCanceledListener {
+            mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+            mView.hideLoading()
         }
     }
 
@@ -150,19 +174,24 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
                 allQuestionList.clear()
 
-                for (doc in snapshot!!.documentChanges) {
-                    mView.showLoading()
-                    if (doc.type == DocumentChange.Type.ADDED ||
-                        doc.type == DocumentChange.Type.MODIFIED ||
-                        doc.type == DocumentChange.Type.REMOVED
-                    ) {
+                try {
+                    for (doc in snapshot!!.documentChanges) {
+                        mView.showLoading()
+                        if (doc.type == DocumentChange.Type.ADDED ||
+                            doc.type == DocumentChange.Type.MODIFIED ||
+                            doc.type == DocumentChange.Type.REMOVED
+                        ) {
 
-                        val docId = doc.document.id
-                        val quesList: QuestionModel =
-                            doc.document.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
-                        this.allQuestionList.add(quesList)
+                            val docId = doc.document.id
+                            val quesList: QuestionModel =
+                                doc.document.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
+                            this.allQuestionList.add(quesList)
 
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    mView.showMessage(e.localizedMessage, 1)
                 }
 
                 mView.loadQuestions(allQuestionList)

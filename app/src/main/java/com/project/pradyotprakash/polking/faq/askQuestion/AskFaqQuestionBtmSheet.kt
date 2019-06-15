@@ -29,8 +29,6 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
     private var type: String = "queRes"
     @SuppressLint("SimpleDateFormat")
     var dateFormat: DateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-    @SuppressLint("SimpleDateFormat")
-    var timeFormat: DateFormat = SimpleDateFormat("HH:mm:ss")
 
     companion object {
         fun newInstance(): AskFaqQuestionBtmSheet =
@@ -103,7 +101,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
                         questionData["openedBy"] = "0"
                         questionData["helpFullYes"] = "0"
                         questionData["helpFullNo"] = "0"
-                        questionData["isTopQuestion"] = false
+                        questionData["isTopQuestion"] = "false"
                         questionData["type"] = type
 
                         firestore.collection("faqs").add(questionData).addOnSuccessListener {

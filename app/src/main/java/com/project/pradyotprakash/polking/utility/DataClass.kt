@@ -22,6 +22,6 @@ data class FAQsQuestionModel(
     val helpFullYes: String = "",
     val helpFullNo: String = "",
     val type: String = "",
-    val answer: String = "",
-    val isTopQuestion: Boolean = false
+    val isTopQuestion: String = "",
+    val answer: String = ""
 ) : GetId()

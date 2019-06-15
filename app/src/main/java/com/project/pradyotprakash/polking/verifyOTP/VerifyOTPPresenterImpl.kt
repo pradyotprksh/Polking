@@ -87,6 +87,7 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
             mAuth.signInWithCredential(credential).addOnCompleteListener(mContext) { task ->
                 if (task.isSuccessful) {
                     mView.hideLoading()
+                    mView.stopAct()
                 } else {
                     mView.hideLoading()
                     mView.showMessage(mContext.getString(R.string.something_went_wring_oops), 1)
