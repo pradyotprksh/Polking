@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <resources>
     <string name="readSMSPermission">Please allow Polking to read SMS</string>
     <string name="readStoragePermission">Please allow Polking to read storage</string>

@@ -5,6 +5,13 @@
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
     </configurations>
   </component>
+  <component name="OneSkyComponent">
+    <option name="apiKey" value="fLcc5QKDf9rMp23zUBMxmpYVCPWWNWLT" />
+    <option name="apiSecret" value="EhLn6uNIHyyXHqLqk1ImMUNBIm1bu89Z" />
+    <option name="projectId" value="160377" />
+    <option name="moduleName" value="app" />
+    <option name="baseLanguage" value="en-IN" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
