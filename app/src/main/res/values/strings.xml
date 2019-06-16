@@ -96,4 +96,12 @@
     <string name="nofeedback_txt">Thank you for your feedback. We will make the answers more understandable.</string>
     <string name="was_it_helpful">Was it helpful?</string>
     <string name="search_here">Search Here</string>
+    <string name="about_us_txt">Hello Guys, Polking. An android application which will help you to deal with not all but
+        some of the problems you face in your day to day life. Like should I buy this phone, should I rent a home at
+        that place or thaaat place. You want to know what people think about your ideas before going all out. You want
+        to know others thinking also. So that\'s why we build an application where you can have a vote not once in 5
+        years but many in single day for not a government party but on your daily decisions. Use it to have fun but
+        don\'t hurt others also. Last but not the least, Thank you for downloading our application Polking. Have Fun. If
+        you want you can share this app using the below link to your family, friends and enemies. ;-)
+    </string>
 </resources>

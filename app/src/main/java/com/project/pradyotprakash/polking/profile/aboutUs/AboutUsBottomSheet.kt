@@ -70,7 +70,7 @@ class AboutUsBottomSheet @Inject constructor() : BottomSheetDialogFragment(), Pr
                     if (snapshot != null && snapshot.exists()) {
                         view.aboutUs_tv.text = snapshot.data!!["about_us"].toString()
                     } else {
-                        view.aboutUs_tv.text = ""
+                        view.aboutUs_tv.text = getString(R.string.about_us_txt)
                     }
                 }
 
