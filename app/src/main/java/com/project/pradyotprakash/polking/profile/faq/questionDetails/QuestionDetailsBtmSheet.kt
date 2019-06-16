@@ -54,7 +54,7 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
             }
         }
 
-        activity!!.logd(getString(R.string.profilebottomsheet))
+        activity!!.logd(getString(R.string.questionbottomsheet))
 
         initView(view)
         return view

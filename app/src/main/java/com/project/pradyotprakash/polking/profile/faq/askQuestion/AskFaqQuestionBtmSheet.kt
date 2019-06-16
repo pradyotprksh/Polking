@@ -49,7 +49,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
             }
         }
 
-        activity!!.logd(getString(R.string.profilebottomsheet))
+        activity!!.logd(getString(R.string.faqbottomsheet))
 
         initView(view)
         return view

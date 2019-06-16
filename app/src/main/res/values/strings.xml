@@ -104,4 +104,7 @@
         don\'t hurt others also. Last but not the least, Thank you for downloading our application Polking. Have Fun. If
         you want you can share this app using the below link to your family, friends and enemies. ;-)
     </string>
+    <string name="reviewbottomsheet">ReviewBottomSheet onCreateView</string>
+    <string name="faqbottomsheet">Ask FAQs Btm Sheet onCreateView</string>
+    <string name="questionbottomsheet">Question Details Btm Sheet onCreateView</string>
 </resources>
