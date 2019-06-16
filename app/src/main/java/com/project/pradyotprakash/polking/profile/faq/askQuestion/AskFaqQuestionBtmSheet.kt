@@ -17,7 +17,6 @@ import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.add_faq_question_btm_sheet.*
 import kotlinx.android.synthetic.main.add_faq_question_btm_sheet.view.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -28,7 +27,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
     private lateinit var firestore: FirebaseFirestore
     private var type: String = "queRes"
     @SuppressLint("SimpleDateFormat")
-    var dateFormat: DateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+    var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
 
     companion object {
         fun newInstance(): AskFaqQuestionBtmSheet =
@@ -95,7 +94,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
                         val date = Date()
                         val questionData = HashMap<String, Any>()
                         questionData["question"] = view.addQuestion_et.text.toString()
-                        questionData["answer"] = view.addQuestion_et3.text.toString()
+                        questionData["answer"] = view.addFeed_et3.text.toString()
                         questionData["askedBy"] = mAuth.currentUser!!.uid
                         questionData["askedOn"] = dateFormat.format(date)
                         questionData["openedBy"] = "0"
@@ -107,7 +106,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
                         firestore.collection("faqs").add(questionData).addOnSuccessListener {
                             hideLoading()
                             view.addQuestion_et.setText("")
-                            view.addQuestion_et3.setText("")
+                            view.addFeed_et3.setText("")
                         }.addOnFailureListener { exception ->
                             showMessage(
                                 "Something Went Wrong. ${exception.localizedMessage}",

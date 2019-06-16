@@ -1,6 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
 
+    <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
+               android:src="@drawable/ic_about" app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent" android:scaleType="centerCrop"
+               android:id="@+id/imageView5"/>
+
+    <TextView
+            android:text="@string/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/back_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/muli"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"/>
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/back_tv" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp" android:layout_marginTop="25dp"
+            android:textColor="@color/black" android:textSize="18sp"
+            android:fontFamily="@font/muli_bold"
+            android:text="@string/give_us_your_feedback_and_we_will_make_sure_we_will_change_if_not_we_will_bring_something_new_but_change_will_happen"
+            android:id="@+id/textView7"/>
+    <TextView
+            android:text="@string/very_bad_uninstalling_if_you_didn_t_change_this"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/feedback0_tv"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp" android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView7" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp" android:textColor="@color/black"
+            android:textSize="16sp" android:fontFamily="@font/muli_semi_bold"/>
+    <TextView
+            android:text="@string/not_so_good_please_fix_this"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/feedback1_tv"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedback0_tv" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp" android:textColor="@color/black"
+            android:textSize="16sp" android:fontFamily="@font/muli_semi_bold" android:layout_marginTop="20dp"/>
+    <TextView
+            android:text="@string/some_thins_need_to_be_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/feedback2_tv"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedback1_tv" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp" android:textColor="@color/black"
+            android:textSize="16sp" android:fontFamily="@font/muli_semi_bold" android:layout_marginTop="20dp"/>
+    <TextView
+            android:text="@string/good_application"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/feedback3_tv"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedback2_tv" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp" android:textColor="@color/black"
+            android:textSize="16sp" android:fontFamily="@font/muli_semi_bold" android:layout_marginTop="20dp"/>
+    <TextView
+            android:text="@string/very_good_everything_is_working_fine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/feedback4_tv"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedback3_tv" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp" android:textColor="@color/black"
+            android:textSize="16sp" android:fontFamily="@font/muli_semi_bold" android:layout_marginTop="20dp"/>
+    <TextView
+            android:text="@string/say_what_you_didn_t_like_in_brief"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/val_tv"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedback4_tv" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginRight="20dp" android:textColor="@color/black"
+            android:textSize="15sp" android:fontFamily="@font/muli_bold" android:layout_marginTop="40dp"
+            android:visibility="gone"/>
+
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:background="@drawable/white_round_borders"
+            android:elevation="3dp"
+            android:id="@+id/addFeed_et3"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="20dp"
+            android:paddingLeft="15dp"
+            android:paddingTop="10dp"
+            android:focusable="auto"
+            android:paddingRight="15dp"
+            android:paddingBottom="10dp"
+            android:hint="@string/write_here"
+            android:textSize="12sp"
+            android:fontFamily="@font/muli_light"
+            android:textColor="@color/black"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/val_tv" android:layout_marginTop="20dp"
+            android:visibility="gone" app:layout_constraintEnd_toStartOf="@+id/post_Tv"/>
+
+    <TextView
+            android:text="@string/post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/post_Tv"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:elevation="3dp"
+            android:fontFamily="@font/muli_bold"
+            android:background="@drawable/appcolor_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp" app:layout_constraintTop_toTopOf="@+id/addFeed_et3"
+            app:layout_constraintBottom_toBottomOf="@+id/addFeed_et3" android:paddingLeft="20dp"
+            android:paddingTop="5dp" android:paddingRight="20dp" android:paddingBottom="5dp"/>
 </android.support.constraint.ConstraintLayout>

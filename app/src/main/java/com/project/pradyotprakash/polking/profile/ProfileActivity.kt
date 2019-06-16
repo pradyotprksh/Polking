@@ -20,6 +20,7 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
+import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.utility.BgModel
 import com.project.pradyotprakash.polking.utility.Utility
@@ -40,6 +41,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     private var bgDocId: String? = null
     private lateinit var profileEditBtmSheet: ProfileEditBtmSheet
     private lateinit var aboutUsBottomSheet: AboutUsBottomSheet
+    private lateinit var reviewUsBottomSheet: ReviewUsBtmSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -77,7 +79,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
 
         review_tv.setOnClickListener {
-
+            openReviewUsSheet()
         }
 
         faq_tv.setOnClickListener {
@@ -96,6 +98,13 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         aboutUsBottomSheet = AboutUsBottomSheet.newInstance()
+        reviewUsBottomSheet = ReviewUsBtmSheet.newInstance()
+    }
+
+    private fun openReviewUsSheet() {
+        if (!reviewUsBottomSheet.isAdded) {
+            reviewUsBottomSheet.show(supportFragmentManager, "btmSheet")
+        }
     }
 
     private fun openAboutUsSheet() {

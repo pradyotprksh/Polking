@@ -8,7 +8,6 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.QuestionModel
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -25,9 +24,9 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var dataBase: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
-    var dateFormat: DateFormat = SimpleDateFormat("yyyy/MM/dd")
+    var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
     @SuppressLint("SimpleDateFormat")
-    var timeFormat: DateFormat = SimpleDateFormat("HH:mm:ss")
+    var timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm:ss")
 
     @Inject
     internal fun MainActivityPresenterImpl(activity: Activity) {

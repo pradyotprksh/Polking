@@ -3,7 +3,6 @@ package com.project.pradyotprakash.polking.profile.aboutUs
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.BottomSheetDialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +11,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
+import com.project.pradyotprakash.polking.utility.RoundBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.question_details_btm_sheet.view.*
 import javax.inject.Inject
 
-class AboutUsBottomSheet @Inject constructor() : BottomSheetDialogFragment(), ProfileEditView {
+class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
