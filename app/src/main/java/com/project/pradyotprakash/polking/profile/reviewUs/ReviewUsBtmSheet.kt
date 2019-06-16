@@ -31,7 +31,7 @@ class ReviewUsBtmSheet @Inject constructor() : BottomSheetDialogFragment(), Prof
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         AndroidInjection.inject(this.activity)
-        val view = inflater.inflate(R.layout.about_us_btm_sheet, container, false)
+        val view = inflater.inflate(R.layout.review_us_btm_sheet, container, false)
 
         dialog.setOnShowListener { dialog ->
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
