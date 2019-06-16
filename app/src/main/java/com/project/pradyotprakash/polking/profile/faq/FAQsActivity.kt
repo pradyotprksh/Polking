@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.faq
+package com.project.pradyotprakash.polking.profile.faq
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -9,12 +9,12 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.faq.adapter.BlockReportAdapter
-import com.project.pradyotprakash.polking.faq.adapter.FriendBestFriendAdapter
-import com.project.pradyotprakash.polking.faq.adapter.QuestionResponseAdapter
-import com.project.pradyotprakash.polking.faq.adapter.TopQuestionAdapter
-import com.project.pradyotprakash.polking.faq.askQuestion.AskFaqQuestionBtmSheet
-import com.project.pradyotprakash.polking.faq.questionDetails.QuestionDetailsBtmSheet
+import com.project.pradyotprakash.polking.profile.faq.adapter.BlockReportAdapter
+import com.project.pradyotprakash.polking.profile.faq.adapter.FriendBestFriendAdapter
+import com.project.pradyotprakash.polking.profile.faq.adapter.QuestionResponseAdapter
+import com.project.pradyotprakash.polking.profile.faq.adapter.TopQuestionAdapter
+import com.project.pradyotprakash.polking.profile.faq.askQuestion.AskFaqQuestionBtmSheet
+import com.project.pradyotprakash.polking.profile.faq.questionDetails.QuestionDetailsBtmSheet
 import com.project.pradyotprakash.polking.utility.CustomLayoutManager
 import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
 import com.project.pradyotprakash.polking.utility.logd

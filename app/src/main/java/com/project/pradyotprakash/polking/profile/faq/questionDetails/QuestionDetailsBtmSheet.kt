@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.faq.questionDetails
+package com.project.pradyotprakash.polking.profile.faq.questionDetails
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -87,7 +87,7 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                         }
 
                         view.question_tv.text = result.getString("question")!!
-                        view.answer_tv.text = result.getString("answer")!!
+                        view.aboutUs_tv.text = result.getString("answer")!!
 
                         hideLoading()
                     } else {

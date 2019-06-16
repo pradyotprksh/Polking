@@ -40,7 +40,7 @@
                 android:name=".verifyOTP.VerifyOTPActivity"
                 android:screenOrientation="portrait"/>
 
-        <activity android:name=".faq.FAQsActivity"
+        <activity android:name="com.project.pradyotprakash.polking.profile.faq.FAQsActivity"
                   android:screenOrientation="portrait"/>
 
         <activity android:name=".profile.ProfileActivity"

@@ -17,8 +17,9 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.faq.FAQsActivity
+import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
+import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.utility.BgModel
 import com.project.pradyotprakash.polking.utility.Utility
@@ -37,7 +38,8 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     private var allBgAdapter: BackgroundAdapter? = null
     private val allBgList = ArrayList<BgModel>()
     private var bgDocId: String? = null
-    lateinit var profileEditBtmSheet: ProfileEditBtmSheet
+    private lateinit var profileEditBtmSheet: ProfileEditBtmSheet
+    private lateinit var aboutUsBottomSheet: AboutUsBottomSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -83,7 +85,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
 
         aboutUs_tv.setOnClickListener {
-
+            openAboutUsSheet()
         }
 
         back_tv.setOnClickListener {
@@ -93,6 +95,13 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
 
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
+        aboutUsBottomSheet = AboutUsBottomSheet.newInstance()
+    }
+
+    private fun openAboutUsSheet() {
+        if (!aboutUsBottomSheet.isAdded) {
+            aboutUsBottomSheet.show(supportFragmentManager, "btmSheet")
+        }
     }
 
     override fun onBackPressed() {

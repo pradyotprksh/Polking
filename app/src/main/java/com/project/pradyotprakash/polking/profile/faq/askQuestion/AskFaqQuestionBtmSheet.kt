@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.faq.askQuestion
+package com.project.pradyotprakash.polking.profile.faq.askQuestion
 
 import android.annotation.SuppressLint
 import android.os.Bundle

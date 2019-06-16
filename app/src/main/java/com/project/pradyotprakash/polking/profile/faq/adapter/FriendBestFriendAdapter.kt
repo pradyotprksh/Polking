@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.faq.adapter
+package com.project.pradyotprakash.polking.profile.faq.adapter
 
 import android.app.Activity
 import android.content.Context
@@ -12,15 +12,15 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.TextView
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.faq.FAQsActivity
+import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
 import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
 
-class BlockReportAdapter(
-    private val blockReportModelList: List<FAQsQuestionModel>,
-    private var blockReportModelListFiltered: List<FAQsQuestionModel>,
+class FriendBestFriendAdapter(
+    private val friendBestFriendModelList: List<FAQsQuestionModel>,
+    private var friendBestFriendModelListFiltered: List<FAQsQuestionModel>,
     private val context: Context,
     private val activity: Activity
-) : RecyclerView.Adapter<BlockReportAdapter.ViewAdapter>(), Filterable {
+) : RecyclerView.Adapter<FriendBestFriendAdapter.ViewAdapter>(), Filterable {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.question_response_layout, p0, false)
@@ -28,16 +28,16 @@ class BlockReportAdapter(
     }
 
     override fun getItemCount(): Int {
-        return blockReportModelListFiltered.size
+        return friendBestFriendModelListFiltered.size
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onBindViewHolder(holder: ViewAdapter, pos: Int) {
-        holder.questionTv.text = blockReportModelListFiltered[pos].question
+        holder.questionTv.text = friendBestFriendModelListFiltered[pos].question
 
         holder.itemView.setOnClickListener {
             if (activity is FAQsActivity) {
-                activity.openQuestionDetails(blockReportModelListFiltered[pos].docId)
+                activity.openQuestionDetails(friendBestFriendModelListFiltered[pos].docId)
             }
         }
     }
@@ -50,11 +50,11 @@ class BlockReportAdapter(
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
-                blockReportModelListFiltered = if (charString.isEmpty()) {
-                    blockReportModelList
+                friendBestFriendModelListFiltered = if (charString.isEmpty()) {
+                    friendBestFriendModelList
                 } else {
                     val filteredList = ArrayList<FAQsQuestionModel>()
-                    for (row in blockReportModelListFiltered) {
+                    for (row in friendBestFriendModelListFiltered) {
                         if (row.question.toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(row)
                         }
@@ -63,12 +63,12 @@ class BlockReportAdapter(
                 }
 
                 val filterResults = FilterResults()
-                filterResults.values = blockReportModelListFiltered
+                filterResults.values = friendBestFriendModelListFiltered
                 return filterResults
             }
 
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                blockReportModelListFiltered = filterResults.values as ArrayList<FAQsQuestionModel>
+                friendBestFriendModelListFiltered = filterResults.values as ArrayList<FAQsQuestionModel>
                 notifyDataSetChanged()
             }
         }
