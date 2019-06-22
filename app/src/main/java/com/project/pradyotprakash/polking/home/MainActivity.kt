@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 Math.abs(i) == appBarLayout.totalScrollRange -> {
                     if (addQuestion_et2.visibility != View.VISIBLE) {
                         addQuestion_et2.visibility = View.VISIBLE
-                        addQuestion_et2.startAnimation(Utility().inFromLeftAnimation())
+                        addQuestion_et2.startAnimation(Utility().inFromDownAnimation())
                     }
                 }
                 i == 0 -> {
