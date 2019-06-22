@@ -33,7 +33,7 @@ class BestFrndQuestionAdapter(
     }
 
     inner class ViewAdapter(mView: View) : RecyclerView.ViewHolder(mView) {
-        val profile_iv: ImageView = mView.findViewById(R.id.profile_iv)
+        val profile_iv: ImageView = mView.findViewById(R.id.bg_iv)
     }
 
 }

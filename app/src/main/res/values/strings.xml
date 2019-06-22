@@ -128,4 +128,10 @@
     <string name="very_much_thanks">Thank You Very Much. But I Think You Are Being Modest. Tell us What Changes You
         Required. Please.
     </string>
+    <string name="yes_question">Yes?</string>
+    <string name="no_question">No?</string>
+    <string name="dont_support">Please LogIn To Give Your Vote. Because We Do Not Support Anonymous Voting Now.</string>
+    <string name="we_dont_work_that_way">This Application Helps You To Know What Others Think About Your Idea. Not What
+        You Think About Your Own Thinking. So Sorry We Don\'t Work That Way. Sorry.
+    </string>
 </resources>

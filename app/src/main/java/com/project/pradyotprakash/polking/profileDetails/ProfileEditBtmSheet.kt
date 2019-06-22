@@ -87,7 +87,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
         DatePicker(view.age_et).listen()
 
-        view.profile_iv.setOnClickListener {
+        view.bg_iv.setOnClickListener {
             if (checkReadPermission() && checkWritePermission()) {
                 openCamera()
             } else {
@@ -298,10 +298,10 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                         view.imagePrgBsr.visibility = View.GONE
                         return false
                     }
-                }).into(view.profile_iv)
+                }).into(view.bg_iv)
 
-                view.profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
-                view.profile_iv.borderWidth = 4
+                view.bg_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                view.bg_iv.borderWidth = 4
 
                 view.addQuestion_et.setText(result.getString("name"))
                 view.age_et.setText(result.getString("birthDay"))
@@ -366,9 +366,9 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
     fun getImageUri(imageUri: Uri?) {
         this.userMainImageURI = imageUri
-        profile_iv.setImageURI(userMainImageURI)
-        profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
-        profile_iv.borderWidth = 4
+        bg_iv.setImageURI(userMainImageURI)
+        bg_iv.borderColor = resources.getColor(R.color.colorPrimary)
+        bg_iv.borderWidth = 4
         imageUrl = null
     }
 

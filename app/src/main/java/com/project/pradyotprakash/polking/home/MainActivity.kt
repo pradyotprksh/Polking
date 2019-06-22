@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -18,6 +19,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
@@ -36,6 +38,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
+    private var questionsAdapter: QuestionsAdapter? = null
+    private val allQues = ArrayList<QuestionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -106,6 +110,11 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         post_Tv.setOnClickListener {
             presenter.uploadQuestion(addQuestion_et.text.toString())
         }
+
+        questionsAdapter = QuestionsAdapter(allQues, this, this)
+        recentQ_rv.setHasFixedSize(true)
+        recentQ_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recentQ_rv.adapter = questionsAdapter
     }
 
     override fun onResume() {
@@ -212,7 +221,15 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
+        if (allQuestionList.size > 0) {
+            this.allQues.clear()
 
+            allQues.addAll(allQuestionList)
+            questionsAdapter!!.notifyDataSetChanged()
+        } else {
+            recentQ_rv.visibility = View.GONE
+            recent_tv.visibility = View.GONE
+        }
     }
 
     override fun onStop() {

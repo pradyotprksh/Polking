@@ -37,7 +37,7 @@
                 android:layout_height="100dp"
                 android:src="@drawable/pbg_two"
                 android:scaleType="centerCrop"
-                android:id="@+id/profile_iv"/>
+                android:id="@+id/bg_iv"/>
 
     </LinearLayout>
 
