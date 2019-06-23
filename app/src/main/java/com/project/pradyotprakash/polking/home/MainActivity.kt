@@ -111,6 +111,31 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             presenter.uploadQuestion(addQuestion_et.text.toString())
         }
 
+        addQuestion_et2.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s != null) {
+                    if (s.length > 5) {
+                        if (post_Tv2.visibility == View.GONE) {
+                            post_Tv2.startAnimation(Utility().inFromRightAnimation())
+                        }
+                        post_Tv2.visibility = View.VISIBLE
+                    } else {
+                        if (post_Tv2.visibility != View.GONE) {
+                            post_Tv2.startAnimation(Utility().outToRightAnimation())
+                            post_Tv2.visibility = View.GONE
+                        }
+                    }
+                } else {
+                    if (post_Tv2.visibility != View.GONE) {
+                        post_Tv2.startAnimation(Utility().outToRightAnimation())
+                        post_Tv2.visibility = View.GONE
+                    }
+                }
+            }
+        })
+
         questionsAdapter = QuestionsAdapter(allQues, this, this)
         recentQ_rv.setHasFixedSize(true)
         recentQ_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)

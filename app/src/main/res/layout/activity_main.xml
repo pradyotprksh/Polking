@@ -207,7 +207,6 @@
             android:paddingTop="10dp"
             android:paddingRight="15dp"
             android:paddingBottom="10dp"
-            android:focusable="false"
             android:hint="@string/enter_your_question"
             android:textSize="12sp"
             android:fontFamily="@font/muli_light"
@@ -215,9 +214,27 @@
             android:visibility="gone"
             android:layout_marginStart="20dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginRight="20dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="20dp"/>
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="20dp"
+            android:layout_marginEnd="20dp" app:layout_constraintEnd_toStartOf="@+id/post_Tv2"
+            android:layout_marginRight="20dp"/>
+    <TextView
+            android:text="@string/post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/post_Tv2"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:elevation="3dp"
+            android:fontFamily="@font/muli_bold"
+            android:background="@drawable/appcolor_background"
+            android:visibility="gone"
+            android:paddingLeft="20dp"
+            android:paddingTop="5dp" android:paddingRight="20dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et2"
+            app:layout_constraintTop_toTopOf="@+id/addQuestion_et2" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginRight="20dp" android:layout_marginEnd="20dp"/>
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
