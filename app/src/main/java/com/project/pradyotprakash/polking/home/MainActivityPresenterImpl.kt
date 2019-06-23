@@ -22,6 +22,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var mAuth: FirebaseAuth
     private var currentUser: FirebaseUser? = null
     private lateinit var dataBase: FirebaseFirestore
+    private lateinit var getQuestionDataBase: FirebaseFirestore
+    private lateinit var uploadQuestionDataBase: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -34,6 +36,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         mAuth = FirebaseAuth.getInstance()
         currentUser = mAuth.currentUser
         dataBase = FirebaseFirestore.getInstance()
+        getQuestionDataBase = FirebaseFirestore.getInstance()
+        uploadQuestionDataBase = FirebaseFirestore.getInstance()
     }
 
     override fun start() {
@@ -198,7 +202,77 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 mView.hideLoading()
 
             }
+    }
 
+    override fun giveVote(docId: String, type: Int) {
+        if (mAuth.currentUser != null) {
+            mView.showLoading()
+
+            getQuestionDataBase.collection("question").document(docId).addSnapshotListener { snapshot, exception ->
+
+                if (exception != null) {
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
+                    mView.hideLoading()
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    var yesVoted = snapshot.data!!["noVote"].toString().toInt()
+                    var noVoted = snapshot.data!!["yesVote"].toString().toInt()
+
+                    if (type == 1) {
+                        ++yesVoted
+                    } else {
+                        ++noVoted
+                    }
+
+                    val questionData = HashMap<String, Any>()
+                    questionData["yesVote"] = "$yesVoted"
+                    questionData["noVote"] = "$noVoted"
+
+                    uploadQuestionDataBase.collection("question").document(docId).update(questionData)
+                        .addOnSuccessListener {
+                            val date = Date()
+                            val voteData = HashMap<String, Any>()
+                            voteData["voted"] = type
+                            voteData["votedFor"] = docId
+                            voteData["votedOnDate"] = dateFormat.format(date)
+                            voteData["votedOnTime"] = timeFormat.format(date)
+
+                            dataBase.collection("question").document(docId).collection("votes")
+                                .document().set(voteData).addOnSuccessListener {
+                                    mView.hideLoading()
+                                }.addOnFailureListener { exception ->
+                                    mView.showMessage(
+                                        "Something Went Wrong. ${exception.localizedMessage}",
+                                        1
+                                    )
+                                    mView.hideLoading()
+                                }.addOnCanceledListener {
+                                    mView.showMessage(mContext.getString(R.string.inable_to_vote), 4)
+                                    mView.hideLoading()
+                                }
+                        }.addOnFailureListener { exception_last ->
+                            mView.showMessage(
+                                "Something Went Wrong. ${exception_last.localizedMessage}",
+                                1
+                            )
+                            mView.hideLoading()
+                        }.addOnCanceledListener {
+                            mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                            mView.hideLoading()
+                        }
+                } else {
+                    mView.hideLoading()
+                    mView.showMessage(
+                        mContext.getString(R.string.that_embarrassing), 1
+                    )
+                }
+
+            }
+
+        }
     }
 
 }

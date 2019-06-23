@@ -263,4 +263,9 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         presenter.removeListener()
     }
 
+    // type 1 -> YES 0 -> NO
+    fun giveTheVote(docId: String, type: Int) {
+        presenter.giveVote(docId, type)
+    }
+
 }

@@ -134,4 +134,6 @@
     <string name="we_dont_work_that_way">This Application Helps You To Know What Others Think About Your Idea. Not What
         You Think About Your Own Thinking. So Sorry We Don\'t Work That Way. Sorry.
     </string>
+    <string name="inable_to_vote">Unable To Process Your Vote At The Moment. Please Try Again.</string>
+    <string name="that_embarrassing">Something Went Wrong. Unable To Find Question Data. That\'s Embarrassing</string>
 </resources>

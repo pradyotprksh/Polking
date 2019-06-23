@@ -30,6 +30,7 @@ class QuestionsAdapter(
 
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var dataBase: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.question_layout, p0, false)
@@ -100,7 +101,9 @@ class QuestionsAdapter(
                         context.showMessage(context.getString(R.string.we_dont_work_that_way), 1)
                     }
                 } else {
-
+                    if (context is MainActivity) {
+                        context.giveTheVote(allQues[pos].docId, 1)
+                    }
                 }
             } else {
                 if (context is MainActivity) {
@@ -110,8 +113,24 @@ class QuestionsAdapter(
         }
 
         holder.no_tv.setOnClickListener {
-
+            if (mAuth.currentUser != null) {
+                if (allQues[pos].askedBy == mAuth.currentUser!!.uid) {
+                    if (context is MainActivity) {
+                        context.showMessage(context.getString(R.string.we_dont_work_that_way), 1)
+                    }
+                } else {
+                    if (context is MainActivity) {
+                        context.giveTheVote(allQues[pos].docId, 0)
+                    }
+                }
+            } else {
+                if (context is MainActivity) {
+                    context.showMessage(context.getString(R.string.dont_support), 1)
+                }
+            }
         }
+
+        dataBase.collection("question").document(allQues[pos].docId).collection("votes")
 
     }
 
