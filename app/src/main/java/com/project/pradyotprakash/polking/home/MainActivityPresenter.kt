@@ -27,4 +27,7 @@ interface MainActivityPresenter: BasePresenter {
 
     // add vote to question
     fun giveVote(docId: String, type: Int)
+
+    // get the vote list
+    fun getTheVoteList()
 }

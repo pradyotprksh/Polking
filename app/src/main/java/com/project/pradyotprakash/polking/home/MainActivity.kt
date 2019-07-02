@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
 
+    private var clickedPos: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -264,8 +266,14 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     // type 1 -> YES 0 -> NO
-    fun giveTheVote(docId: String, type: Int) {
+    fun giveTheVote(docId: String, type: Int, pos: Int) {
+        this.clickedPos = pos
         presenter.giveVote(docId, type)
+    }
+
+    override fun onSuccessVote() {
+        presenter.getTheVoteList()
+        questionsAdapter!!.notifyDataSetChanged()
     }
 
 }

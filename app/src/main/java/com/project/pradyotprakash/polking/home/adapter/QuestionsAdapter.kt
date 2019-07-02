@@ -102,7 +102,7 @@ class QuestionsAdapter(
                     }
                 } else {
                     if (context is MainActivity) {
-                        context.giveTheVote(allQues[pos].docId, 1)
+                        context.giveTheVote(allQues[pos].docId, 1, pos)
                     }
                 }
             } else {
@@ -120,7 +120,7 @@ class QuestionsAdapter(
                     }
                 } else {
                     if (context is MainActivity) {
-                        context.giveTheVote(allQues[pos].docId, 0)
+                        context.giveTheVote(allQues[pos].docId, 0, pos)
                     }
                 }
             } else {

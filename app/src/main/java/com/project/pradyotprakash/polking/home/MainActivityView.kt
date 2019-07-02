@@ -32,4 +32,7 @@ interface MainActivityView: BaseView {
 
     // show options if logged in
     fun showOptions()
+
+    // when vote added successfully
+    fun onSuccessVote()
 }

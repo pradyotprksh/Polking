@@ -24,6 +24,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var dataBase: FirebaseFirestore
     private lateinit var getQuestionDataBase: FirebaseFirestore
     private lateinit var uploadQuestionDataBase: FirebaseFirestore
+    private lateinit var addVotesDataBase: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -38,6 +39,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         dataBase = FirebaseFirestore.getInstance()
         getQuestionDataBase = FirebaseFirestore.getInstance()
         uploadQuestionDataBase = FirebaseFirestore.getInstance()
+        addVotesDataBase = FirebaseFirestore.getInstance()
     }
 
     override fun start() {
@@ -231,6 +233,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     questionData["yesVote"] = "$yesVoted"
                     questionData["noVote"] = "$noVoted"
 
+                    // Update Yes/No Votes
                     uploadQuestionDataBase.collection("question").document(docId).update(questionData)
                         .addOnSuccessListener {
                             val date = Date()
@@ -239,10 +242,32 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                             voteData["votedFor"] = docId
                             voteData["votedOnDate"] = dateFormat.format(date)
                             voteData["votedOnTime"] = timeFormat.format(date)
+                            voteData["votedBy"] = mAuth.currentUser!!.uid
 
+                            // Add The Votes To The Collection
                             dataBase.collection("question").document(docId).collection("votes")
                                 .document().set(voteData).addOnSuccessListener {
-                                    mView.hideLoading()
+
+                                    // Add Votes To The Current User Logged In
+                                    val userVoteData = HashMap<String, Any>()
+                                    userVoteData["voted"] = type
+                                    userVoteData["votedFor"] = docId
+                                    userVoteData["votedOnDate"] = dateFormat.format(date)
+                                    userVoteData["votedOnTime"] = timeFormat.format(date)
+                                    addVotesDataBase.collection("users").document(mAuth.currentUser!!.uid)
+                                        .collection("votes").add(userVoteData).addOnSuccessListener {
+                                            mView.onSuccessVote()
+                                            mView.hideLoading()
+                                        }.addOnFailureListener { exception ->
+                                            mView.showMessage(
+                                                "Something Went Wrong. ${exception.localizedMessage}",
+                                                1
+                                            )
+                                            mView.hideLoading()
+                                        }.addOnCanceledListener {
+                                            mView.showMessage(mContext.getString(R.string.inable_to_vote), 4)
+                                            mView.hideLoading()
+                                        }
                                 }.addOnFailureListener { exception ->
                                     mView.showMessage(
                                         "Something Went Wrong. ${exception.localizedMessage}",
@@ -273,6 +298,10 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             }
 
         }
+    }
+
+    override fun getTheVoteList() {
+
     }
 
 }
