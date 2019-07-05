@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
 
-    private var clickedPos: Int = -1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -151,6 +149,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         presenter.getProfileData()
         presenter.getBestFrndQuestions()
         presenter.getQuestions()
+        presenter.getVotes()
     }
 
     override fun startProfileAct() {
@@ -265,15 +264,21 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         presenter.removeListener()
     }
 
-    // type 1 -> YES 0 -> NO
-    fun giveTheVote(docId: String, type: Int, pos: Int) {
-        this.clickedPos = pos
-        presenter.giveVote(docId, type)
+    fun showVotes(docId: String) {
+        if (docId.isNotEmpty()) {
+
+        }
     }
 
-    override fun onSuccessVote() {
-        presenter.getTheVoteList()
-        questionsAdapter!!.notifyDataSetChanged()
+    override fun setVotesForUsers(votesHashMap: HashMap<String, String>) {
+        if (votesHashMap.size > 0) {
+            questionsAdapter!!.setVotesByUser(votesHashMap)
+            questionsAdapter!!.notifyDataSetChanged()
+        }
+    }
+
+    fun openProfileAct() {
+
     }
 
 }

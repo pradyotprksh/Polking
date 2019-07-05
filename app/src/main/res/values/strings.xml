@@ -136,4 +136,6 @@
     </string>
     <string name="inable_to_vote">Unable To Process Your Vote At The Moment. Please Try Again.</string>
     <string name="that_embarrassing">Something Went Wrong. Unable To Find Question Data. That\'s Embarrassing</string>
+    <string name="you_agree">You Agree. Nice!</string>
+    <string name="you_disagree">You Disagree! Wow!</string>
 </resources>

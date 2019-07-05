@@ -8,6 +8,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.QuestionModel
+import com.project.pradyotprakash.polking.utility.UserVotesModel
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -17,6 +18,7 @@ import kotlin.collections.HashMap
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     private val allQuestionList = ArrayList<QuestionModel>()
+    private val allVotesList = ArrayList<UserVotesModel>()
     lateinit var mContext: Activity
     @Inject lateinit var mView: MainActivityView
     private lateinit var mAuth: FirebaseAuth
@@ -25,6 +27,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var getQuestionDataBase: FirebaseFirestore
     private lateinit var uploadQuestionDataBase: FirebaseFirestore
     private lateinit var addVotesDataBase: FirebaseFirestore
+    private lateinit var votesHashMap: HashMap<String, String>
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -206,102 +209,47 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             }
     }
 
-    override fun giveVote(docId: String, type: Int) {
-        if (mAuth.currentUser != null) {
-            mView.showLoading()
-
-            getQuestionDataBase.collection("question").document(docId).addSnapshotListener { snapshot, exception ->
-
-                if (exception != null) {
-                    mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
-                    )
-                    mView.hideLoading()
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    var yesVoted = snapshot.data!!["noVote"].toString().toInt()
-                    var noVoted = snapshot.data!!["yesVote"].toString().toInt()
-
-                    if (type == 1) {
-                        ++yesVoted
-                    } else {
-                        ++noVoted
+    override fun getVotes() {
+        votesHashMap = HashMap()
+        if (currentUser != null) {
+            addVotesDataBase.collection("users").document(mAuth.currentUser!!.uid).collection("votes")
+                .addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
                     }
 
-                    val questionData = HashMap<String, Any>()
-                    questionData["yesVote"] = "$yesVoted"
-                    questionData["noVote"] = "$noVoted"
+                    allVotesList.clear()
+                    votesHashMap.clear()
 
-                    // Update Yes/No Votes
-                    uploadQuestionDataBase.collection("question").document(docId).update(questionData)
-                        .addOnSuccessListener {
-                            val date = Date()
-                            val voteData = HashMap<String, Any>()
-                            voteData["voted"] = type
-                            voteData["votedFor"] = docId
-                            voteData["votedOnDate"] = dateFormat.format(date)
-                            voteData["votedOnTime"] = timeFormat.format(date)
-                            voteData["votedBy"] = mAuth.currentUser!!.uid
-
-                            // Add The Votes To The Collection
-                            dataBase.collection("question").document(docId).collection("votes")
-                                .document().set(voteData).addOnSuccessListener {
-
-                                    // Add Votes To The Current User Logged In
-                                    val userVoteData = HashMap<String, Any>()
-                                    userVoteData["voted"] = type
-                                    userVoteData["votedFor"] = docId
-                                    userVoteData["votedOnDate"] = dateFormat.format(date)
-                                    userVoteData["votedOnTime"] = timeFormat.format(date)
-                                    addVotesDataBase.collection("users").document(mAuth.currentUser!!.uid)
-                                        .collection("votes").add(userVoteData).addOnSuccessListener {
-                                            mView.onSuccessVote()
-                                            mView.hideLoading()
-                                        }.addOnFailureListener { exception ->
-                                            mView.showMessage(
-                                                "Something Went Wrong. ${exception.localizedMessage}",
-                                                1
-                                            )
-                                            mView.hideLoading()
-                                        }.addOnCanceledListener {
-                                            mView.showMessage(mContext.getString(R.string.inable_to_vote), 4)
-                                            mView.hideLoading()
-                                        }
-                                }.addOnFailureListener { exception ->
-                                    mView.showMessage(
-                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                        1
-                                    )
-                                    mView.hideLoading()
-                                }.addOnCanceledListener {
-                                    mView.showMessage(mContext.getString(R.string.inable_to_vote), 4)
-                                    mView.hideLoading()
-                                }
-                        }.addOnFailureListener { exception_last ->
-                            mView.showMessage(
-                                "Something Went Wrong. ${exception_last.localizedMessage}",
-                                1
-                            )
-                            mView.hideLoading()
-                        }.addOnCanceledListener {
-                            mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                            mView.hideLoading()
+                    try {
+                        for (doc in snapshot!!.documentChanges) {
+                            mView.showLoading()
+                            if (doc.type == DocumentChange.Type.ADDED ||
+                                doc.type == DocumentChange.Type.MODIFIED ||
+                                doc.type == DocumentChange.Type.REMOVED
+                            ) {
+                                val docId = doc.document.id
+                                val votesList: UserVotesModel =
+                                    doc.document.toObject(UserVotesModel::class.java).withId(docId)
+                                this.allVotesList.add(votesList)
+                                this.votesHashMap[votesList.votedFor] = votesList.voted
+                            }
                         }
-                } else {
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        mView.showMessage(e.localizedMessage, 1)
+                    }
+
+                    mView.setVotesForUsers(votesHashMap)
+
                     mView.hideLoading()
-                    mView.showMessage(
-                        mContext.getString(R.string.that_embarrassing), 1
-                    )
+
                 }
-
-            }
-
+        } else {
+            mView.hideOptions()
         }
-    }
-
-    override fun getTheVoteList() {
-
     }
 
 }

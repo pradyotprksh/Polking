@@ -33,6 +33,7 @@ interface MainActivityView: BaseView {
     // show options if logged in
     fun showOptions()
 
-    // when vote added successfully
-    fun onSuccessVote()
+    // votes by the current user
+    fun setVotesForUsers(votesHashMap: HashMap<String, String>)
+
 }

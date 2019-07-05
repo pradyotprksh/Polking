@@ -25,9 +25,7 @@ interface MainActivityPresenter: BasePresenter {
     // remove listener
     fun removeListener()
 
-    // add vote to question
-    fun giveVote(docId: String, type: Int)
+    // get the votes
+    fun getVotes()
 
-    // get the vote list
-    fun getTheVoteList()
 }

@@ -25,3 +25,11 @@ data class FAQsQuestionModel(
     val isTopQuestion: String = "",
     val answer: String = ""
 ) : GetId()
+
+// Votes
+data class UserVotesModel(
+    val voted: String = "",
+    val votedFor: String = "",
+    val votedOnDate: String = "",
+    val votedOnTime: String = ""
+) : GetId()
