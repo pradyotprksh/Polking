@@ -33,3 +33,11 @@ data class UserVotesModel(
     val votedOnDate: String = "",
     val votedOnTime: String = ""
 ) : GetId()
+
+data class QuestionVotesModel(
+    val voted: String = "",
+    val votedFor: String = "",
+    val votedOnDate: String = "",
+    val votedOnTime: String = "",
+    val votedBy: String = ""
+) : GetId()

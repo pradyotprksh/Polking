@@ -138,4 +138,10 @@
     <string name="that_embarrassing">Something Went Wrong. Unable To Find Question Data. That\'s Embarrassing</string>
     <string name="you_agree">You Agree. Nice!</string>
     <string name="you_disagree">You Disagree! Wow!</string>
+    <string name="add_as_friend">Friend?</string>
+    <string name="is_a_friend">Friend</string>
+    <string name="add_as_bestfriend">Best Friend?</string>
+    <string name="is_a_bestfrined">Best Friend</string>
+    <string name="follow">Follow</string>
+    <string name="following">Following</string>
 </resources>

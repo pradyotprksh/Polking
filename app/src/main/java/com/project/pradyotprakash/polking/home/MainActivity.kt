@@ -23,6 +23,7 @@ import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
+import com.project.pradyotprakash.polking.usersList.UserListBtmSheet
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
+    lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
 
@@ -64,6 +66,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         profileEditBtmSheet.isCancelable = false
+        userListBtmSheet = UserListBtmSheet.newInstance()
 
         appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout: AppBarLayout, i: Int ->
             when {
@@ -266,7 +269,12 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     fun showVotes(docId: String) {
         if (docId.isNotEmpty()) {
-
+            if (!userListBtmSheet.isAdded) {
+                userListBtmSheet.show(supportFragmentManager, "btmSheet")
+                userListBtmSheet.setQuestionDocId(docId)
+                userListBtmSheet.setContext(this)
+                userListBtmSheet.setActivity(this)
+            }
         }
     }
 
