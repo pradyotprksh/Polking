@@ -24,7 +24,9 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.utility.QuestionVotesModel
 import de.hdodenhof.circleimageview.CircleImageView
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 class UserListAdapter(
     private val allVotesList: ArrayList<QuestionVotesModel>,
@@ -32,8 +34,11 @@ class UserListAdapter(
     private val activity: Activity
 ) : RecyclerView.Adapter<UserListAdapter.ViewAdapter>() {
 
+    private lateinit var allFriendList: HashMap<String, String>
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    @SuppressLint("SimpleDateFormat")
+    var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.profile_list_layout, p0, false)
@@ -93,6 +98,32 @@ class UserListAdapter(
 
         }
 
+        holder.profile_iv.setOnClickListener {
+            if (context is MainActivity) {
+                context.openProfileAct()
+            }
+        }
+
+        holder.userName_tv.setOnClickListener {
+            if (context is MainActivity) {
+                context.openProfileAct()
+            }
+        }
+
+        if (allFriendList.containsKey(allVotesList[pos].votedBy)) {
+            holder.request_tv.text = context.getString(R.string.following)
+            holder.request_tv.setTextColor(context.getColor(R.color.colorPrimaryDark))
+            holder.request_cv.setCardBackgroundColor(context.getColor(R.color.white))
+            holder.request_cv.isEnabled = false
+            holder.request_cv.isClickable = false
+        } else {
+            holder.request_tv.text = context.getString(R.string.follow)
+            holder.request_tv.setTextColor(context.getColor(R.color.white))
+            holder.request_cv.setCardBackgroundColor(context.getColor(R.color.colorPrimaryDark))
+            holder.request_cv.isEnabled = true
+            holder.request_cv.isClickable = true
+        }
+
         if (allVotesList[pos].voted == "1") {
             holder.userName_tv.setTextColor(context.getColor(R.color.dark_green))
         } else {
@@ -103,13 +134,54 @@ class UserListAdapter(
             when {
                 holder.request_tv.text == context.getString(R.string.follow) -> {
                     if (mAuth.currentUser != null) {
+                        val date = Date()
                         holder.request_cv.setCardBackgroundColor(context.getColor(R.color.dark_gray))
                         holder.follow_progress.visibility = View.VISIBLE
 
-                        holder.request_tv.text = context.getString(R.string.following)
-                        holder.request_tv.setTextColor(context.getColor(R.color.colorPrimaryDark))
+                        val friendMap = HashMap<String, Any>()
+                        friendMap["userId"] = allVotesList[pos].votedBy
+                        friendMap["madeFriendOn"] = dateFormat.format(date)
+                        friendMap["madeBestFriendOn"] = ""
+                        friendMap["isBestFriend"] = "false"
+                        friendMap["isFriend"] = "true"
 
-                        firestore.collection("users").document(mAuth.currentUser!!.uid).collection("friends")
+                        firestore.collection("users").document(mAuth.currentUser!!.uid)
+                            .collection("friends")
+                            .add(friendMap)
+                            .addOnSuccessListener {
+                                holder.request_tv.text = context.getString(R.string.following)
+                                holder.request_tv.setTextColor(context.getColor(R.color.colorPrimaryDark))
+                                holder.request_cv.setCardBackgroundColor(context.getColor(R.color.white))
+                                holder.request_cv.isEnabled = false
+                                holder.request_cv.isClickable = false
+                                holder.follow_progress.visibility = View.GONE
+                            }.addOnFailureListener { exception ->
+                                if (context is MainActivity) {
+                                    holder.request_tv.text = context.getString(R.string.follow)
+                                    holder.request_tv.setTextColor(context.getColor(R.color.white))
+                                    holder.request_cv.setCardBackgroundColor(context.getColor(R.color.colorPrimaryDark))
+                                    holder.request_cv.isEnabled = true
+                                    holder.request_cv.isClickable = true
+                                    holder.follow_progress.visibility = View.GONE
+                                    context.showMessage(
+                                        "Something Went Wrong. ${exception.localizedMessage}",
+                                        1
+                                    )
+                                }
+                            }.addOnCanceledListener {
+                                if (context is MainActivity) {
+                                    holder.request_tv.text = context.getString(R.string.follow)
+                                    holder.request_tv.setTextColor(context.getColor(R.color.white))
+                                    holder.request_cv.setCardBackgroundColor(context.getColor(R.color.colorPrimaryDark))
+                                    holder.request_cv.isEnabled = true
+                                    holder.request_cv.isClickable = true
+                                    holder.follow_progress.visibility = View.GONE
+                                    context.showMessage(
+                                        context.getString(R.string.inable_to_vote),
+                                        4
+                                    )
+                                }
+                            }
                     } else {
                         if (activity is MainActivity) {
                             activity.showMessage(context.getString(R.string.dont_support), 1)
@@ -119,6 +191,10 @@ class UserListAdapter(
             }
         }
 
+    }
+
+    fun setFriendList(allFriendsList: java.util.HashMap<String, String>) {
+        this.allFriendList = allFriendsList
     }
 
     inner class ViewAdapter(mView: View) : RecyclerView.ViewHolder(mView) {

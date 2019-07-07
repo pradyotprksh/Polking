@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.usersList.adapter.UserListAdapter
+import com.project.pradyotprakash.polking.utility.FriendsListModel
 import com.project.pradyotprakash.polking.utility.QuestionVotesModel
 import com.project.pradyotprakash.polking.utility.RoundBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
@@ -23,6 +24,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.users_list_btm_sheet.view.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 class UserListBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
 
@@ -32,6 +34,7 @@ class UserListBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditVi
     private lateinit var firestore: FirebaseFirestore
     private var docId: String = ""
     private val allVotesList = ArrayList<QuestionVotesModel>()
+    private val allFriendsList = HashMap<String, String>()
     private var userListAdapter: UserListAdapter? = null
 
     companion object {
@@ -114,6 +117,43 @@ class UserListBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditVi
                         stopAct()
                     }
 
+                    userListAdapter!!.notifyDataSetChanged()
+
+                    hideLoading()
+
+                }
+
+            firestore.collection("users").document(mAuth.currentUser!!.uid)
+                .collection("friends").addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                        stopAct()
+                    }
+
+                    this.allFriendsList.clear()
+
+                    try {
+                        for (doc in snapshot!!.documentChanges) {
+                            showLoading()
+                            if (doc.type == DocumentChange.Type.ADDED ||
+                                doc.type == DocumentChange.Type.MODIFIED ||
+                                doc.type == DocumentChange.Type.REMOVED
+                            ) {
+                                val docId = doc.document.id
+                                val friendList: FriendsListModel =
+                                    doc.document.toObject(FriendsListModel::class.java).withId(docId)
+                                allFriendsList[friendList.userId] = friendList.userId
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        showMessage(e.localizedMessage, 1)
+                        stopAct()
+                    }
+
+                    userListAdapter!!.setFriendList(allFriendsList)
                     userListAdapter!!.notifyDataSetChanged()
 
                     hideLoading()

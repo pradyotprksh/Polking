@@ -34,10 +34,20 @@ data class UserVotesModel(
     val votedOnTime: String = ""
 ) : GetId()
 
+// Question Votes List
 data class QuestionVotesModel(
     val voted: String = "",
     val votedFor: String = "",
     val votedOnDate: String = "",
     val votedOnTime: String = "",
     val votedBy: String = ""
+) : GetId()
+
+// Friend List
+data class FriendsListModel(
+    val userId: String = "",
+    val madeFriendOn: String = "",
+    val madeBestFriendOn: String = "",
+    val isBestFriend: String = "",
+    val isFriend: String = ""
 ) : GetId()
