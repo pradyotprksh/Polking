@@ -221,6 +221,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     override fun openAddProfileDetails() {
         if (!profileEditBtmSheet.isAdded) {
             profileEditBtmSheet.show(supportFragmentManager, "btmSheet")
+            profileEditBtmSheet.setCloseTitle(getString(R.string.can_t_close_this), true)
         }
     }
 

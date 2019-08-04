@@ -134,18 +134,22 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     }
 
     override fun changeBgId(bgDocId: String) {
+        mView.showLoading()
         val userData = HashMap<String, Any>()
         userData["bg_option"] = bgDocId
         dataBase.collection("users")
             .document(mAuth.currentUser!!.uid)
             .update(userData).addOnSuccessListener {
+                mView.hideLoading()
                 mView.stopAct()
             }.addOnFailureListener { exception ->
+                mView.hideLoading()
                 mView.showMessage(
                     "Something Went Wrong. ${exception.localizedMessage}",
                     1
                 )
             }.addOnCanceledListener {
+                mView.hideLoading()
                 mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
             }
     }

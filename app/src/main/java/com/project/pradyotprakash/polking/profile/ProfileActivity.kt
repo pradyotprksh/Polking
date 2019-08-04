@@ -69,6 +69,10 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             optionList_cl.startAnimation(Utility().inFromDownAnimation())
         }
 
+        profile_iv.setOnClickListener {
+            openAddProfileDetails()
+        }
+
         edit_tv.setOnClickListener {
             openAddProfileDetails()
         }
@@ -176,6 +180,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     override fun openAddProfileDetails() {
         if (!profileEditBtmSheet.isAdded) {
             profileEditBtmSheet.show(supportFragmentManager, "btmSheet")
+            profileEditBtmSheet.setCloseTitle(getString(R.string.close), true)
         }
     }
 

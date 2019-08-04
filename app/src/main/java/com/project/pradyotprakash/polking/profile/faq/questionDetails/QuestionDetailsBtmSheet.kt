@@ -138,14 +138,14 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                             }
 
                             view.helpful_tv.text =
-                                """${getString(R.string.was_it_helpful)}  $yesPercent% Agreed & $noPercent% Disagreed"""
+                                """${activity!!.getString(R.string.was_it_helpful)}  $yesPercent% Agreed & $noPercent% Disagreed"""
                         } else {
                             view.helpful_tv.text =
-                                """${getString(R.string.was_it_helpful)}  0.0% Agreed & 0.0% Disagreed"""
+                                """${activity!!.getString(R.string.was_it_helpful)}  0.0% Agreed & 0.0% Disagreed"""
                         }
                     }
             } else {
-                showMessage(getString(R.string.user_not_found), 1)
+                showMessage(activity!!.getString(R.string.user_not_found), 1)
             }
         }
 

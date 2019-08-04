@@ -40,6 +40,8 @@ import javax.inject.Inject
 
 class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
 
+    private var title: String = ""
+    private var isClosable: Boolean = false
     private var count = 0
     private var count1 = 0
     private var imageUrl: String? = null
@@ -93,6 +95,19 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
             } else {
                 showMessage(getString(R.string.permission_not_granted), 2)
             }
+        }
+
+        if (title.isNotEmpty()) {
+            view.back_tv.text = title
+        } else {
+            view.back_tv.text = activity!!.getString(R.string.can_t_close_this)
+        }
+
+        view.back_tv.setOnClickListener {
+            if (isClosable) {
+                dismiss()
+            }
+            return@setOnClickListener
         }
 
         view.male_tv.setOnClickListener {
@@ -506,6 +521,11 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                 .setMessage(message).setPositiveButton(getString(R.string.ok_string), okListener)
                 .setNegativeButton(getString(R.string.cancel_string), null).create().show()
         }
+    }
+
+    fun setCloseTitle(title: String, isClosable: Boolean) {
+        this.title = title
+        this.isClosable = isClosable
     }
 
 }
