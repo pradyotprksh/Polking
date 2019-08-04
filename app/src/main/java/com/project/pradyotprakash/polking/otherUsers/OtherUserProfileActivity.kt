@@ -1,9 +1,9 @@
 package com.project.pradyotprakash.polking.otherUsers
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection

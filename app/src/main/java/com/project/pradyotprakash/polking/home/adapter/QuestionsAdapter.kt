@@ -32,7 +32,7 @@ class QuestionsAdapter(
     private val activity: Activity
 ) : RecyclerView.Adapter<QuestionsAdapter.ViewAdapter>() {
 
-    private lateinit var votesHashMap: HashMap<String, String>
+    private var votesHashMap: HashMap<String, String> = HashMap()
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var dataBase: FirebaseFirestore = FirebaseFirestore.getInstance()

@@ -11,11 +11,14 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.appbar.AppBarLayout
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.profile.ProfileActivity
@@ -139,7 +142,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         questionsAdapter = QuestionsAdapter(allQues, this, this)
         recentQ_rv.setHasFixedSize(true)
-        recentQ_rv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recentQ_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recentQ_rv.adapter = questionsAdapter
     }
 

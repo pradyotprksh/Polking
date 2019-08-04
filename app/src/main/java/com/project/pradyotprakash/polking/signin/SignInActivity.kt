@@ -2,12 +2,12 @@ package com.project.pradyotprakash.polking.signin
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.isValidPhone
 import com.project.pradyotprakash.polking.utility.logd

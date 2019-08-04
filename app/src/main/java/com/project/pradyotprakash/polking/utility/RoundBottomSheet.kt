@@ -2,8 +2,8 @@ package com.project.pradyotprakash.polking.utility
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.BottomSheetDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.project.pradyotprakash.polking.R
 
 open class RoundBottomSheet : BottomSheetDialogFragment() {

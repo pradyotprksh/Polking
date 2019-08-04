@@ -1,13 +1,13 @@
 package com.project.pradyotprakash.polking.profile.faq
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.PagerSnapHelper
-import android.support.v7.widget.SearchView
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.faq.adapter.BlockReportAdapter
 import com.project.pradyotprakash.polking.profile.faq.adapter.FriendBestFriendAdapter

@@ -2,7 +2,6 @@ package com.project.pradyotprakash.polking.utility
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v4.view.animation.PathInterpolatorCompat
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
@@ -10,6 +9,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.animation.PathInterpolatorCompat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
