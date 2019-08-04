@@ -30,7 +30,7 @@
             android:textColor="@color/white"
             android:fontFamily="@font/muli"/>
 
-    <androidx.constraintlayout.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/appcolor_background"
@@ -62,7 +62,7 @@
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/muli_bold"/>
 
-    </androidx.constraintlayout.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="80dp"
@@ -126,7 +126,7 @@
             android:layout_marginTop="20dp"
             android:textColor="@color/black"/>
 
-    <androidx.constraintlayout.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="3dp"
@@ -202,7 +202,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginEnd="15dp"/>
 
-    </androidx.constraintlayout.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
             android:text="@string/save"
