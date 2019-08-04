@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import com.project.pradyotprakash.polking.utility.UserVotesModel
@@ -33,6 +34,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
     @SuppressLint("SimpleDateFormat")
     var timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm:ss")
+    @SuppressLint("SimpleDateFormat")
+    var dateTimeFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
 
     @Inject
     internal fun MainActivityPresenterImpl(activity: Activity) {
@@ -146,6 +149,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             val questionData = HashMap<String, Any>()
             questionData["question"] = question
             questionData["askedBy"] = currentUser!!.uid
+            questionData["askedOn"] = dateTimeFormat.format(date)
             questionData["askedOnDate"] = dateFormat.format(date)
             questionData["askedOnTime"] = timeFormat.format(date)
             questionData["yesVote"] = "0"
@@ -173,6 +177,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     override fun getQuestions() {
 
         dataBase.collection("question")
+            .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     mView.showMessage(
@@ -185,10 +190,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 try {
                     for (doc in snapshot!!.documentChanges) {
                         mView.showLoading()
-                        if (doc.type == DocumentChange.Type.ADDED ||
-                            doc.type == DocumentChange.Type.MODIFIED ||
-                            doc.type == DocumentChange.Type.REMOVED
-                        ) {
+                        if (doc.type == DocumentChange.Type.ADDED) {
 
                             val docId = doc.document.id
                             val quesList: QuestionModel =
@@ -202,7 +204,9 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     mView.showMessage(e.localizedMessage, 1)
                 }
 
-                mView.loadQuestions(allQuestionList)
+                if (allQuestionList.size > 0) {
+                    mView.loadQuestions(allQuestionList)
+                }
 
                 mView.hideLoading()
 

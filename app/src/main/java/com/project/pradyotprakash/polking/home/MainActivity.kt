@@ -112,10 +112,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             }
         })
 
-        post_Tv.setOnClickListener {
-            presenter.uploadQuestion(addQuestion_et.text.toString())
-        }
-
         addQuestion_et2.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -141,6 +137,14 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             }
         })
 
+        post_Tv.setOnClickListener {
+            presenter.uploadQuestion(addQuestion_et.text.toString())
+        }
+
+        post_Tv2.setOnClickListener {
+            presenter.uploadQuestion(addQuestion_et2.text.toString())
+        }
+
         questionsAdapter = QuestionsAdapter(allQues, this, this)
         recentQ_rv.setHasFixedSize(true)
         recentQ_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -150,6 +154,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     override fun onResume() {
         super.onResume()
         logd(getString(R.string.resume))
+        this.allQues.clear()
         presenter.addAuthStateListener()
         presenter.getProfileData()
         presenter.getBestFrndQuestions()
@@ -254,7 +259,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
         if (allQuestionList.size > 0) {
-            this.allQues.clear()
             recentQ_rv.visibility = View.VISIBLE
             recent_tv.visibility = View.VISIBLE
             allQues.addAll(allQuestionList)
