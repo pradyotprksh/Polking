@@ -28,161 +28,173 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.google.android.material.appbar.AppBarLayout
-                android:background="@android:color/transparent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:fitsSystemWindows="true"
-                android:id="@+id/appBarLayout" app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-            <com.google.android.material.appbar.CollapsingToolbarLayout
+            <com.google.android.material.appbar.AppBarLayout
                     android:background="@android:color/transparent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/appBarLayout"
                     android:fitsSystemWindows="true"
-                    app:expandedTitleTextAppearance="@android:color/transparent"
-                    app:layout_scrollFlags="scroll|snap">
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                        android:background="@android:color/transparent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:expandedTitleTextAppearance="@android:color/transparent"
+                        android:fitsSystemWindows="true"
+                        app:contentScrim="?attr/colorPrimary"
+                        app:layout_scrollFlags="scroll|snap">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_collapseMode="parallax"
+                            android:paddingTop="30dp"
+                            android:paddingBottom="20dp">
+
+                        <TextView
+                                android:text="@string/home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/back_tv"
+                                app:fontFamily="@font/muli_bold"
+                                android:textSize="18sp"
+                                android:textColor="@android:color/white"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:layout_marginStart="20dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginLeft="20dp" android:visibility="gone"/>
+
+                        <TextView
+                                android:text="@string/welcome_home"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/welcome_tv"
+                                android:textSize="12sp"
+                                android:textColor="@android:color/white"
+                                app:fontFamily="@font/muli_light"
+                                android:layout_marginTop="15dp"
+                                app:layout_constraintTop_toBottomOf="@+id/back_tv"
+                                android:layout_marginStart="20dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginLeft="20dp"/>
+
+                        <EditText
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:ems="10"
+                                android:background="@drawable/white_round_borders"
+                                android:elevation="3dp"
+                                android:id="@+id/addQuestion_et"
+                                android:layout_marginStart="20dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_marginLeft="20dp"
+                                android:paddingLeft="15dp"
+                                android:paddingTop="10dp"
+                                android:focusable="auto"
+                                android:paddingRight="15dp"
+                                android:paddingBottom="10dp"
+                                android:hint="@string/enter_your_question"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/muli_light"
+                                android:textColor="@color/black"
+                                android:layout_marginTop="30dp"
+                                app:layout_constraintTop_toBottomOf="@+id/welcome_tv" android:layout_marginEnd="20dp"
+                                app:layout_constraintEnd_toStartOf="@+id/post_Tv" android:layout_marginRight="20dp"/>
+
+                        <TextView
+                                android:text="@string/post"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/post_Tv"
+                                android:gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:elevation="3dp"
+                                android:fontFamily="@font/muli_bold"
+                                android:background="@drawable/appcolor_background"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:visibility="gone"
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginRight="20dp" app:layout_constraintTop_toTopOf="@+id/addQuestion_et"
+                                app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et" android:paddingLeft="20dp"
+                                android:paddingTop="5dp" android:paddingRight="20dp" android:paddingBottom="5dp"/>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/addQuestion_et"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginEnd="20dp"
+                                android:id="@+id/bestFrndQuestion_rv"
+                                android:visibility="visible" android:layout_marginTop="10dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="fill_vertical"
+                    android:clipToPadding="false"
+                    android:fillViewport="true"
+                    android:scrollbars="none"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_collapseMode="parallax"
-                        android:paddingTop="30dp"
-                        android:paddingBottom="20dp">
+                        android:layout_height="wrap_content">
+
 
                     <TextView
-                            android:text="@string/home"
+                            android:text="@string/recent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/back_tv"
-                            app:fontFamily="@font/muli_bold"
-                            android:textSize="18sp"
-                            android:textColor="@android:color/white"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginStart="20dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginLeft="20dp"/>
-
-                    <TextView
-                            android:text="@string/welcome_home"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/welcome_tv"
-                            android:textSize="12sp"
-                            android:textColor="@android:color/white"
-                            app:fontFamily="@font/muli_light"
-                            android:layout_marginTop="15dp"
-                            app:layout_constraintTop_toBottomOf="@+id/back_tv"
-                            android:layout_marginStart="20dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginLeft="20dp"/>
-
-                    <EditText
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:inputType="textMultiLine"
-                            android:ems="10"
-                            android:background="@drawable/white_round_borders"
-                            android:elevation="3dp"
-                            android:id="@+id/addQuestion_et"
-                            android:layout_marginStart="20dp"
+                            android:id="@+id/recent_tv"
+                            android:textColor="@color/black"
+                            android:textSize="26sp"
+                            android:fontFamily="@font/muli_bold"
                             app:layout_constraintStart_toStartOf="parent"
                             android:layout_marginLeft="20dp"
-                            android:paddingLeft="15dp"
-                            android:paddingTop="10dp"
-                            android:focusable="auto"
-                            android:paddingRight="15dp"
-                            android:paddingBottom="10dp"
-                            android:hint="@string/enter_your_question"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/muli_light"
-                            android:textColor="@color/black"
-                            android:layout_marginTop="30dp"
-                            app:layout_constraintTop_toBottomOf="@+id/welcome_tv" android:layout_marginEnd="20dp"
-                            app:layout_constraintEnd_toStartOf="@+id/post_Tv" android:layout_marginRight="20dp"/>
-
-                    <TextView
-                            android:text="@string/post"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/post_Tv"
-                            android:gravity="center"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:elevation="3dp"
-                            android:fontFamily="@font/muli_bold"
-                            android:background="@drawable/appcolor_background"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:visibility="gone"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginRight="20dp" app:layout_constraintTop_toTopOf="@+id/addQuestion_et"
-                            app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et" android:paddingLeft="20dp"
-                            android:paddingTop="5dp" android:paddingRight="20dp" android:paddingBottom="5dp"/>
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp" app:layout_constraintTop_toTopOf="parent"/>
 
                     <androidx.recyclerview.widget.RecyclerView
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="50dp"
+                            app:layout_constraintTop_toBottomOf="@+id/recent_tv"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/addQuestion_et"
+                            android:id="@+id/recentQ_rv"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginRight="20dp"
-                            android:layout_marginEnd="20dp"
-                            android:id="@+id/bestFrndQuestion_rv"
-                            android:visibility="visible" android:layout_marginTop="10dp"/>
+                            android:layout_marginBottom="50dp"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </androidx.core.widget.NestedScrollView>
 
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_vertical"
-                android:clipToPadding="false"
-                android:fillViewport="true"
-                android:scrollbars="none"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                <TextView
-                        android:text="@string/recent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/recent_tv"
-                        android:textColor="@color/black"
-                        android:textSize="26sp"
-                        android:fontFamily="@font/muli_bold"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp" app:layout_constraintTop_toTopOf="parent"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="50dp"
-                        app:layout_constraintTop_toBottomOf="@+id/recent_tv"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:id="@+id/recentQ_rv"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:layout_marginBottom="50dp"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.core.widget.NestedScrollView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -201,9 +213,9 @@
     <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords"
+            android:inputType="textMultiLine"
             android:ems="10"
-            android:background="@drawable/white_round_borders"
+            android:background="@drawable/app_color_round_borders"
             android:elevation="3dp"
             android:id="@+id/addQuestion_et2"
             android:paddingLeft="15dp"

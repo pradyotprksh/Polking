@@ -34,6 +34,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.abs
 
 class MainActivity : AppCompatActivity(), MainActivityView {
 
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout: AppBarLayout, i: Int ->
             when {
-                Math.abs(i) == appBarLayout.totalScrollRange -> {
+                abs(i) == appBarLayout.totalScrollRange -> {
                     if (addQuestion_et2.visibility != View.VISIBLE) {
                         addQuestion_et2.visibility = View.VISIBLE
                         addQuestion_et2.startAnimation(Utility().inFromDownAnimation())
@@ -215,7 +216,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     @SuppressLint("SetTextI18n")
     override fun setUserName(name: String) {
-        welcome_tv.text = "Welcome Home, $name"
+        welcome_tv.text = "Welcome, $name"
     }
 
     override fun openAddProfileDetails() {
@@ -254,7 +255,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
         if (allQuestionList.size > 0) {
             this.allQues.clear()
-
+            recentQ_rv.visibility = View.VISIBLE
+            recent_tv.visibility = View.VISIBLE
             allQues.addAll(allQuestionList)
             questionsAdapter!!.notifyDataSetChanged()
         } else {
