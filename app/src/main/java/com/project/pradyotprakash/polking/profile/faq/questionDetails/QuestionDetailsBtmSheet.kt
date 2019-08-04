@@ -126,19 +126,9 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                             helpFullYes = snapshot.getString("helpFullYes")!!.toFloat()
                             helpFullNo = snapshot.getString("helpFullNo")!!.toFloat()
 
-                            yesPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
-                                ((helpFullYes / (helpFullYes + helpFullNo)) * 100.0).toFloat()
-                            } else {
-                                0.0f
-                            }
-                            noPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
-                                ((helpFullNo / (helpFullYes + helpFullNo)) * 100.0).toFloat()
-                            } else {
-                                0.0f
-                            }
+                            yesPercent = snapshot.getString("yesPercent")!!.toFloat()
+                            noPercent = snapshot.getString("noPercent")!!.toFloat()
 
-                            view.helpful_tv.text =
-                                """${activity!!.getString(R.string.was_it_helpful)}  $yesPercent% Agreed & $noPercent% Disagreed"""
                         } else {
                             view.helpful_tv.text =
                                 """${activity!!.getString(R.string.was_it_helpful)}  0.0% Agreed & 0.0% Disagreed"""
@@ -158,12 +148,6 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                 val questionData = HashMap<String, Any>()
                 questionData["helpFullYes"] = (++helpFullYes).toString()
                 questionData["helpFullNo"] = helpFullNo.toString()
-
-                if (yesPercent - noPercent > 30.0f) {
-                    questionData["isTopQuestion"] = "true"
-                } else {
-                    questionData["isTopQuestion"] = "false"
-                }
 
                 firestore.collection("faqs").document(docId!!).update(questionData).addOnFailureListener { exception ->
                     showMessage(
@@ -185,12 +169,6 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                 val questionData = HashMap<String, Any>()
                 questionData["helpFullYes"] = helpFullYes.toString()
                 questionData["helpFullNo"] = (++helpFullNo).toString()
-
-                if (yesPercent - noPercent > 30.0f) {
-                    questionData["isTopQuestion"] = "true"
-                } else {
-                    questionData["isTopQuestion"] = "false"
-                }
 
                 firestore.collection("faqs").document(docId!!).update(questionData).addOnFailureListener { exception ->
                     showMessage(
