@@ -10,6 +10,8 @@ import android.view.animation.Transformation
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.animation.PathInterpolatorCompat
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -187,6 +189,12 @@ class Utility {
         animation.interpolator = easeInOutQuart
         animation.duration = duration.toLong()
         view.startAnimation(animation)
+    }
+
+    internal fun roundOffDecimal(number: Double): Double? {
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.CEILING
+        return df.format(number).toDouble()
     }
 
 }

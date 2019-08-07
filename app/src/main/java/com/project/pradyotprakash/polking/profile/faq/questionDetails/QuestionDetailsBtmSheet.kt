@@ -28,8 +28,8 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
     private var docId: String? = null
     private var helpFullYes: Float = 0.0f
     private var helpFullNo: Float = 0.0f
-    private var yesPercent: Float = 0.0f
-    private var noPercent: Float = 0.0f
+    private var yesPercent: Double = 0.00
+    private var noPercent: Double = 0.00
 
     companion object {
         fun newInstance(): QuestionDetailsBtmSheet =
@@ -126,8 +126,13 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
                             helpFullYes = snapshot.getString("helpFullYes")!!.toFloat()
                             helpFullNo = snapshot.getString("helpFullNo")!!.toFloat()
 
-                            yesPercent = snapshot.getString("yesPercent")!!.toFloat()
-                            noPercent = snapshot.getString("noPercent")!!.toFloat()
+                            yesPercent = snapshot.getString("yesPercent")!!.toDouble()
+                            noPercent = snapshot.getString("noPercent")!!.toDouble()
+
+                            view.helpful_tv.text =
+                                """${activity!!.getString(R.string.was_it_helpful)}  ${Utility().roundOffDecimal(
+                                    yesPercent
+                                )}% Agreed & $noPercent% Disagreed"""
 
                         } else {
                             view.helpful_tv.text =

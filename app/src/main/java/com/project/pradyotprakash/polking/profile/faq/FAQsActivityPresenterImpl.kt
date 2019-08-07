@@ -61,21 +61,7 @@ class FAQsActivityPresenterImpl @Inject constructor() : FAQsActivityPresenter {
                         val quesList: FAQsQuestionModel =
                             doc.document.toObject<FAQsQuestionModel>(FAQsQuestionModel::class.java).withId(docId)
 
-                        val helpFullYes = quesList.helpFullYes.toFloat()
-                        val helpFullNo = quesList.helpFullNo.toFloat()
-
-                        val yesPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
-                            ((helpFullYes / (helpFullYes + helpFullNo)) * 100.0).toFloat()
-                        } else {
-                            0.0f
-                        }
-                        val noPercent = if (helpFullYes != 0f || helpFullNo != 0f) {
-                            ((helpFullNo / (helpFullYes + helpFullNo)) * 100.0).toFloat()
-                        } else {
-                            0.0f
-                        }
-
-                        if (yesPercent - noPercent > 30.0f) {
+                        if (quesList.isTopQuestion == "true") {
                             topQuestionModelList.add(quesList)
                         }
                         when {
