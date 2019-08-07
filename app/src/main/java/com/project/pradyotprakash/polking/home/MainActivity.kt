@@ -159,7 +159,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         presenter.getProfileData()
         presenter.getBestFrndQuestions()
         presenter.getQuestions()
-        presenter.getVotes()
     }
 
     override fun startProfileAct() {
@@ -283,13 +282,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 userListBtmSheet.setContext(this)
                 userListBtmSheet.setActivity(this)
             }
-        }
-    }
-
-    override fun setVotesForUsers(votesHashMap: HashMap<String, String>) {
-        if (votesHashMap.size > 0) {
-            questionsAdapter!!.setVotesByUser(votesHashMap)
-            questionsAdapter!!.notifyDataSetChanged()
         }
     }
 

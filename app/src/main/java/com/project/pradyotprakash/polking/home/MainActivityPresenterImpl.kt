@@ -213,47 +213,4 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             }
     }
 
-    override fun getVotes() {
-        votesHashMap = HashMap()
-        if (currentUser != null) {
-            addVotesDataBase.collection("users").document(mAuth.currentUser!!.uid).collection("votes")
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    allVotesList.clear()
-                    votesHashMap.clear()
-
-                    try {
-                        for (doc in snapshot!!.documentChanges) {
-                            mView.showLoading()
-                            if (doc.type == DocumentChange.Type.ADDED ||
-                                doc.type == DocumentChange.Type.MODIFIED ||
-                                doc.type == DocumentChange.Type.REMOVED
-                            ) {
-                                val docId = doc.document.id
-                                val votesList: UserVotesModel =
-                                    doc.document.toObject(UserVotesModel::class.java).withId(docId)
-                                this.allVotesList.add(votesList)
-                                this.votesHashMap[votesList.votedFor] = votesList.voted
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        mView.showMessage(e.localizedMessage, 1)
-                    }
-
-                    mView.setVotesForUsers(votesHashMap)
-
-                    mView.hideLoading()
-
-                }
-        } else {
-            mView.hideOptions()
-        }
-    }
-
 }

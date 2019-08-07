@@ -25,7 +25,4 @@ interface MainActivityPresenter: BasePresenter {
     // remove listener
     fun removeListener()
 
-    // get the votes
-    fun getVotes()
-
 }
