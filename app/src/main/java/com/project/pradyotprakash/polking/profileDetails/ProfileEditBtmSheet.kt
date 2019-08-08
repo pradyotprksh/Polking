@@ -339,7 +339,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                         other_tv.setTextColor(resources.getColor(R.color.black))
                         genderType = 1
                     }
-                    else -> {
+                    Integer.parseInt(result.get("gender").toString()) == 2 -> {
                         male_tv.setTextColor(resources.getColor(R.color.black))
                         female_tv.setTextColor(resources.getColor(R.color.black))
                         other_tv.setTextColor(resources.getColor(R.color.colorPrimaryDark))

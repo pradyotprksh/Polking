@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <resources>
     <string name="readSMSPermission">Please allow Polking to read SMS</string>
+    <string name="contactPermission">Please allow Polking to read your Contact Details</string>
     <string name="readStoragePermission">Please allow Polking to read storage</string>
     <string name="writeStoragePermission">Please allow Polking to write to storage</string>
     <string name="app_name">Polking</string>

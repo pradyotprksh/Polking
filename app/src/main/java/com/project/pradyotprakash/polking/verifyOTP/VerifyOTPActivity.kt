@@ -161,7 +161,6 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
     override fun onResume() {
         super.onResume()
         logd("Resume")
-        presenter.checkForSMSPermission()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
