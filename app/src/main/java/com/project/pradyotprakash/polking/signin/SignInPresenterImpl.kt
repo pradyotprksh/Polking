@@ -95,7 +95,7 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
             userData["imageUrl"] = account.photoUrl!!
             userData["name"] = account.displayName!!
             userData["age"] = 18
-            userData["birthDay"] = "Add Your Birth Date"
+            userData["birthDay"] = ""
             userData["gender"] = "-1"
             userData["questions"] = "0"
             userData["friends"] = "0"
