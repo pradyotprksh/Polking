@@ -40,6 +40,10 @@ import javax.inject.Inject
 
 class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
 
+    private var questions: String? = "0"
+    private var friends: String? = "0"
+    private var best_friends: String? = "0"
+    private var bg_option: String? = "bg_one"
     private var title: String = ""
     private var isClosable: Boolean = false
     private var count = 0
@@ -89,7 +93,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
         DatePicker(view.age_et).listen()
 
-        view.bg_iv.setOnClickListener {
+        view.user_iv.setOnClickListener {
             if (checkReadPermission() && checkWritePermission()) {
                 openCamera()
             } else {
@@ -182,10 +186,11 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                                                                     Utility().getAge(view.age_et.text.toString())
                                                                 userData["birthDay"] = view.age_et.text.toString()
                                                                 userData["gender"] = genderType.toString()
-                                                                userData["questions"] = "0"
-                                                                userData["friends"] = "0"
-                                                                userData["best_friends"] = "0"
-                                                                userData["bg_option"] = "bg_one"
+                                                                userData["questions"] = questions!!
+                                                                userData["friends"] = friends!!
+                                                                userData["best_friends"] =
+                                                                    best_friends!!
+                                                                userData["bg_option"] = bg_option!!
 
                                                                 firestore.collection("users")
                                                                     .document(mAuth.currentUser!!.uid)
@@ -313,13 +318,18 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
                         view.imagePrgBsr.visibility = View.GONE
                         return false
                     }
-                }).into(view.bg_iv)
+                }).into(view.user_iv)
 
-                view.bg_iv.borderColor = resources.getColor(R.color.colorPrimary)
-                view.bg_iv.borderWidth = 4
+                view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                view.user_iv.borderWidth = 4
 
                 view.addQuestion_et.setText(result.getString("name"))
                 view.age_et.setText(result.getString("birthDay"))
+
+                questions = result.getString("questions")
+                friends = result.getString("friends")
+                best_friends = result.getString("best_friends")
+                bg_option = result.getString("bg_option")
 
                 /*
                     0 - Male
@@ -381,9 +391,9 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
 
     fun getImageUri(imageUri: Uri?) {
         this.userMainImageURI = imageUri
-        bg_iv.setImageURI(userMainImageURI)
-        bg_iv.borderColor = resources.getColor(R.color.colorPrimary)
-        bg_iv.borderWidth = 4
+        user_iv.setImageURI(userMainImageURI)
+        user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+        user_iv.borderWidth = 4
         imageUrl = null
     }
 

@@ -64,7 +64,7 @@ class BackgroundAdapter(
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
-        val bgImage: CircleImageView = mView.findViewById(R.id.bg_iv)
+        val bgImage: CircleImageView = mView.findViewById(R.id.user_iv)
         val progressBar: ProgressBar = mView.findViewById(R.id.progressBar)
     }
 

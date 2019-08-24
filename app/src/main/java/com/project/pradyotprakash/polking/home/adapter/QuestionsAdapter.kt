@@ -97,13 +97,13 @@ class QuestionsAdapter(
         holder.question_tv.text = allQues[pos].question
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
-                context.openProfileAct()
+                context.openProfileDetails(allQues[pos].askedBy)
             }
         }
     }
 
     inner class ViewAdapter(context: View) : RecyclerView.ViewHolder(context) {
-        val profile_iv: CircleImageView = context.findViewById(R.id.bg_iv)
+        val profile_iv: CircleImageView = context.findViewById(R.id.user_iv)
         val username_tv: TextView = context.findViewById(R.id.username_tv)
         val question_tv: TextView = context.findViewById(R.id.question_tv)
         val votes_tv: TextView = context.findViewById(R.id.votes_tv)

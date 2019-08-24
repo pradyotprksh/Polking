@@ -100,13 +100,13 @@ class UserListAdapter(
 
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
-                context.openProfileAct()
+                context.openProfileDetails(allVotesList[pos].votedBy)
             }
         }
 
         holder.userName_tv.setOnClickListener {
             if (context is MainActivity) {
-                context.openProfileAct()
+                context.openProfileDetails(allVotesList[pos].votedBy)
             }
         }
 

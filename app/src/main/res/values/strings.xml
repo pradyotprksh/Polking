@@ -61,6 +61,7 @@
     <string name="getting_details">Getting Details was Cancelled somehow. Was that you?</string>
     <string name="check_permission">Unable To Start. Check Permission. Please.</string>
     <string name="profilebottomsheet">ProfileEditBtmSheet onCreateView</string>
+    <string name="otherprofiledetailsbottomsheet">OtherProfileOptions onCreateView</string>
     <string name="create">Create</string>
     <string name="resume">Resume</string>
     <string name="stop">Stop</string>

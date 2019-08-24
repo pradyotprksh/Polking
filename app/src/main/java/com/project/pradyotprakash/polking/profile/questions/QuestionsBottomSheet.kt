@@ -56,6 +56,10 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
         view.questions_rv.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         view.questions_rv.adapter = questionsAdapter
 
+        view.back_tv.setOnClickListener {
+            dismiss()
+        }
+
         if (mAuth.currentUser != null) {
             showLoading()
 

@@ -21,6 +21,7 @@ import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.AppBarLayout
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
+import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
+    lateinit var otherProfileOptions: OtherProfileOptions
     lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
@@ -62,11 +64,12 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private fun initialize() {
         presenter.start()
 
-        bg_iv.setOnClickListener {
+        user_iv.setOnClickListener {
             presenter.isLoggedIn()
         }
 
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
+        otherProfileOptions = OtherProfileOptions.newInstance()
         profileEditBtmSheet.isCancelable = false
         userListBtmSheet = UserListBtmSheet.newInstance()
 
@@ -212,7 +215,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                     imageProgressBar.visibility = View.GONE
                     return false
                 }
-            }).into(bg_iv)
+            }).into(user_iv)
         } else {
             showMessage(getString(R.string.something_went_wrong), 1)
         }
@@ -285,8 +288,11 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         }
     }
 
-    fun openProfileAct() {
-
+    fun openProfileDetails(askedBy: String) {
+        if (!otherProfileOptions.isAdded) {
+            otherProfileOptions.show(supportFragmentManager, "btmSheet")
+            otherProfileOptions.setUserId(askedBy)
+        }
     }
 
 }

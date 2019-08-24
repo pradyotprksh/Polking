@@ -267,7 +267,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             ): Boolean {
                 return false
             }
-        }).into(bg_iv)
+        }).into(user_iv)
         bgDocId = docId
     }
 }
