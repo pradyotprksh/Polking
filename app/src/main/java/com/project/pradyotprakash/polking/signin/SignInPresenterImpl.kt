@@ -34,7 +34,6 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
             .build()
         googleSignInClient = GoogleSignIn.getClient(mContext, gso)
         mAuth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
     }
 
     override fun checkContactForPermission(): Boolean {
@@ -90,9 +89,10 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
     }
 
     override fun updateUi(account: GoogleSignInAccount) {
+        firestore = FirebaseFirestore.getInstance()
         if (mAuth.currentUser != null) {
             val userData = HashMap<String, Any>()
-            userData["imageUrl"] = account.photoUrl!!
+            userData["imageUrl"] = account.photoUrl!!.toString()
             userData["name"] = account.displayName!!
             userData["age"] = 18
             userData["birthDay"] = ""

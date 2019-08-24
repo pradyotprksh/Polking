@@ -15,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -35,6 +36,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.android.support:multidex:1.0.3'
 
     // Dagger
     implementation "com.google.dagger:dagger:$dagger_version"
@@ -45,8 +47,8 @@ dependencies {
 
     // Firebase
     implementation "com.google.firebase:firebase-auth:$firebase_version"
-    implementation 'com.google.firebase:firebase-firestore:20.2.0'
-    implementation 'com.google.firebase:firebase-storage:18.1.1'
+    implementation 'com.google.firebase:firebase-firestore:21.0.0'
+    implementation "com.google.firebase:firebase-storage:$firebase_version"
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
     // circular image view

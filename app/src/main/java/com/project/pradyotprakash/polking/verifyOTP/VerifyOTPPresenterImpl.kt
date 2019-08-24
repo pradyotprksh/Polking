@@ -51,11 +51,11 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
 
     override fun otpCallBacks(phoneNumber: String) {
         mCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: PhoneAuthCredential?) {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 signInWithPhoneAuthCredential(credential)
             }
 
-            override fun onVerificationFailed(e: FirebaseException?) {
+            override fun onVerificationFailed(e: FirebaseException) {
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     mView.showMessage(mContext.getString(R.string.invalid_creds), 1)
                 } else if (e is FirebaseTooManyRequestsException) {
@@ -63,12 +63,15 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
                 }
             }
 
-            override fun onCodeSent(verificationId: String?, token: PhoneAuthProvider.ForceResendingToken?) {
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
+            ) {
                 storedVerificationId = verificationId
                 resendToken = token
             }
 
-            override fun onCodeAutoRetrievalTimeOut(p0: String?) {
+            override fun onCodeAutoRetrievalTimeOut(p0: String) {
                 mView.showMessage(mContext.getString(R.string.time_out), 1)
             }
         }
