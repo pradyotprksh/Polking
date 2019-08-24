@@ -5,25 +5,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
+import com.project.pradyotprakash.polking.utility.QuestionModel
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
+import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.*
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.view.*
+import java.util.*
 import javax.inject.Inject
 
 class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var askedBy: String
+    private val allQuestionList = ArrayList<QuestionModel>()
+    private var questionsAdapter: QuestionsAdapter? = null
+    private val allQues = ArrayList<QuestionModel>()
 
     companion object {
         fun newInstance(): OtherProfileOptions =
@@ -50,11 +61,131 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     private fun initView(view: View) {
 
         firestore = FirebaseFirestore.getInstance()
+        allQues.clear()
+        questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
+        view.questions_rv.setHasFixedSize(true)
+        view.questions_rv.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        view.questions_rv.adapter = questionsAdapter
 
         getUserData(view)
 
+        // get user questions
+        if (askedBy.isNotEmpty()) {
+            firestore.collection("question")
+                .orderBy("askedOn", Query.Direction.DESCENDING)
+                .addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
+
+                    allQuestionList.clear()
+
+                    try {
+                        for (doc in snapshot!!.documentChanges) {
+                            showLoading()
+                            if (doc.type == DocumentChange.Type.ADDED) {
+
+                                val docId = doc.document.id
+                                val quesList: QuestionModel =
+                                    doc.document.toObject<QuestionModel>(QuestionModel::class.java)
+                                        .withId(docId)
+                                if (quesList.askedBy == askedBy) {
+                                    this.allQuestionList.add(quesList)
+                                }
+
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        showMessage(e.localizedMessage, 1)
+                    }
+
+                    if (allQuestionList.size > 0) {
+                        allQues.addAll(allQuestionList)
+                        questionsAdapter!!.notifyDataSetChanged()
+                    }
+                }
+        }
+
         view.back_tv.setOnClickListener {
             dismiss()
+        }
+
+        view.questionVal_tv.setOnClickListener {
+            if (view.questions_rv.visibility == View.VISIBLE) {
+                view.questions_rv.visibility = View.GONE
+            } else if (view.empty_data_anim.visibility == View.VISIBLE) {
+                view.empty_data_anim.visibility = View.GONE
+            } else {
+                if (allQues.size > 0) {
+                    view.questions_rv.visibility = View.VISIBLE
+                    view.questions_rv.startAnimation(Utility().inFromRightAnimation())
+                } else {
+                    view.empty_data_anim.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        view.question_tv.setOnClickListener {
+            if (view.questions_rv.visibility == View.VISIBLE) {
+                view.questions_rv.visibility = View.GONE
+            } else if (view.empty_data_anim.visibility == View.VISIBLE) {
+                view.empty_data_anim.visibility = View.GONE
+            } else {
+                if (allQues.size > 0) {
+                    view.questions_rv.visibility = View.VISIBLE
+                    view.questions_rv.startAnimation(Utility().inFromRightAnimation())
+                } else {
+                    view.empty_data_anim.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        view.friendsVal_tv.setOnClickListener {
+            view.questions_rv.visibility = View.GONE
+            if (view.friendsVal_tv.text == "0") {
+                if (view.empty_data_anim.visibility == View.VISIBLE) {
+                    view.empty_data_anim.visibility = View.GONE
+                } else {
+                    view.empty_data_anim.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        view.friends_tv.setOnClickListener {
+            view.questions_rv.visibility = View.GONE
+            if (view.friendsVal_tv.text == "0") {
+                if (view.empty_data_anim.visibility == View.VISIBLE) {
+                    view.empty_data_anim.visibility = View.GONE
+                } else {
+                    view.empty_data_anim.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        view.bestFrndVal_tv.setOnClickListener {
+            view.questions_rv.visibility = View.GONE
+            if (view.bestFrnd_tv.text == "0") {
+                if (view.empty_data_anim.visibility == View.VISIBLE) {
+                    view.empty_data_anim.visibility = View.GONE
+                } else {
+                    view.empty_data_anim.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        view.bestFrnd_tv.setOnClickListener {
+            view.questions_rv.visibility = View.GONE
+            if (view.bestFrnd_tv.text == "0") {
+                if (view.empty_data_anim.visibility == View.VISIBLE) {
+                    view.empty_data_anim.visibility = View.GONE
+                } else {
+                    view.empty_data_anim.visibility = View.VISIBLE
+                }
+            }
         }
 
     }

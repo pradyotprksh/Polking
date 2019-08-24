@@ -18,6 +18,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/questions_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:clipToPadding="false"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back_tv" />
+
+    <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/empty_data_anim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/questions_rv"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="celebration_anim.json"
+            app:lottie_loop="true" />
+
     <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_iv"
             android:layout_width="45dp"
@@ -29,7 +54,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_default_pic"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/back_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/empty_data_anim" />
 
     <TextView
             android:id="@+id/userNameTv"
