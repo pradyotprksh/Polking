@@ -146,4 +146,10 @@
     <string name="is_a_bestfrined">Best Friend</string>
     <string name="follow">Follow</string>
     <string name="following">Following</string>
+    <string name="see_complete_details">See Complete Details</string>
+    <string name="follow_as_a_friend">Follow As A Friend</string>
+    <string name="report_this_user">Report</string>
+    <string name="block_this_user">Block</string>
+    <string name="following_as_a_friend">Following As A Friend</string>
+    <string name="unfollow_as_a_friend">Unfriend</string>
 </resources>
