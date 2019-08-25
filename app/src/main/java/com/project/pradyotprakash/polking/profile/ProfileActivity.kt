@@ -20,6 +20,7 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
+import com.project.pradyotprakash.polking.profile.friends.FriendsBottomSheet
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
@@ -44,6 +45,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     private lateinit var aboutUsBottomSheet: AboutUsBottomSheet
     private lateinit var reviewUsBottomSheet: ReviewUsBtmSheet
     private lateinit var questionBottomSheet: QuestionsBottomSheet
+    private lateinit var friendsBottomSheet: FriendsBottomSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -92,6 +94,10 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             openQuestionSheet()
         }
 
+        yourFrnd_tv.setOnClickListener {
+            openFriendSheet()
+        }
+
         faq_tv.setOnClickListener {
             openActivity(FAQsActivity::class.java)
         }
@@ -110,6 +116,13 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         aboutUsBottomSheet = AboutUsBottomSheet.newInstance()
         reviewUsBottomSheet = ReviewUsBtmSheet.newInstance()
         questionBottomSheet = QuestionsBottomSheet.newInstance()
+        friendsBottomSheet = FriendsBottomSheet.newInstance()
+    }
+
+    private fun openFriendSheet() {
+        if (!friendsBottomSheet.isAdded) {
+            friendsBottomSheet.show(supportFragmentManager, "btmSheet")
+        }
     }
 
     private fun openQuestionSheet() {
@@ -237,12 +250,27 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
     override fun setUserDetails(question: String?, friends: String?, bestFriends: String?) {
         if (!question.isNullOrEmpty()) {
+            if (question == "0") {
+                yourPosts_tv.visibility = View.GONE
+            } else {
+                yourPosts_tv.visibility = View.VISIBLE
+            }
             questionVal_tv.text = question
         }
         if (!friends.isNullOrEmpty()) {
+            if (friends == "0") {
+                yourFrnd_tv.visibility = View.GONE
+            } else {
+                yourFrnd_tv.visibility = View.VISIBLE
+            }
             friendsVal_tv.text = friends
         }
         if (!bestFriends.isNullOrEmpty()) {
+            if (bestFriends == "0") {
+                yourBestFrnd_tview17.visibility = View.GONE
+            } else {
+                yourBestFrnd_tview17.visibility = View.VISIBLE
+            }
             bestFrndVal_tv.text = bestFriends
         }
     }
