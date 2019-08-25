@@ -20,14 +20,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
+import com.project.pradyotprakash.polking.profile.friendsAdapter.FriendsAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.*
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.*
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.view.*
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
@@ -40,6 +39,9 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     private val allQuestionList = ArrayList<QuestionModel>()
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
+    private val allFriends = ArrayList<FriendsListModel>()
+    private val allFriendsList = ArrayList<FriendsListModel>()
+    private var friendsAdapter: FriendsAdapter? = null
 
     companion object {
         fun newInstance(): OtherProfileOptions =
@@ -71,12 +73,20 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         addfriendfirestore = FirebaseFirestore.getInstance()
         getfriendfirestore = FirebaseFirestore.getInstance()
         deletefriendfirestore = FirebaseFirestore.getInstance()
+
         allQues.clear()
         questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
         view.questions_rv.setHasFixedSize(true)
         view.questions_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         view.questions_rv.adapter = questionsAdapter
+
+        allFriendsList.clear()
+        friendsAdapter = FriendsAdapter(allFriendsList, context!!, activity!!)
+        view.friends_rv.setHasFixedSize(true)
+        view.friends_rv.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        view.friends_rv.adapter = friendsAdapter
 
         getUserData(view)
 
@@ -85,6 +95,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         }
 
         view.questionVal_tv.setOnClickListener {
+            view.friends_rv.visibility = View.GONE
             if (view.questions_rv.visibility == View.VISIBLE) {
                 view.questions_rv.visibility = View.GONE
             } else {
@@ -98,6 +109,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         }
 
         view.question_tv.setOnClickListener {
+            view.friends_rv.visibility = View.GONE
             if (view.questions_rv.visibility == View.VISIBLE) {
                 view.questions_rv.visibility = View.GONE
             } else {
@@ -113,14 +125,28 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         view.friendsVal_tv.setOnClickListener {
             view.questions_rv.visibility = View.GONE
             if (view.friendsVal_tv.text == "0") {
-
+                view.friends_rv.visibility = View.GONE
+            } else {
+                if (view.friends_rv.visibility == View.VISIBLE) {
+                    view.friends_rv.visibility = View.GONE
+                } else {
+                    view.friends_rv.visibility = View.VISIBLE
+                    view.friends_rv.startAnimation(Utility().inFromRightAnimation())
+                }
             }
         }
 
         view.friends_tv.setOnClickListener {
             view.questions_rv.visibility = View.GONE
             if (view.friendsVal_tv.text == "0") {
-
+                view.friends_rv.visibility = View.GONE
+            } else {
+                if (view.friends_rv.visibility == View.VISIBLE) {
+                    view.friends_rv.visibility = View.GONE
+                } else {
+                    view.friends_rv.visibility = View.VISIBLE
+                    view.friends_rv.startAnimation(Utility().inFromRightAnimation())
+                }
             }
         }
 
@@ -226,7 +252,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             dismiss()
         } else {
             if (mAuth.currentUser != null) {
-                getfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
+                getfriendfirestore.collection("users").document(askedBy)
                     .collection("friends").addSnapshotListener { snapshot, exception ->
                         if (exception != null) {
                             showMessage(
@@ -234,14 +260,16 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                             )
                         }
 
+                        allFriends.clear()
+
                         try {
                             for (doc in snapshot!!.documentChanges) {
-                                if (doc.type == DocumentChange.Type.ADDED) {
+                                if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
                                     val docId = doc.document.id
                                     val friendList: FriendsListModel =
                                         doc.document.toObject(FriendsListModel::class.java)
                                             .withId(docId)
-                                    if (friendList.userId == askedBy) {
+                                    if (friendList.userId == mAuth.currentUser!!.uid) {
                                         view.connectTv.text =
                                             getString(R.string.unfollow_as_a_friend)
                                         view.connectTv.setTextColor(context!!.getColor(R.color.dark_red))
@@ -252,11 +280,19 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                         view.connectTv.textAlignment =
                                             View.TEXT_ALIGNMENT_TEXT_START
                                     }
+
+                                    allFriends.add(friendList)
                                 }
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
                             showMessage(e.localizedMessage, 1)
+                        }
+
+                        if (allFriends.size > 0) {
+                            allFriendsList.clear()
+                            allFriendsList.addAll(allFriends)
+                            friendsAdapter!!.notifyDataSetChanged()
                         }
                     }
             }
@@ -294,6 +330,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                     }
 
                     if (allQuestionList.size > 0) {
+                        allQues.clear()
                         allQues.addAll(allQuestionList)
                         questionsAdapter!!.notifyDataSetChanged()
                     }

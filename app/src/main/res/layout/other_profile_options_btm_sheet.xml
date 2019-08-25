@@ -45,6 +45,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/back_tv" />
 
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friends_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:clipToPadding="false"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/questions_rv" />
+
     <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_iv"
             android:layout_width="45dp"
@@ -56,7 +69,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_default_pic"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/questions_rv" />
+            app:layout_constraintTop_toBottomOf="@+id/friends_rv" />
 
     <TextView
             android:id="@+id/userNameTv"
