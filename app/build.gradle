@@ -50,6 +50,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:21.0.0'
     implementation "com.google.firebase:firebase-storage:$firebase_version"
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.firebase:firebase-ml-vision:23.0.0'
+    implementation 'com.google.firebase:firebase-ml-vision-face-model:18.0.0'
 
     // circular image view
     implementation 'de.hdodenhof:circleimageview:3.0.0'
