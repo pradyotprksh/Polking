@@ -97,7 +97,9 @@ class QuestionsAdapter(
         holder.question_tv.text = allQues[pos].question
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
-                context.openProfileDetails(allQues[pos].askedBy)
+                if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                    context.openProfileDetails(allQues[pos].askedBy)
+                }
             }
         }
     }
