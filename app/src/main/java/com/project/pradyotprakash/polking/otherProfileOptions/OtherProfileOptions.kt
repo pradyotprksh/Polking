@@ -251,90 +251,11 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             view.progressBar5.visibility = View.GONE
             dismiss()
         } else {
-            if (mAuth.currentUser != null) {
-                getfriendfirestore.collection("users").document(askedBy)
-                    .collection("friends").addSnapshotListener { snapshot, exception ->
-                        if (exception != null) {
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}", 1
-                            )
-                        }
-
-                        allFriends.clear()
-
-                        try {
-                            for (doc in snapshot!!.documentChanges) {
-                                if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
-                                    val docId = doc.document.id
-                                    val friendList: FriendsListModel =
-                                        doc.document.toObject(FriendsListModel::class.java)
-                                            .withId(docId)
-                                    if (friendList.userId == mAuth.currentUser!!.uid) {
-                                        view.connectTv.text =
-                                            getString(R.string.unfollow_as_a_friend)
-                                        view.connectTv.setTextColor(context!!.getColor(R.color.dark_red))
-                                        view.connectTv.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                                    } else {
-                                        view.connectTv.text = getString(R.string.follow_as_a_friend)
-                                        view.connectTv.setTextColor(activity!!.getColor(R.color.black))
-                                        view.connectTv.textAlignment =
-                                            View.TEXT_ALIGNMENT_TEXT_START
-                                    }
-
-                                    allFriends.add(friendList)
-                                }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            showMessage(e.localizedMessage, 1)
-                        }
-
-                        if (allFriends.size > 0) {
-                            allFriendsList.clear()
-                            allFriendsList.addAll(allFriends)
-                            friendsAdapter!!.notifyDataSetChanged()
-                        }
-                    }
-            }
+            // get user friend list
+            getUserFriendList(view)
 
             // get selected user questions
-            firestore.collection("question")
-                .orderBy("askedOn", Query.Direction.DESCENDING)
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    allQuestionList.clear()
-
-                    try {
-                        for (doc in snapshot!!.documentChanges) {
-                            showLoading()
-                            if (doc.type == DocumentChange.Type.ADDED) {
-
-                                val docId = doc.document.id
-                                val quesList: QuestionModel =
-                                    doc.document.toObject<QuestionModel>(QuestionModel::class.java)
-                                        .withId(docId)
-                                if (quesList.askedBy == askedBy) {
-                                    this.allQuestionList.add(quesList)
-                                }
-
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        showMessage(e.localizedMessage, 1)
-                    }
-
-                    if (allQuestionList.size > 0) {
-                        allQues.clear()
-                        allQues.addAll(allQuestionList)
-                        questionsAdapter!!.notifyDataSetChanged()
-                    }
-                }
+            getUserQuestionsList(view)
 
             // get user data
             firestore.collection("users").document(askedBy)
@@ -348,9 +269,19 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                     if (snapshot != null && snapshot.exists()) {
                         if (snapshot.data!!["questions"].toString().isNotEmpty()) {
                             view.questionVal_tv.text = snapshot.data!!["questions"].toString()
+                            if (snapshot.data!!["questions"].toString() == "0") {
+                                view.friends_rv.visibility = View.GONE
+                            } else {
+                                getUserQuestionsList(view)
+                            }
                         }
                         if (snapshot.data!!["friends"].toString().isNotEmpty()) {
                             view.friendsVal_tv.text = snapshot.data!!["friends"].toString()
+                            if (snapshot.data!!["friends"].toString() == "0") {
+                                view.friends_rv.visibility = View.GONE
+                            } else {
+                                getUserFriendList(view)
+                            }
                         }
                         if (snapshot.data!!["best_friends"].toString().isNotEmpty()) {
                             view.bestFrndVal_tv.text = snapshot.data!!["best_friends"].toString()
@@ -390,6 +321,99 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                     } else {
                         hideLoading()
                         view.progressBar5.visibility = View.GONE
+                    }
+                }
+        }
+    }
+
+    private fun getUserQuestionsList(view: View) {
+        firestore.collection("question")
+            .orderBy("askedOn", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
+                }
+
+                allQuestionList.clear()
+
+                try {
+                    for (doc in snapshot!!.documentChanges) {
+                        showLoading()
+                        if (doc.type == DocumentChange.Type.ADDED) {
+
+                            val docId = doc.document.id
+                            val quesList: QuestionModel =
+                                doc.document.toObject<QuestionModel>(QuestionModel::class.java)
+                                    .withId(docId)
+                            if (quesList.askedBy == askedBy) {
+                                this.allQuestionList.add(quesList)
+                            }
+
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    showMessage(e.localizedMessage, 1)
+                }
+
+                if (allQuestionList.size > 0) {
+                    allQues.clear()
+                    allQues.addAll(allQuestionList)
+                    questionsAdapter!!.notifyDataSetChanged()
+                }
+            }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private fun getUserFriendList(view: View) {
+        if (mAuth.currentUser != null) {
+            getfriendfirestore.collection("users").document(askedBy)
+                .collection("friends").addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
+
+                    allFriends.clear()
+
+                    try {
+                        for (doc in snapshot!!.documentChanges) {
+                            if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
+                                val docId = doc.document.id
+                                val friendList: FriendsListModel =
+                                    doc.document.toObject(FriendsListModel::class.java)
+                                        .withId(docId)
+                                if (friendList.userId == mAuth.currentUser!!.uid) {
+                                    view.connectTv.text =
+                                        getString(R.string.unfollow_as_a_friend)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        view.connectTv.setTextColor(context!!.getColor(R.color.dark_red))
+                                    }
+                                    view.connectTv.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                                } else {
+                                    view.connectTv.text = getString(R.string.follow_as_a_friend)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        view.connectTv.setTextColor(activity!!.getColor(R.color.black))
+                                    }
+                                    view.connectTv.textAlignment =
+                                        View.TEXT_ALIGNMENT_TEXT_START
+                                }
+
+                                allFriends.add(friendList)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        showMessage(e.localizedMessage, 1)
+                    }
+
+                    if (allFriends.size > 0) {
+                        allFriendsList.clear()
+                        allFriendsList.addAll(allFriends)
+                        friendsAdapter!!.notifyDataSetChanged()
                     }
                 }
         }
