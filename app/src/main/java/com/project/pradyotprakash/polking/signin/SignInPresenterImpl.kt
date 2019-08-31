@@ -24,10 +24,13 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
     lateinit var gso: GoogleSignInOptions
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var getfirestore: FirebaseFirestore
 
     @Inject
     internal fun SignInPresenterImpl(activity: Activity) {
         mContext = activity
+        firestore = FirebaseFirestore.getInstance()
+        getfirestore = FirebaseFirestore.getInstance()
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(mContext.getString(R.string.default_web_client_id))
             .requestEmail()
@@ -89,24 +92,38 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
     }
 
     override fun updateUi(account: GoogleSignInAccount) {
-        firestore = FirebaseFirestore.getInstance()
         if (mAuth.currentUser != null) {
-            val userData = HashMap<String, Any>()
-            userData["imageUrl"] = account.photoUrl!!.toString()
-            userData["name"] = account.displayName!!
-            userData["age"] = 18
-            userData["birthDay"] = ""
-            userData["gender"] = "-1"
-            userData["questions"] = "0"
-            userData["friends"] = "0"
-            userData["best_friends"] = "0"
-            userData["bg_option"] = "bg_one"
-
-            firestore.collection("users")
-                .document(mAuth.currentUser!!.uid)
-                .set(userData).addOnSuccessListener {
-                    mView.hideLoading()
-                    mView.stopAct()
+            getfirestore.collection("users")
+                .document(mAuth.currentUser!!.uid).get().addOnSuccessListener { result ->
+                    if (result.exists()) {
+                        mView.hideLoading()
+                        mView.stopAct()
+                    } else {
+                        val userData = HashMap<String, Any>()
+                        userData["name"] = account.displayName!!
+                        userData["age"] = 18
+                        userData["birthDay"] = ""
+                        userData["gender"] = "-1"
+                        userData["questions"] = "0"
+                        userData["friends"] = "0"
+                        userData["best_friends"] = "0"
+                        userData["bg_option"] = "bg_one"
+                        firestore.collection("users")
+                            .document(mAuth.currentUser!!.uid)
+                            .update(userData).addOnSuccessListener {
+                                mView.hideLoading()
+                                mView.stopAct()
+                            }.addOnFailureListener { exception ->
+                                mView.showMessage(
+                                    "Something Went Wrong. ${exception.localizedMessage}",
+                                    1
+                                )
+                                mView.hideLoading()
+                            }.addOnCanceledListener {
+                                mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
+                                mView.hideLoading()
+                            }
+                    }
                 }.addOnFailureListener { exception ->
                     mView.showMessage(
                         "Something Went Wrong. ${exception.localizedMessage}",
