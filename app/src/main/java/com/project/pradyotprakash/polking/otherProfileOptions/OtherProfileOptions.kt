@@ -34,6 +34,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     private lateinit var addfriendfirestore: FirebaseFirestore
     private lateinit var deletefriendfirestore: FirebaseFirestore
     private lateinit var getfriendfirestore: FirebaseFirestore
+    private lateinit var notificationFirestore: FirebaseFirestore
     private lateinit var askedBy: String
     private lateinit var mAuth: FirebaseAuth
     private val allQuestionList = ArrayList<QuestionModel>()
@@ -73,6 +74,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         addfriendfirestore = FirebaseFirestore.getInstance()
         getfriendfirestore = FirebaseFirestore.getInstance()
         deletefriendfirestore = FirebaseFirestore.getInstance()
+        notificationFirestore = FirebaseFirestore.getInstance()
 
         allQues.clear()
         questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
@@ -218,7 +220,26 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                             firestore.collection("users").document(askedBy)
                                 .collection("friends").document(mAuth.currentUser!!.uid)
                                 .set(otherFriendData).addOnSuccessListener {
-                                    view.progressBar5.visibility = View.GONE
+
+                                    val notificationData = HashMap<String, Any>()
+                                    notificationData["notificationMessageBy"] =
+                                        mAuth.currentUser!!.uid
+                                    notificationData["notificationMessage"] =
+                                        " added you as you friend. So both of you are friend."
+
+                                    notificationFirestore.collection("users").document(askedBy)
+                                        .collection("notifications")
+                                        .document(mAuth.currentUser!!.uid)
+                                        .set(notificationData).addOnSuccessListener {
+                                            view.progressBar5.visibility = View.GONE
+                                        }.addOnFailureListener { exception ->
+                                            showMessage(
+                                                "Something Went Wrong. ${exception.localizedMessage}",
+                                                1
+                                            )
+                                            view.progressBar5.visibility = View.GONE
+                                        }
+
                                 }.addOnCompleteListener {
                                     view.connectTv.text = getString(R.string.unfollow_as_a_friend)
                                     view.connectTv.setTextColor(context!!.getColor(R.color.dark_red))
