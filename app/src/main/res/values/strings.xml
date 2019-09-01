@@ -152,4 +152,7 @@
     <string name="block_this_user">Block</string>
     <string name="following_as_a_friend">Following As A Friend</string>
     <string name="unfollow_as_a_friend">Unfriend</string>
+    <string name="you_have_got">You have got</string>
+    <string name="notificationbottomsheet">Notification Bottom Sheet onCreate</string>
+    <string name="notifications_for_you">Notifications For You</string>
 </resources>

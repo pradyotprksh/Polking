@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.otherProfileOptions
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -26,7 +27,11 @@ import com.project.pradyotprakash.polking.utility.*
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.*
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
@@ -43,6 +48,8 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     private val allFriends = ArrayList<FriendsListModel>()
     private val allFriendsList = ArrayList<FriendsListModel>()
     private var friendsAdapter: FriendsAdapter? = null
+    @SuppressLint("SimpleDateFormat")
+    var dateTimeFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
 
     companion object {
         fun newInstance(): OtherProfileOptions =
@@ -221,15 +228,18 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                 .collection("friends").document(mAuth.currentUser!!.uid)
                                 .set(otherFriendData).addOnSuccessListener {
 
+                                    val date = Date()
                                     val notificationData = HashMap<String, Any>()
                                     notificationData["notificationMessageBy"] =
                                         mAuth.currentUser!!.uid
                                     notificationData["notificationMessage"] =
                                         " added you as you friend. So both of you are friend."
+                                    notificationData["notificationOn"] = dateTimeFormat.format(date)
+                                    notificationData["notificationIsRead"] = "false"
 
                                     notificationFirestore.collection("users").document(askedBy)
                                         .collection("notifications")
-                                        .document(mAuth.currentUser!!.uid)
+                                        .document()
                                         .set(notificationData).addOnSuccessListener {
                                             view.progressBar5.visibility = View.GONE
                                         }.addOnFailureListener { exception ->

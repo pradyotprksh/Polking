@@ -8,9 +8,11 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,10 +21,14 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.appbar.AppBarLayout
+import com.irozon.sneaker.Sneaker
+import com.irozon.sneaker.interfaces.OnSneakerClickListener
+import com.irozon.sneaker.interfaces.OnSneakerDismissListener
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
+import com.project.pradyotprakash.polking.profile.notification.NotificationBottomSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.usersList.UserListBtmSheet
@@ -37,12 +43,14 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
 
-class MainActivity : AppCompatActivity(), MainActivityView {
+class MainActivity : AppCompatActivity(), MainActivityView, OnSneakerClickListener,
+    OnSneakerDismissListener {
 
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
     lateinit var otherProfileOptions: OtherProfileOptions
+    lateinit var notificationBottomSheet: NotificationBottomSheet
     lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
@@ -70,6 +78,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
+        notificationBottomSheet = NotificationBottomSheet.newInstance()
         profileEditBtmSheet.isCancelable = false
         userListBtmSheet = UserListBtmSheet.newInstance()
 
@@ -162,6 +171,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         presenter.getProfileData()
         presenter.getBestFrndQuestions()
         presenter.getQuestions()
+        presenter.getNotificationCount()
     }
 
     override fun startProfileAct() {
@@ -188,6 +198,48 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun showUploadedSuccess() {
         addQuestion_et.setText("")
+    }
+
+    override fun showNotificationView(notificationCount: String) {
+        if (notificationCount != "0" && notificationCount.isNotEmpty()) {
+
+            val message: String = when (notificationCount) {
+                "1" -> getString(R.string.you_have_got) + " " + notificationCount + " notification."
+                "100" -> getString(R.string.you_have_got) + "  99+ notifications."
+                else -> getString(R.string.you_have_got) + " " + notificationCount + " notifications."
+            }
+
+            val typeface = ResourcesCompat.getFont(this, R.font.muli_bold)
+
+            Sneaker.with(this)
+                .setTitle("Notification", R.color.white)
+                .setMessage(message, R.color.white)
+                .setDuration(15000)
+                .autoHide(true)
+                .setHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setIcon(R.mipmap.ic_launcher, true)
+                .setTypeface(typeface!!)
+                .setOnSneakerClickListener(this)
+                .setOnSneakerDismissListener(this)
+                .setCornerRadius(5, 0)
+                .sneak(R.color.colorAccent)
+        }
+    }
+
+    override fun onSneakerClick(view: View) {
+        if (!notificationBottomSheet.isAdded) {
+            notificationBottomSheet.show(supportFragmentManager, "btmSheet")
+        }
+    }
+
+    override fun onDismiss() {
+        logd("message dismissed")
+    }
+
+    override fun hideNotificationView() {
+        if (notificationBottomSheet.isAdded) {
+            notificationBottomSheet.dismiss()
+        }
     }
 
     override fun setUserProfileImage(imageUrl: String?) {

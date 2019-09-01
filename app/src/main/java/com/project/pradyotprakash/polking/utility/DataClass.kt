@@ -51,3 +51,11 @@ data class FriendsListModel(
     val isBestFriend: String = "",
     val isFriend: String = ""
 ) : GetId()
+
+// Notification List
+data class NotificationModel(
+    val notificationMessageBy: String = "",
+    val notificationMessage: String = "",
+    val notificationOn: String = "",
+    val notificationIsRead: String = ""
+) : GetId()

@@ -33,4 +33,10 @@ interface MainActivityView: BaseView {
     // show options if logged in
     fun showOptions()
 
+    // show notification view
+    fun showNotificationView(notificationCount: String)
+
+    // hide notification view
+    fun hideNotificationView()
+
 }
