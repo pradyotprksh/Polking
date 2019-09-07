@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.NotificationModel
@@ -69,6 +70,7 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
 
             notificationFirestore.collection("users").document(mAuth.currentUser!!.uid)
                 .collection("notifications")
+                .orderBy("notificationOn", Query.Direction.DESCENDING)
                 .addSnapshotListener { snapshot, exception ->
                     if (exception != null) {
                         showMessage(
