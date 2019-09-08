@@ -62,34 +62,42 @@ class QuestionsAdapter(
 
             if (snapshot != null && snapshot.exists()) {
 
-                Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                            exception: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            if (activity is MainActivity) {
-                                activity.showMessage(
-                                    "Something Went Wrong. ${exception!!.localizedMessage}", 1
-                                )
+                try {
+                    Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(
+                                exception: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                if (activity is MainActivity) {
+                                    activity.showMessage(
+                                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                                    )
+                                }
+                                return false
                             }
-                            return false
-                        }
 
-                        override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            return false
-                        }
-                    }).into(holder.profile_iv)
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
+                        }).into(holder.profile_iv)
 
-                holder.username_tv.text = snapshot.data!!["name"].toString()
+                    holder.username_tv.text = snapshot.data!!["name"].toString()
+                } catch (exception: Exception) {
+                    if (activity is MainActivity) {
+                        activity.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
+                }
 
             }
 

@@ -5,19 +5,32 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent">
 
-    <TextView
+    <com.google.android.material.chip.Chip
             android:id="@+id/back_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/muli"
+            android:layout_marginTop="15dp"
             android:text="@string/close"
-            android:textColor="@color/white"
-            android:textSize="15sp"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:closeIconEnabled="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/disagree_color" />
+
+    <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/back_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_tv"
+            app:layout_constraintTop_toTopOf="@+id/back_tv" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/questions_rv"

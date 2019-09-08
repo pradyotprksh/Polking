@@ -200,8 +200,8 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                     view.progressBar5.visibility = View.GONE
                                 }.addOnCompleteListener {
                                     view.connectTv.text = getString(R.string.follow_as_a_friend)
-                                    view.connectTv.setTextColor(activity!!.getColor(R.color.black))
-                                    view.connectTv.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+                                    view.connectTv.setChipBackgroundColorResource(R.color.agree_color)
+                                    view.connectTv.isCloseIconVisible = false
                                 }
 
                         }
@@ -225,8 +225,8 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                     view.progressBar5.visibility = View.GONE
                                 }.addOnCompleteListener {
                                     view.connectTv.text = getString(R.string.unfollow_as_a_friend)
-                                    view.connectTv.setTextColor(context!!.getColor(R.color.dark_red))
-                                    view.connectTv.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                                    view.connectTv.setChipBackgroundColorResource(R.color.disagree_color)
+                                    view.connectTv.isCloseIconVisible = false
                                 }.addOnFailureListener { exception ->
                                     showMessage(
                                         "Something Went Wrong. ${exception.localizedMessage}",
@@ -391,19 +391,13 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                     doc.document.toObject(FriendsListModel::class.java)
                                         .withId(docId)
                                 if (friendList.userId == mAuth.currentUser!!.uid) {
-                                    view.connectTv.text =
-                                        getString(R.string.unfollow_as_a_friend)
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        view.connectTv.setTextColor(context!!.getColor(R.color.dark_red))
-                                    }
-                                    view.connectTv.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                                    view.connectTv.text = getString(R.string.unfollow_as_a_friend)
+                                    view.connectTv.setChipBackgroundColorResource(R.color.disagree_color)
+                                    view.connectTv.isCloseIconVisible = true
                                 } else {
                                     view.connectTv.text = getString(R.string.follow_as_a_friend)
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        view.connectTv.setTextColor(activity!!.getColor(R.color.black))
-                                    }
-                                    view.connectTv.textAlignment =
-                                        View.TEXT_ALIGNMENT_TEXT_START
+                                    view.connectTv.setChipBackgroundColorResource(R.color.agree_color)
+                                    view.connectTv.isCloseIconVisible = false
                                 }
 
                                 allFriends.add(friendList)

@@ -188,6 +188,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun showUploadedSuccess() {
         addQuestion_et.setText("")
+        addQuestion_et2.setText("")
     }
 
     override fun setUserProfileImage(imageUrl: String?) {

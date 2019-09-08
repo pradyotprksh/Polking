@@ -97,7 +97,6 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
                     }
 
                     if (allNotification.size > 0) {
-                        allNotificationsList.clear()
                         allNotificationsList.addAll(allNotification)
                         notificationsAdapter!!.notifyDataSetChanged()
                     }

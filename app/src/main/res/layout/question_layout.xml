@@ -78,7 +78,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/question_tv"
-                    app:rippleColor="#009B00" />
+                    app:rippleColor="@color/agree_color" />
 
             <com.google.android.material.chip.Chip
                     android:id="@+id/no_tv"
@@ -95,7 +95,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/question_tv"
-                    app:rippleColor="#9B0000" />
+                    app:rippleColor="@color/disagree_color" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
