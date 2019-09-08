@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
@@ -48,6 +49,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     private lateinit var questionBottomSheet: QuestionsBottomSheet
     private lateinit var friendsBottomSheet: FriendsBottomSheet
     private lateinit var notificationBottomSheet: NotificationBottomSheet
+    private lateinit var otherProfileOptions: OtherProfileOptions
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -124,6 +126,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         questionBottomSheet = QuestionsBottomSheet.newInstance()
         friendsBottomSheet = FriendsBottomSheet.newInstance()
         notificationBottomSheet = NotificationBottomSheet.newInstance()
+        otherProfileOptions = OtherProfileOptions.newInstance()
     }
 
     private fun openNotificationBtmSheet() {
@@ -310,5 +313,12 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             }
         }).into(user_iv)
         bgDocId = docId
+    }
+
+    fun openProfileDetails(notificationMessageBy: String) {
+        if (!otherProfileOptions.isAdded) {
+            otherProfileOptions.show(supportFragmentManager, "btmSheet")
+            otherProfileOptions.setUserId(notificationMessageBy)
+        }
     }
 }

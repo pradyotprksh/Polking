@@ -101,6 +101,20 @@ class NotificationsAdapter(
                 }
         }
 
+        p0.name_chio.setOnClickListener {
+            openUserDetails(allNotificationsList[p1].notificationMessageBy)
+        }
+
+        p0.user_iv.setOnClickListener {
+            openUserDetails(allNotificationsList[p1].notificationMessageBy)
+        }
+
+    }
+
+    private fun openUserDetails(notificationMessageBy: String) {
+        if (context is ProfileActivity) {
+            context.openProfileDetails(notificationMessageBy)
+        }
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
