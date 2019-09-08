@@ -94,31 +94,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
-    override fun getNotificationCount() {
-        if (currentUser != null) {
-            dataBase.collection("users").document(currentUser!!.uid)
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    if (snapshot != null && snapshot.exists()) {
-                        if (snapshot.data!!["notificationCount"].toString() != "0") {
-                            mView.showNotificationView(snapshot.data!!["notificationCount"].toString())
-                        } else {
-                            mView.hideNotificationView()
-                        }
-                    } else {
-                        mView.hideNotificationView()
-                    }
-                }
-        } else {
-            mView.hideOptions()
-        }
-    }
-
     override fun addAuthStateListener() {
         mAuth.addAuthStateListener { mAuth ->
             if (mAuth.currentUser != null) {
