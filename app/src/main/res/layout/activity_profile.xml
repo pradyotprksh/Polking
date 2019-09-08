@@ -488,6 +488,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginRight="20dp"
                 android:text="@string/alerts"
+                app:rippleColor="@color/colorPrimary"
                 android:theme="@style/Theme.MaterialComponents.Light"
                 app:chipIcon="@drawable/ic_notifications"
                 app:layout_constraintBottom_toBottomOf="@+id/iv_close"

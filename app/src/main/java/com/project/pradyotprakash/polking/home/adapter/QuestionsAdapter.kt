@@ -16,6 +16,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
@@ -95,10 +96,23 @@ class QuestionsAdapter(
         }
 
         holder.question_tv.text = allQues[pos].question
+
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
                 if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
                     context.openProfileDetails(allQues[pos].askedBy)
+                } else {
+                    context.startProfileAct()
+                }
+            }
+        }
+
+        holder.username_tv.setOnClickListener {
+            if (context is MainActivity) {
+                if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                    context.openProfileDetails(allQues[pos].askedBy)
+                } else {
+                    context.startProfileAct()
                 }
             }
         }
@@ -106,11 +120,10 @@ class QuestionsAdapter(
 
     inner class ViewAdapter(context: View) : RecyclerView.ViewHolder(context) {
         val profile_iv: CircleImageView = context.findViewById(R.id.user_iv)
-        val username_tv: TextView = context.findViewById(R.id.username_tv)
+        val username_tv: Chip = context.findViewById(R.id.username_tv)
         val question_tv: TextView = context.findViewById(R.id.question_tv)
-        val votes_tv: TextView = context.findViewById(R.id.votes_tv)
-        val yes_tv: TextView = context.findViewById(R.id.yes_tv)
-        val no_tv: TextView = context.findViewById(R.id.no_tv)
+        val yes_tv: Chip = context.findViewById(R.id.yes_tv)
+        val no_tv: Chip = context.findViewById(R.id.no_tv)
     }
 
 }

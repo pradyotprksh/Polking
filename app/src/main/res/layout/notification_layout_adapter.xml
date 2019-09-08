@@ -25,6 +25,7 @@
             android:layout_marginLeft="10dp"
             android:ellipsize="end"
             android:fontFamily="@font/muli_bold"
+            app:rippleColor="@color/colorAccent"
             android:theme="@style/Theme.MaterialComponents.Light"
             app:layout_constraintBottom_toBottomOf="@+id/user_iv"
             app:layout_constraintStart_toEndOf="@+id/user_iv"
