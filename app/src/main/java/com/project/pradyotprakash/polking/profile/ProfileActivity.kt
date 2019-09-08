@@ -21,6 +21,7 @@ import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
 import com.project.pradyotprakash.polking.profile.friends.FriendsBottomSheet
+import com.project.pradyotprakash.polking.profile.notification.NotificationBottomSheet
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
@@ -46,6 +47,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     private lateinit var reviewUsBottomSheet: ReviewUsBtmSheet
     private lateinit var questionBottomSheet: QuestionsBottomSheet
     private lateinit var friendsBottomSheet: FriendsBottomSheet
+    private lateinit var notificationBottomSheet: NotificationBottomSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -112,11 +114,22 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             }
         }
 
+        notificationchip.setOnClickListener {
+            openNotificationBtmSheet()
+        }
+
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         aboutUsBottomSheet = AboutUsBottomSheet.newInstance()
         reviewUsBottomSheet = ReviewUsBtmSheet.newInstance()
         questionBottomSheet = QuestionsBottomSheet.newInstance()
         friendsBottomSheet = FriendsBottomSheet.newInstance()
+        notificationBottomSheet = NotificationBottomSheet.newInstance()
+    }
+
+    private fun openNotificationBtmSheet() {
+        if (!notificationBottomSheet.isAdded) {
+            notificationBottomSheet.show(supportFragmentManager, "btmSheet")
+        }
     }
 
     private fun openFriendSheet() {

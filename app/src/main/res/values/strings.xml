@@ -155,4 +155,5 @@
     <string name="you_have_got">You have got</string>
     <string name="notificationbottomsheet">Notification Bottom Sheet onCreate</string>
     <string name="notifications_for_you">Notifications For You</string>
+    <string name="alerts">Alerts</string>
 </resources>

@@ -4,21 +4,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <com.google.android.material.chip.Chip
-            android:id="@+id/notification_chip"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+    <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_default_appcolor"
+            app:civ_border_color="@color/light_gray"
+            app:civ_border_width="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/name_chio"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/muli_bold"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:layout_constraintBottom_toBottomOf="@+id/user_iv"
+            app:layout_constraintStart_toEndOf="@+id/user_iv"
+            app:layout_constraintTop_toTopOf="@+id/user_iv" />
+
+    <TextView
+            android:id="@+id/notification_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
-            android:ellipsize="end"
-            android:theme="@style/Theme.MaterialComponents.Light"
+            android:fontFamily="@font/muli"
+            android:text="TextView"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/name_chio"
+            app:layout_constraintTop_toBottomOf="@+id/user_iv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
