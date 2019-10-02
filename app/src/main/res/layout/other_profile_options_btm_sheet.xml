@@ -60,14 +60,30 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginLeft="15dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
             android:theme="@style/Theme.MaterialComponents.Light"
             app:layout_constraintBottom_toBottomOf="@+id/user_iv"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/makeBfChip"
             app:layout_constraintStart_toEndOf="@+id/user_iv"
             app:layout_constraintTop_toTopOf="@+id/user_iv"
             app:rippleColor="@color/colorPrimary" />
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/makeBfChip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:text="@string/add_as_bestfriend"
+            android:textColor="@color/white"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            android:visibility="gone"
+            app:chipBackgroundColor="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="@+id/user_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/user_iv"
+            app:rippleColor="@color/agree_color" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/details_cl"
@@ -209,7 +225,22 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/questions_rv" />
+            app:layout_constraintTop_toBottomOf="@+id/questions_rv">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bestFriends_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:clipToPadding="false"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/friends_rv" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/connectTv"
@@ -228,7 +259,7 @@
             app:closeIconTint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/friends_rv" />
+            app:layout_constraintTop_toBottomOf="@+id/bestFriends_rv" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/chip4"

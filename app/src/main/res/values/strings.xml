@@ -156,4 +156,6 @@
     <string name="notificationbottomsheet">Notification Bottom Sheet onCreate</string>
     <string name="notifications_for_you">Notifications For You</string>
     <string name="alerts">Alerts</string>
+    <string name="first_friend_then_best_friend">First Friend Then Best Friend</string>
+    <string name="something_new">Something New</string>
 </resources>

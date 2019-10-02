@@ -45,11 +45,11 @@
                     android:layout_marginRight="20dp"
                     android:fontFamily="@font/muli_bold"
                     android:theme="@style/Theme.MaterialComponents.Light"
-                    app:rippleColor="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="@+id/user_iv"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/user_iv"
-                    app:layout_constraintTop_toTopOf="@+id/user_iv" />
+                    app:layout_constraintTop_toTopOf="@+id/user_iv"
+                    app:rippleColor="@color/colorPrimary" />
 
             <TextView
                     android:id="@+id/question_tv"

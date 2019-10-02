@@ -107,20 +107,28 @@ class QuestionsAdapter(
 
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                    context.openProfileDetails(allQues[pos].askedBy)
+                if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        context.openProfileDetails(allQues[pos].askedBy)
+                    } else {
+                        context.startProfileAct()
+                    }
                 } else {
-                    context.startProfileAct()
+                    context.startLogin()
                 }
             }
         }
 
         holder.username_tv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                    context.openProfileDetails(allQues[pos].askedBy)
+                if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        context.openProfileDetails(allQues[pos].askedBy)
+                    } else {
+                        context.startProfileAct()
+                    }
                 } else {
-                    context.startProfileAct()
+                    context.startLogin()
                 }
             }
         }

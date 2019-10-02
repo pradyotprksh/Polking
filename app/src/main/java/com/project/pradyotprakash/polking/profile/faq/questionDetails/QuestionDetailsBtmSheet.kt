@@ -46,7 +46,7 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
         AndroidInjection.inject(this.activity)
         val view = inflater.inflate(R.layout.question_details_btm_sheet, container, false)
 
-        dialog.setOnShowListener { dialog ->
+        dialog!!.setOnShowListener { dialog ->
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
             val bottomSheetInternal = bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
             if (bottomSheetInternal != null) {

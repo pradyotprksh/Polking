@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -18,7 +19,6 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.google.android.material.appbar.AppBarLayout
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
@@ -35,7 +35,6 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.abs
 
 class MainActivity : AppCompatActivity(), MainActivityView {
 
@@ -72,23 +71,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         otherProfileOptions = OtherProfileOptions.newInstance()
         profileEditBtmSheet.isCancelable = false
         userListBtmSheet = UserListBtmSheet.newInstance()
-
-        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout: AppBarLayout, i: Int ->
-            when {
-                abs(i) == appBarLayout.totalScrollRange -> {
-                    if (addQuestion_et2.visibility != View.VISIBLE) {
-                        addQuestion_et2.visibility = View.VISIBLE
-                        addQuestion_et2.startAnimation(Utility().inFromDownAnimation())
-                    }
-                }
-                i == 0 -> {
-                    addQuestion_et2.visibility = View.GONE
-                }
-                else -> {
-                    addQuestion_et2.visibility = View.GONE
-                }
-            }
-        })
 
         addQuestion_et.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
@@ -152,6 +134,14 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         recentQ_rv.setHasFixedSize(true)
         recentQ_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recentQ_rv.adapter = questionsAdapter
+
+        reloadQuestions.setOnClickListener {
+            presenter.getBestFrndQuestions()
+            presenter.getQuestions()
+            Handler().postDelayed({
+                reloadQuestions.visibility = View.GONE
+            }, 1000)
+        }
     }
 
     override fun onResume() {
@@ -162,6 +152,12 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         presenter.getProfileData()
         presenter.getBestFrndQuestions()
         presenter.getQuestions()
+    }
+
+    override fun showReloadOption() {
+        if (reloadQuestions.visibility != View.VISIBLE) {
+            reloadQuestions.visibility = View.VISIBLE
+        }
     }
 
     override fun startProfileAct() {
@@ -261,6 +257,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
+        allQues.clear()
         if (allQuestionList.size > 0) {
             recentQ_rv.visibility = View.VISIBLE
             recent_tv.visibility = View.VISIBLE

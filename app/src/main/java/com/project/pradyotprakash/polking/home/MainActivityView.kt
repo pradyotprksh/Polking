@@ -33,4 +33,7 @@ interface MainActivityView: BaseView {
     // show options if logged in
     fun showOptions()
 
+    // reload question
+    fun showReloadOption()
+
 }

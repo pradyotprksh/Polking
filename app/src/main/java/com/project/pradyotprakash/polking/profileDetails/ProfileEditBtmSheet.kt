@@ -71,7 +71,7 @@ class ProfileEditBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEdi
         AndroidInjection.inject(this.activity)
         val view = inflater.inflate(R.layout.profile_edit_btm_sheet, container, false)
 
-        dialog.setOnShowListener { dialog ->
+        dialog!!.setOnShowListener { dialog ->
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
             val bottomSheetInternal = bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
             if (bottomSheetInternal != null) {

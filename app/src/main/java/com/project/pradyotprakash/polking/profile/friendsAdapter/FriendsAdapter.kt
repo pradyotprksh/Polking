@@ -14,9 +14,11 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
+import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.FriendsListModel
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -26,6 +28,7 @@ class FriendsAdapter(
     private val activity: Activity
 ) : RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
 
+    private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
@@ -81,6 +84,24 @@ class FriendsAdapter(
                 }
 
             }
+
+        p0.itemView.setOnClickListener {
+            when (context) {
+                is MainActivity -> if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allFriendsList[p1].userId) {
+                        context.openProfileDetails(allFriendsList[p1].userId)
+                    }
+                } else {
+                    context.startLogin()
+                }
+                is ProfileActivity -> if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allFriendsList[p1].userId) {
+                        context.openProfileDetails(allFriendsList[p1].userId)
+                    }
+                }
+            }
+        }
+
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {

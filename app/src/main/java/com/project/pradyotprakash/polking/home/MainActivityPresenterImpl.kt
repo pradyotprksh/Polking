@@ -176,8 +176,10 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     override fun getQuestions() {
 
+        mView.showLoading()
+
         dataBase.collection("question")
-            .orderBy("askedOn", Query.Direction.DESCENDING)
+            .orderBy("askedOn", Query.Direction.ASCENDING)
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     mView.showMessage(
@@ -188,16 +190,21 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 allQuestionList.clear()
 
                 try {
-                    for (doc in snapshot!!.documentChanges) {
-                        mView.showLoading()
-                        if (doc.type == DocumentChange.Type.ADDED) {
+                    for (doc in snapshot!!) {
+                        val docId = doc.id
+                        val quesList: QuestionModel =
+                            doc.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
+                        this.allQuestionList.add(0, quesList)
+                    }
 
-                            val docId = doc.document.id
-                            val quesList: QuestionModel =
-                                doc.document.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
-                            this.allQuestionList.add(quesList)
-
+                    for (doc in snapshot.documentChanges) {
+                        if (doc.type == DocumentChange.Type.ADDED ||
+                            doc.type == DocumentChange.Type.MODIFIED ||
+                            doc.type == DocumentChange.Type.REMOVED
+                        ) {
+                            mView.showReloadOption()
                         }
+
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

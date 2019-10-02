@@ -40,7 +40,7 @@ class AskFaqQuestionBtmSheet @Inject constructor() : RoundBottomSheet(), Profile
         AndroidInjection.inject(this.activity)
         val view = inflater.inflate(R.layout.add_faq_question_btm_sheet, container, false)
 
-        dialog.setOnShowListener { dialog ->
+        dialog!!.setOnShowListener { dialog ->
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
             val bottomSheetInternal = bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
             if (bottomSheetInternal != null) {
