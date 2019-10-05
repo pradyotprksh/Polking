@@ -79,16 +79,20 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         setContentView(R.layout.activity_profile)
 
         logd(getString(R.string.create))
+
         initialize()
     }
 
     private fun initialize() {
 
-        allBgAdapter = BackgroundAdapter(allBgList, this, this)
-        rv_bgOption.setHasFixedSize(true)
-        rv_bgOption.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        rv_bgOption.adapter = allBgAdapter
+        setOnClickListners()
 
+        initvariables()
+
+        setAdapters()
+    }
+
+    private fun setOnClickListners() {
         options_tv.setOnClickListener {
             optionList_cl.visibility = View.VISIBLE
             optionList_cl.startAnimation(Utility().inFromDownAnimation())
@@ -164,7 +168,9 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         notificationchip.setOnClickListener {
             openNotificationBtmSheet()
         }
+    }
 
+    private fun initvariables() {
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         aboutUsBottomSheet = AboutUsBottomSheet.newInstance()
         reviewUsBottomSheet = ReviewUsBtmSheet.newInstance()
@@ -172,6 +178,13 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         friendsBottomSheet = FriendsBottomSheet.newInstance()
         notificationBottomSheet = NotificationBottomSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
+    }
+
+    private fun setAdapters() {
+        allBgAdapter = BackgroundAdapter(allBgList, this, this)
+        rv_bgOption.setHasFixedSize(true)
+        rv_bgOption.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rv_bgOption.adapter = allBgAdapter
     }
 
     private fun openNotificationBtmSheet() {
@@ -220,24 +233,19 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
-        return when (MotionEventCompat.getActionMasked(event)) {
-            MotionEvent.ACTION_DOWN -> {
-                false
-            }
-            MotionEvent.ACTION_MOVE -> {
-                false
-            }
-            MotionEvent.ACTION_UP -> {
-                openNotificationBtmSheet()
+        return if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+            if (optionList_cl.visibility == View.VISIBLE) {
+                optionList_cl.startAnimation(Utility().outToDownAnimation())
+                optionList_cl.visibility = View.GONE
                 true
-            }
-            MotionEvent.ACTION_CANCEL -> {
+            } else {
                 false
             }
-            MotionEvent.ACTION_OUTSIDE -> {
-                false
-            }
-            else -> super.onTouchEvent(event)
+        } else if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
+            openNotificationBtmSheet()
+            true
+        } else {
+            super.onTouchEvent(event)
         }
     }
 

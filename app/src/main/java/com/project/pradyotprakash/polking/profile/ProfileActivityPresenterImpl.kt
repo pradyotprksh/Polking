@@ -32,34 +32,21 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     override fun getUserData() {
         mView.showLoading()
         if (currentUser != null) {
+            setListnerForUserData()
+            getTheUserData()
+        } else {
+            mView.showMessage(mContext.getString(R.string.user_not_found), 1)
+        }
+    }
 
-            dataBase.collection("users").document(currentUser!!.uid)
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    if (snapshot != null && snapshot.exists()) {
-                        mView.setUserDetails(
-                            snapshot.data!!["questions"].toString(), snapshot.data!!["friends"].toString(),
-                            snapshot.data!!["best_friends"].toString()
-                        )
-                        mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
-                        mView.setUserName(snapshot.data!!["name"].toString())
-                        mView.hideLoading()
-                    } else {
-                        mView.openAddProfileDetails()
-                        mView.hideLoading()
-                    }
-                }
-
-            dataBase.collection("users").document(currentUser!!.uid).get().addOnSuccessListener { result ->
+    private fun getTheUserData() {
+        dataBase.collection("users").document(currentUser!!.uid).get()
+            .addOnSuccessListener { result ->
                 if (result.exists()) {
 
                     bgDataBase.collection("background_images")
-                        .document(result.getString("bg_option")!!).get().addOnSuccessListener { resultBg ->
+                        .document(result.getString("bg_option")!!).get()
+                        .addOnSuccessListener { resultBg ->
                             mView.showLoading()
                             if (result.exists()) {
                                 mView.setBgImage(resultBg.getString("imageUrl")!!, resultBg.id)
@@ -85,15 +72,37 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
                     mView.hideLoading()
                 }
             }.addOnFailureListener {
-                mView.showMessage(mContext.getString(R.string.something_went_wring_oops), 1)
-                mView.hideLoading()
-            }.addOnCanceledListener {
-                mView.showMessage(mContext.getString(R.string.getting_details), 4)
-                mView.hideLoading()
-            }
-        } else {
-            mView.showMessage(mContext.getString(R.string.user_not_found), 1)
+            mView.showMessage(mContext.getString(R.string.something_went_wring_oops), 1)
+            mView.hideLoading()
+        }.addOnCanceledListener {
+            mView.showMessage(mContext.getString(R.string.getting_details), 4)
+            mView.hideLoading()
         }
+    }
+
+    private fun setListnerForUserData() {
+        dataBase.collection("users").document(currentUser!!.uid)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    mView.setUserDetails(
+                        snapshot.data!!["questions"].toString(),
+                        snapshot.data!!["friends"].toString(),
+                        snapshot.data!!["best_friends"].toString()
+                    )
+                    mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
+                    mView.setUserName(snapshot.data!!["name"].toString())
+                    mView.hideLoading()
+                } else {
+                    mView.openAddProfileDetails()
+                    mView.hideLoading()
+                }
+            }
     }
 
     override fun getBackgroundImages() {
