@@ -13,8 +13,9 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="15dp"
             android:text="@string/close"
+            android:textColor="@color/white"
+            app:chipBackgroundColor="@color/disagree_color"
             android:theme="@style/Theme.MaterialComponents.Light"
-            app:closeIconEnabled="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:rippleColor="@color/disagree_color" />

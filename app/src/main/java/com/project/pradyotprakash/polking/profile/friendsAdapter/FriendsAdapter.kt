@@ -7,13 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
@@ -85,6 +85,23 @@ class FriendsAdapter(
 
             }
 
+        p0.name_tv.setOnClickListener {
+            when (context) {
+                is MainActivity -> if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allFriendsList[p1].userId) {
+                        context.openProfileDetails(allFriendsList[p1].userId)
+                    }
+                } else {
+                    context.startLogin()
+                }
+                is ProfileActivity -> if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allFriendsList[p1].userId) {
+                        context.openProfileDetails(allFriendsList[p1].userId)
+                    }
+                }
+            }
+        }
+
         p0.itemView.setOnClickListener {
             when (context) {
                 is MainActivity -> if (mAuth.currentUser != null) {
@@ -107,7 +124,7 @@ class FriendsAdapter(
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val bgImage: CircleImageView = mView.findViewById(R.id.user_iv)
         val progressBar: ProgressBar = mView.findViewById(R.id.progressBar)
-        val name_tv: TextView = mView.findViewById(R.id.name_tv)
+        val name_tv: Chip = mView.findViewById(R.id.name_tv)
     }
 
 }
