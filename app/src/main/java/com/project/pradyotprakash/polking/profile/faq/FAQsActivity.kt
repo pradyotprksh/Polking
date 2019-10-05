@@ -14,7 +14,6 @@ import com.project.pradyotprakash.polking.profile.faq.adapter.BlockReportAdapter
 import com.project.pradyotprakash.polking.profile.faq.adapter.FriendBestFriendAdapter
 import com.project.pradyotprakash.polking.profile.faq.adapter.QuestionResponseAdapter
 import com.project.pradyotprakash.polking.profile.faq.adapter.TopQuestionAdapter
-import com.project.pradyotprakash.polking.profile.faq.askQuestion.AskFaqQuestionBtmSheet
 import com.project.pradyotprakash.polking.profile.faq.questionDetails.QuestionDetailsBtmSheet
 import com.project.pradyotprakash.polking.utility.CustomLayoutManager
 import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
@@ -27,7 +26,6 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
 
     @Inject
     lateinit var presenter: FAQsActivityPresenter
-    private lateinit var askFaqQuestionBtmSheet: AskFaqQuestionBtmSheet
     private lateinit var questionDetailsBtmSheet: QuestionDetailsBtmSheet
 
     private var questionResponseAdapter: QuestionResponseAdapter? = null
@@ -106,12 +104,6 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
     }
 
     private fun onClickListners() {
-        addQuestion_tv.setOnClickListener {
-            if (!askFaqQuestionBtmSheet.isAdded) {
-                askFaqQuestionBtmSheet.show(supportFragmentManager, "btmSheet")
-            }
-        }
-
         back_tv.setOnClickListener {
             stopAct()
         }
@@ -148,7 +140,6 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
     }
 
     private fun initVariable() {
-        askFaqQuestionBtmSheet = AskFaqQuestionBtmSheet.newInstance()
         questionDetailsBtmSheet = QuestionDetailsBtmSheet.newInstance()
     }
 
