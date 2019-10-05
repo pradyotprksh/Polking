@@ -56,8 +56,23 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         super.onCreate(savedInstanceState)
 
         // Make full screen
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        // set theme for notch if sdk is P
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        } else {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         setContentView(R.layout.activity_profile)
 

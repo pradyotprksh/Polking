@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -51,8 +52,23 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         super.onCreate(savedInstanceState)
 
         // Make full screen
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        // set theme for notch if sdk is P
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        } else {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         setContentView(R.layout.activity_main)
 
@@ -142,16 +158,16 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 reloadQuestions.visibility = View.GONE
             }, 1000)
         }
+
+        presenter.getBestFrndQuestions()
+        presenter.getQuestions()
     }
 
     override fun onResume() {
         super.onResume()
         logd(getString(R.string.resume))
-        this.allQues.clear()
         presenter.addAuthStateListener()
         presenter.getProfileData()
-        presenter.getBestFrndQuestions()
-        presenter.getQuestions()
     }
 
     override fun showReloadOption() {
@@ -213,6 +229,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                     return false
                 }
             }).into(user_iv)
+            user_iv.borderWidth = 2
+            user_iv.borderColor = resources.getColor(R.color.colorPrimary)
         } else {
             showMessage(getString(R.string.something_went_wrong), 1)
         }
@@ -220,7 +238,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     @SuppressLint("SetTextI18n")
     override fun setUserName(name: String) {
-        welcome_tv.text = "Welcome, $name"
+        addQuestion_et.hint = getString(R.string.enter_your_question) + " $name"
     }
 
     override fun openAddProfileDetails() {
@@ -257,15 +275,13 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
-        allQues.clear()
+        this.allQues.clear()
         if (allQuestionList.size > 0) {
             recentQ_rv.visibility = View.VISIBLE
-            recent_tv.visibility = View.VISIBLE
             allQues.addAll(allQuestionList)
             questionsAdapter!!.notifyDataSetChanged()
         } else {
             recentQ_rv.visibility = View.GONE
-            recent_tv.visibility = View.GONE
         }
     }
 
