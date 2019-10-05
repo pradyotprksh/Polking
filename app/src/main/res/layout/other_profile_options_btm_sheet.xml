@@ -105,7 +105,7 @@
             android:layout_marginEnd="60dp"
             android:layout_marginRight="60dp"
             android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/connectTv"
+            app:layout_constraintBottom_toTopOf="@+id/questions_rv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -216,27 +216,27 @@
             android:id="@+id/questions_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:clipToPadding="false"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/friends_rv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_cl" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friends_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:clipToPadding="false"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/bestFriends_rv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/questions_rv">
+            app:layout_constraintStart_toStartOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -244,14 +244,14 @@
             android:id="@+id/bestFriends_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:clipToPadding="false"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/connectTv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/friends_rv" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/connectTv"
