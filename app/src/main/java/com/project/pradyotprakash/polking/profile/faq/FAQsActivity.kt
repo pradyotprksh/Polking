@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.profile.faq
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.Window
@@ -45,8 +46,23 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
         super.onCreate(savedInstanceState)
 
         // Make full screen
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        // set theme for notch if sdk is P
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        } else {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         setContentView(R.layout.activity_faqs_actvity)
 
@@ -56,17 +72,52 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
 
     private fun initialize() {
         presenter.start()
-        askFaqQuestionBtmSheet = AskFaqQuestionBtmSheet.newInstance()
-        questionDetailsBtmSheet = QuestionDetailsBtmSheet.newInstance()
 
+        initVariable()
+
+        initAdapter()
+
+        onClickListners()
+
+        searchListner()
+
+        presenter.getQuestions()
+
+    }
+
+    private fun searchListner() {
+        search_et.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                questionResponseAdapter!!.filter.filter(p0)
+                friendBestFriendAdapter!!.filter.filter(p0)
+                blockReportAdapter!!.filter.filter(p0)
+                topQuestionAdapter!!.filter.filter(p0)
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                questionResponseAdapter!!.filter.filter(p0)
+                friendBestFriendAdapter!!.filter.filter(p0)
+                blockReportAdapter!!.filter.filter(p0)
+                topQuestionAdapter!!.filter.filter(p0)
+                return false
+            }
+        })
+    }
+
+    private fun onClickListners() {
         addQuestion_tv.setOnClickListener {
             if (!askFaqQuestionBtmSheet.isAdded) {
                 askFaqQuestionBtmSheet.show(supportFragmentManager, "btmSheet")
             }
         }
 
-        presenter.getQuestions()
+        back_tv.setOnClickListener {
+            stopAct()
+        }
+    }
 
+    private fun initAdapter() {
         val snapHelper = PagerSnapHelper()
 
         questionResponseAdapter =
@@ -94,31 +145,11 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
         topQues_rv.layoutManager = CustomLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         topQues_rv.adapter = topQuestionAdapter
         snapHelper.attachToRecyclerView(topQues_rv)
+    }
 
-        back_tv.setOnClickListener {
-            stopAct()
-        }
-
-        search_et.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                questionResponseAdapter!!.filter.filter(p0)
-                friendBestFriendAdapter!!.filter.filter(p0)
-                blockReportAdapter!!.filter.filter(p0)
-                topQuestionAdapter!!.filter.filter(p0)
-                return false
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                questionResponseAdapter!!.filter.filter(p0)
-                friendBestFriendAdapter!!.filter.filter(p0)
-                blockReportAdapter!!.filter.filter(p0)
-                topQuestionAdapter!!.filter.filter(p0)
-                return false
-            }
-
-
-        })
-
+    private fun initVariable() {
+        askFaqQuestionBtmSheet = AskFaqQuestionBtmSheet.newInstance()
+        questionDetailsBtmSheet = QuestionDetailsBtmSheet.newInstance()
     }
 
     override fun showLoading() {
