@@ -3,7 +3,6 @@ package com.project.pradyotprakash.polking.profile
 import android.app.Activity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.BgModel
@@ -104,14 +103,15 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
 
                 if (e != null) {
                     mView.showMessage("Something went wrong. ${e.localizedMessage}", 1)
+                    return@addSnapshotListener
                 }
 
-                for (doc in documentSnapshot!!.documentChanges) {
-                    if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.MODIFIED) {
-                        val docId = doc.document.id
-                        val bgList: BgModel = doc.document.toObject<BgModel>(BgModel::class.java).withId(docId)
-                        this.allBgList.add(bgList)
-                    }
+                this.allBgList.clear()
+
+                for (doc in documentSnapshot!!) {
+                    val docId = doc.id
+                    val bgList: BgModel = doc.toObject<BgModel>(BgModel::class.java).withId(docId)
+                    this.allBgList.add(bgList)
                 }
                 mView.setBgList(allBgList)
                 mView.hideLoading()

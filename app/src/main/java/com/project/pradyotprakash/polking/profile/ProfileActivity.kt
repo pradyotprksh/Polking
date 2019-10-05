@@ -6,10 +6,12 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MotionEventCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -92,7 +94,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             optionList_cl.startAnimation(Utility().inFromDownAnimation())
         }
 
-        profile_iv.setOnClickListener {
+        profileEditChip.setOnClickListener {
             openAddProfileDetails()
         }
 
@@ -109,8 +111,24 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             openReviewUsSheet()
         }
 
+        questionVal_tv.setOnClickListener {
+            openQuestionSheet()
+        }
+
+        question_tv.setOnClickListener {
+            openQuestionSheet()
+        }
+
         yourPosts_tv.setOnClickListener {
             openQuestionSheet()
+        }
+
+        friendsVal_tv.setOnClickListener {
+            openFriendSheet()
+        }
+
+        friends_tv.setOnClickListener {
+            openFriendSheet()
         }
 
         yourFrnd_tv.setOnClickListener {
@@ -175,9 +193,38 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (!bgDocId.isNullOrEmpty()) {
-            presenter.changeBgId(bgDocId!!)
+        if (optionList_cl.visibility == View.VISIBLE) {
+            optionList_cl.startAnimation(Utility().outToDownAnimation())
+            optionList_cl.visibility = View.GONE
+            return
+        } else {
+            if (!bgDocId.isNullOrEmpty()) {
+                presenter.changeBgId(bgDocId!!)
+            }
+            super.onBackPressed()
+        }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+
+        return when (MotionEventCompat.getActionMasked(event)) {
+            MotionEvent.ACTION_DOWN -> {
+                false
+            }
+            MotionEvent.ACTION_MOVE -> {
+                false
+            }
+            MotionEvent.ACTION_UP -> {
+                openNotificationBtmSheet()
+                true
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                false
+            }
+            MotionEvent.ACTION_OUTSIDE -> {
+                false
+            }
+            else -> super.onTouchEvent(event)
         }
     }
 
@@ -206,6 +253,8 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
                             return false
                         }
                     }).into(profile_iv)
+                    profile_iv.borderWidth = 2
+                    profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
                 }
             }
         } else {

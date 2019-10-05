@@ -12,4 +12,5 @@
     <color name="dark_red">#CC0000</color>
     <color name="agree_color">#009B00</color>
     <color name="disagree_color">#9B0000</color>
+    <color name="transparent">#00000000</color>
 </resources>

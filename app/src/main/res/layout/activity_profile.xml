@@ -6,6 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".profile.ProfileActivity"
+        android:id="@+id/main_cl"
         android:background="@color/black">
 
     <ImageView
@@ -20,7 +21,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintVertical_bias="0.0"
             android:contentDescription="@string/imagedescription"
-            android:scaleType="fitXY"/>
+            android:scaleType="centerCrop" />
 
     <TextView
             android:text="@string/back"
@@ -49,7 +50,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
-            android:id="@+id/welcome_cl">
+            android:id="@+id/profileEditChip">
 
         <View
                 android:layout_width="match_parent"
@@ -79,28 +80,28 @@
                 tools:ignore="VectorDrawableCompat"/>
 
         <TextView
-                android:text="@string/welcome_string"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
                 android:id="@+id/welcome_tv"
-                app:layout_constraintTop_toTopOf="@+id/profile_iv"
-                app:layout_constraintBottom_toBottomOf="@+id/profile_iv"
-                app:layout_constraintStart_toEndOf="@+id/profile_iv"
-                android:layout_marginLeft="15dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                app:layout_constraintEnd_toEndOf="@+id/view2"
+                android:layout_marginLeft="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginRight="15dp"
-                android:textSize="14sp"
                 android:fontFamily="@font/muli_bold"
-                android:textColor="@color/black"/>
+                android:text="@string/welcome_string"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_iv"
+                app:layout_constraintEnd_toEndOf="@+id/view2"
+                app:layout_constraintStart_toEndOf="@+id/profile_iv"
+                app:layout_constraintTop_toTopOf="@+id/profile_iv" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/welcome_cl"
+            app:layout_constraintTop_toBottomOf="@+id/profileEditChip"
             android:layout_marginTop="30dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -214,47 +215,29 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bgOption_cl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="20dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/options_tv"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="60dp"
-            android:layout_marginStart="60dp"
-            android:id="@+id/bgOption_cl"
-            app:layout_constraintTop_toBottomOf="@+id/details_cl" android:visibility="visible">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@drawable/one_sided_round"
-                android:alpha="0.4"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:id="@+id/view3"/>
-
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_bgOption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/one_sided_round_transparent"
+                android:clipToPadding="false"
+                android:paddingStart="15dp"
+                android:paddingLeft="15dp"
+                android:paddingEnd="10dp"
+                android:paddingRight="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/view3"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/one_sided_round_transparent"
-                    android:paddingStart="15dp"
-                    android:id="@+id/rv_bgOption"
-                    android:paddingEnd="0dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="0dp"/>
-
-        </LinearLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -497,6 +480,7 @@
                 app:layout_constraintTop_toTopOf="@+id/iv_close" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
