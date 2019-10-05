@@ -4,6 +4,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+    <ImageView
+            android:id="@+id/background_image"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/imagedescription"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/back_tv"
@@ -11,12 +21,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/close"
+            android:textColor="@color/white"
             android:theme="@style/Theme.MaterialComponents.Light"
-            app:closeIconEnabled="true"
+            app:chipBackgroundColor="@color/disagree_color"
+            app:layout_constraintBottom_toTopOf="@+id/user_iv"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:rippleColor="@color/disagree_color" />
 
     <View
@@ -38,10 +49,10 @@
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
             android:src="@drawable/ic_default_appcolor"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/back_tv" />
+            app:layout_constraintBottom_toTopOf="@+id/details_cl"
+            app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
             android:id="@+id/progressBar5"
@@ -91,12 +102,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="60dp"
             android:layout_marginRight="60dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/connectTv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/user_iv">
+            app:layout_constraintStart_toStartOf="parent">
 
         <TextView
                 android:id="@+id/questionVal_tv"
@@ -248,18 +259,18 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:text="@string/follow_as_a_friend"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:theme="@style/Theme.MaterialComponents.Light"
             app:chipBackgroundColor="@color/agree_color"
             app:closeIconTint="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/chip4"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bestFriends_rv" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/chip4"
@@ -267,15 +278,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="40dp"
             android:text="@string/report_this_user"
             android:textAlignment="center"
             android:theme="@style/Theme.MaterialComponents.Light"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/textView6"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/connectTv"
             app:rippleColor="@color/disagree_color" />
 
     <TextView
@@ -293,7 +304,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="30dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="40dp"
@@ -303,7 +313,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toBottomOf="@+id/connectTv"
             app:rippleColor="@color/disagree_color" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,13 @@
 package com.project.pradyotprakash.polking.otherProfileOptions
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.DisplayMetrics
+import android.view.*
+import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +28,6 @@ import com.project.pradyotprakash.polking.profile.friendsAdapter.FriendsAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.*
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.*
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.view.*
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -68,6 +70,16 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         AndroidInjection.inject(this.activity)
         val view = inflater.inflate(R.layout.other_profile_options_btm_sheet, container, false)
 
+        dialog!!.setOnShowListener { dialog ->
+            val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
+            val bottomSheetInternal =
+                bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
+            if (bottomSheetInternal != null) {
+                BottomSheetBehavior.from<View>(bottomSheetInternal).state =
+                    BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
         activity!!.logd(getString(R.string.otherprofiledetailsbottomsheet))
 
         initView(view)
@@ -108,9 +120,6 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
 
         getUserData(view)
 
-        view.back_tv.setOnCloseIconClickListener {
-            dismiss()
-        }
         view.back_tv.setOnClickListener {
             dismiss()
         }
@@ -331,7 +340,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                             }
                     } else {
                         showMessage(
-                            "A best friend is also a friend. Can't remove make someone best friend and not friend. Get It?",
+                            "A best friend is also a friend. Can't make someone best friend and not friend. Get It?",
                             2
                         )
                     }
@@ -380,10 +389,29 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             }
         }
 
+        if (context != null) {
+            val windMang: WindowManager =
+                context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            val display: Display = windMang.defaultDisplay
+            val metrics = DisplayMetrics()
+            display.getMetrics(metrics)
+            val width = metrics.widthPixels
+            val height = metrics.heightPixels
+
+            view.background_image.minimumWidth = width
+            view.background_image.maxWidth = width
+            view.background_image.maxHeight = height
+            view.background_image.minimumWidth = height
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getUserData(view: View) {
+        if (context == null) {
+            dismiss()
+            return
+        }
         view.progressBar5.visibility = View.VISIBLE
         if (askedBy.isEmpty()) {
             view.progressBar5.visibility = View.GONE
@@ -400,6 +428,72 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
 
             // get user data
             if (isAdded) {
+                firestore.collection("users").document(askedBy).get()
+                    .addOnSuccessListener { result ->
+                        if (result.exists()) {
+
+                            addfriendfirestore.collection("background_images")
+                                .document(result.getString("bg_option")!!).get()
+                                .addOnSuccessListener { resultBg ->
+                                    showLoading()
+                                    if (result.exists()) {
+                                        Glide.with(this).load(resultBg.getString("imageUrl")!!)
+                                            .listener(object :
+                                                RequestListener<Drawable> {
+                                                override fun onLoadFailed(
+                                                    exception: GlideException?,
+                                                    model: Any?,
+                                                    target: Target<Drawable>?,
+                                                    isFirstResource: Boolean
+                                                ): Boolean {
+                                                    view.progressBar5.visibility = View.GONE
+                                                    showMessage(
+                                                        "Something Went Wrong. ${exception?.localizedMessage}",
+                                                        1
+                                                    )
+                                                    return false
+                                                }
+
+                                                override fun onResourceReady(
+                                                    resource: Drawable?,
+                                                    model: Any?,
+                                                    target: Target<Drawable>?,
+                                                    dataSource: DataSource?,
+                                                    isFirstResource: Boolean
+                                                ): Boolean {
+                                                    view.progressBar5.visibility = View.GONE
+                                                    return false
+                                                }
+                                            }).into(view.background_image)
+                                        hideLoading()
+                                    } else {
+                                        showMessage(context!!.getString(R.string.not_found_bg), 1)
+                                        hideLoading()
+                                    }
+                                }.addOnFailureListener { exception ->
+                                    showMessage(
+                                        "Something Went Wrong. ${exception.localizedMessage}",
+                                        1
+                                    )
+                                    hideLoading()
+                                }.addOnCanceledListener {
+                                    showMessage(
+                                        context!!.getString(R.string.loading_image_cancel),
+                                        4
+                                    )
+                                    hideLoading()
+                                }
+
+                            hideLoading()
+                        }
+                    }.addOnFailureListener {
+                    showMessage(context!!.getString(R.string.something_went_wring_oops), 1)
+                    hideLoading()
+                }.addOnCanceledListener {
+                    showMessage(context!!.getString(R.string.getting_details), 4)
+                    hideLoading()
+                }
+
                 firestore.collection("users").document(askedBy)
                     .addSnapshotListener { snapshot, exception ->
                         if (exception != null) {
@@ -465,7 +559,9 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                             view.progressBar5.visibility = View.GONE
                                             return false
                                         }
-                                    }).into(user_iv)
+                                    }).into(view.user_iv)
+                                view.user_iv.borderWidth = 2
+                                view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
 
                                 view.progressBar5.visibility = View.GONE
                             } else {
