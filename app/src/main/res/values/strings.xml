@@ -110,15 +110,14 @@
     <string name="faqbottomsheet">Ask FAQs Btm Sheet onCreateView</string>
     <string name="questionbottomsheet">Question Details Btm Sheet onCreateView</string>
     <string name="give_us_your_feedback_and_we_will_make_sure_we_will_change_if_not_we_will_bring_something_new_but_change_will_happen">
-        Give Us Your Feedback and We Will Make Sure We Will Change. If not we will bring something new. But change WILL
-        happen.
+        Need Your Help To Make Polking A Poling King.
     </string>
-    <string name="very_bad_uninstalling_if_you_didn_t_change_this">Very Bad. Uninstalling If You Didn\'t Change This.
+    <string name="very_bad_uninstalling_if_you_didn_t_change_this">Very Bad
     </string>
-    <string name="not_so_good_please_fix_this">Not So Good. Please Fix This.</string>
-    <string name="some_thins_need_to_be_change">Some thins need to be change.</string>
-    <string name="good_application">Good Application.</string>
-    <string name="very_good_everything_is_working_fine">Very Good. Everything is working fine.</string>
+    <string name="not_so_good_please_fix_this">Not So Good</string>
+    <string name="some_thins_need_to_be_change">Good</string>
+    <string name="good_application">Very Good</string>
+    <string name="very_good_everything_is_working_fine">Best</string>
     <string name="say_what_you_didn_t_like_in_brief">Say What You Didn\'t Like In Brief:</string>
     <string name="write_here">Write Here…</string>
     <string name="its_making_us_sad">It\'s Making Us Sad That You Didn\'t Like Our Application. Please Tell Us And We
