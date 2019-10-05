@@ -123,16 +123,28 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             openQuestionSheet()
         }
 
+        bestFrndVal_tv.setOnClickListener {
+            openFriendSheet(2)
+        }
+
+        bestFrnd_tv.setOnClickListener {
+            openFriendSheet(2)
+        }
+
+        yourBestFrnd_tview17.setOnClickListener {
+            openFriendSheet(2)
+        }
+
         friendsVal_tv.setOnClickListener {
-            openFriendSheet()
+            openFriendSheet(1)
         }
 
         friends_tv.setOnClickListener {
-            openFriendSheet()
+            openFriendSheet(1)
         }
 
         yourFrnd_tv.setOnClickListener {
-            openFriendSheet()
+            openFriendSheet(1)
         }
 
         faq_tv.setOnClickListener {
@@ -168,9 +180,10 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
     }
 
-    private fun openFriendSheet() {
+    private fun openFriendSheet(type: Int) {
         if (!friendsBottomSheet.isAdded) {
             friendsBottomSheet.show(supportFragmentManager, "btmSheet")
+            friendsBottomSheet.setType(type)
         }
     }
 

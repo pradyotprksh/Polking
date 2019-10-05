@@ -1,6 +1,5 @@
 package com.project.pradyotprakash.polking.otherProfileOptions
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -29,7 +28,6 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.*
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.view.*
-import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
@@ -51,8 +49,6 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     private val allBestFriendsList = ArrayList<FriendsListModel>()
     private var friendsAdapter: FriendsAdapter? = null
     private var bestfriendsAdapter: FriendsAdapter? = null
-    @SuppressLint("SimpleDateFormat")
-    var dateTimeFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
 
     companion object {
         fun newInstance(): OtherProfileOptions =
@@ -89,6 +85,86 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initView(view: View) {
+        initvariables()
+
+        setAdapters(view)
+
+        getUserData(view)
+
+        setOnClickListner(view)
+
+        setBackgroundImageMeasurement(view)
+    }
+
+    private fun setOnClickListner(view: View) {
+        view.back_tv.setOnClickListener {
+            dismiss()
+        }
+
+        view.questionVal_tv.setOnClickListener {
+            doQuestionWork(view)
+        }
+
+        view.question_tv.setOnClickListener {
+            doQuestionWork(view)
+        }
+
+        view.friendsVal_tv.setOnClickListener {
+            doFriendWork(view)
+        }
+
+        view.friends_tv.setOnClickListener {
+            doFriendWork(view)
+        }
+
+        view.bestFrndVal_tv.setOnClickListener {
+            doBestFriendWork(view)
+        }
+
+        view.bestFrnd_tv.setOnClickListener {
+            doBestFriendWork(view)
+        }
+
+        view.makeBfChip.setOnCloseIconClickListener {
+            if (mAuth.currentUser != null) {
+                if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
+                    debestfriend(view)
+                } else {
+                    showMessage("First Friend Then Best Friend", 2)
+                }
+            }
+        }
+
+        view.makeBfChip.setOnClickListener {
+            if (mAuth.currentUser != null) {
+                if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
+                    addBestFriend(view)
+                } else {
+                    showMessage(getString(R.string.first_friend_then_best_friend), 2)
+                }
+            }
+        }
+
+        view.connectTv.setOnClickListener {
+            if (mAuth.currentUser != null) {
+                view.progressBar5.visibility = View.VISIBLE
+                if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
+                    if (!view.makeBfChip.isCloseIconVisible) {
+                        defriend(view)
+                    } else {
+                        showMessage(
+                            "A best friend is also a friend. Can't make someone best friend and not friend. Get It?",
+                            2
+                        )
+                    }
+                } else {
+                    makefriend(view)
+                }
+            }
+        }
+    }
+
+    private fun initvariables() {
         mAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
         addfriendfirestore = FirebaseFirestore.getInstance()
@@ -96,7 +172,9 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         getfriendfirestore = FirebaseFirestore.getInstance()
         getbestfriendfirestore = FirebaseFirestore.getInstance()
         deletefriendfirestore = FirebaseFirestore.getInstance()
+    }
 
+    private fun setAdapters(view: View) {
         allQues.clear()
         questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
         view.questions_rv.setHasFixedSize(true)
@@ -117,278 +195,171 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         view.bestFriends_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         view.bestFriends_rv.adapter = bestfriendsAdapter
+    }
 
-        getUserData(view)
+    private fun debestfriend(view: View) {
+        view.progressBar5.visibility = View.VISIBLE
+        addBestfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
+            .collection("bestfriends")
+            .document(askedBy)
+            .delete()
+            .addOnSuccessListener {
+                view.progressBar5.visibility = View.GONE
+            }.addOnCompleteListener {
 
-        view.back_tv.setOnClickListener {
-            dismiss()
-        }
+                val otherFriendData = HashMap<String, Any>()
+                otherFriendData["userId"] = mAuth.currentUser!!.uid
 
-        view.questionVal_tv.setOnClickListener {
-            view.friends_rv.visibility = View.GONE
-            if (view.questions_rv.visibility == View.VISIBLE) {
-                view.questions_rv.visibility = View.GONE
-            } else {
-                if (allQues.size > 0) {
-                    view.questions_rv.visibility = View.VISIBLE
-                    view.questions_rv.startAnimation(Utility().inFromRightAnimation())
-                } else {
-                    view.questions_rv.visibility = View.GONE
-                }
-            }
-        }
-
-        view.question_tv.setOnClickListener {
-            view.friends_rv.visibility = View.GONE
-            if (view.questions_rv.visibility == View.VISIBLE) {
-                view.questions_rv.visibility = View.GONE
-            } else {
-                if (allQues.size > 0) {
-                    view.questions_rv.visibility = View.VISIBLE
-                    view.questions_rv.startAnimation(Utility().inFromRightAnimation())
-                } else {
-                    view.questions_rv.visibility = View.GONE
-                }
-            }
-        }
-
-        view.friendsVal_tv.setOnClickListener {
-            view.questions_rv.visibility = View.GONE
-            if (view.friendsVal_tv.text == "0") {
-                view.friends_rv.visibility = View.GONE
-            } else {
-                if (view.friends_rv.visibility == View.VISIBLE) {
-                    view.friends_rv.visibility = View.GONE
-                } else {
-                    view.friends_rv.visibility = View.VISIBLE
-                    view.friends_rv.startAnimation(Utility().inFromRightAnimation())
-                }
-            }
-        }
-
-        view.friends_tv.setOnClickListener {
-            view.questions_rv.visibility = View.GONE
-            if (view.friendsVal_tv.text == "0") {
-                view.friends_rv.visibility = View.GONE
-            } else {
-                if (view.friends_rv.visibility == View.VISIBLE) {
-                    view.friends_rv.visibility = View.GONE
-                } else {
-                    view.friends_rv.visibility = View.VISIBLE
-                    view.friends_rv.startAnimation(Utility().inFromRightAnimation())
-                }
-            }
-        }
-
-        view.bestFrndVal_tv.setOnClickListener {
-            view.questions_rv.visibility = View.GONE
-            if (view.bestFrnd_tv.text == "0") {
-                view.bestFriends_rv.visibility = View.GONE
-            } else {
-                if (view.bestFriends_rv.visibility == View.VISIBLE) {
-                    view.bestFriends_rv.visibility = View.GONE
-                } else {
-                    view.bestFriends_rv.visibility = View.VISIBLE
-                    view.bestFriends_rv.startAnimation(Utility().inFromRightAnimation())
-                }
-            }
-        }
-
-        view.bestFrnd_tv.setOnClickListener {
-            view.questions_rv.visibility = View.GONE
-            if (view.bestFrnd_tv.text == "0") {
-
-            }
-        }
-
-        view.makeBfChip.setOnCloseIconClickListener {
-            if (mAuth.currentUser != null) {
-                if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
-                    view.progressBar5.visibility = View.VISIBLE
-                    addBestfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
-                        .collection("bestfriends")
-                        .document(askedBy)
-                        .delete()
-                        .addOnSuccessListener {
-                            view.progressBar5.visibility = View.GONE
-                        }.addOnCompleteListener {
-
-                            val otherFriendData = HashMap<String, Any>()
-                            otherFriendData["userId"] = mAuth.currentUser!!.uid
-
-                            firestore.collection("users").document(askedBy)
-                                .collection("bestfriends")
-                                .document(mAuth.currentUser!!.uid)
-                                .delete()
-                                .addOnSuccessListener {
-                                    view.progressBar5.visibility = View.GONE
-                                }.addOnCompleteListener {
-                                    if (isAdded && !isDetached) {
-                                        view.makeBfChip.isCloseIconVisible = false
-                                        view.makeBfChip.text = getString(R.string.add_as_bestfriend)
-                                        view.makeBfChip.setChipBackgroundColorResource(R.color.colorAccent)
-                                        view.makeBfChip.setRippleColorResource(R.color.agree_color)
-                                    }
-                                }.addOnFailureListener { exception ->
-                                    showMessage(
-                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                        1
-                                    )
-                                    view.progressBar5.visibility = View.GONE
-                                }
-                        }.addOnFailureListener { exception ->
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}",
-                                1
-                            )
-                            view.progressBar5.visibility = View.GONE
+                firestore.collection("users").document(askedBy)
+                    .collection("bestfriends")
+                    .document(mAuth.currentUser!!.uid)
+                    .delete()
+                    .addOnSuccessListener {
+                        view.progressBar5.visibility = View.GONE
+                    }.addOnCompleteListener {
+                        if (isAdded && !isDetached) {
+                            view.makeBfChip.isCloseIconVisible = false
+                            view.makeBfChip.text = getString(R.string.add_as_bestfriend)
+                            view.makeBfChip.setChipBackgroundColorResource(R.color.colorAccent)
+                            view.makeBfChip.setRippleColorResource(R.color.agree_color)
                         }
-                } else {
-                    showMessage("First Friend Then Best Friend", 2)
-                }
-            }
-        }
-
-        view.makeBfChip.setOnClickListener {
-            if (mAuth.currentUser != null) {
-                if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
-                    view.progressBar5.visibility = View.VISIBLE
-                    val friendData = HashMap<String, Any>()
-                    friendData["userId"] = askedBy
-                    addBestfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
-                        .collection("bestfriends")
-                        .document(askedBy).set(friendData)
-                        .addOnSuccessListener {
-                            view.progressBar5.visibility = View.GONE
-                        }.addOnCompleteListener {
-
-                            val otherFriendData = HashMap<String, Any>()
-                            otherFriendData["userId"] = mAuth.currentUser!!.uid
-
-                            firestore.collection("users").document(askedBy)
-                                .collection("bestfriends").document(mAuth.currentUser!!.uid)
-                                .set(otherFriendData).addOnSuccessListener {
-                                    view.progressBar5.visibility = View.GONE
-                                }.addOnCompleteListener {
-                                    if (isAdded && !isDetached) {
-                                        view.makeBfChip.isCloseIconVisible = true
-                                        view.makeBfChip.text = getString(R.string.best_friends)
-                                        view.makeBfChip.setChipBackgroundColorResource(R.color.agree_color)
-                                        view.makeBfChip.setRippleColorResource(R.color.colorAccent)
-                                    }
-                                }.addOnFailureListener { exception ->
-                                    showMessage(
-                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                        1
-                                    )
-                                    view.progressBar5.visibility = View.GONE
-                                }
-                        }.addOnFailureListener { exception ->
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}",
-                                1
-                            )
-                            view.progressBar5.visibility = View.GONE
-                        }
-                } else {
-                    showMessage(getString(R.string.first_friend_then_best_friend), 2)
-                }
-            }
-        }
-
-        view.connectTv.setOnClickListener {
-            if (mAuth.currentUser != null) {
-                view.progressBar5.visibility = View.VISIBLE
-
-                if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
-
-                    if (!view.makeBfChip.isCloseIconVisible) {
-                        deletefriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
-                            .collection("friends").document(askedBy)
-                            .delete()
-                            .addOnFailureListener { exception ->
-                                showMessage(
-                                    "Something Went Wrong. ${exception.localizedMessage}",
-                                    1
-                                )
-                                view.progressBar5.visibility = View.GONE
-                            }.addOnSuccessListener {
-                                view.progressBar5.visibility = View.GONE
-                            }.addOnCompleteListener {
-
-                                firestore.collection("users").document(askedBy)
-                                    .collection("friends").document(mAuth.currentUser!!.uid)
-                                    .delete()
-                                    .addOnFailureListener { exception ->
-                                        showMessage(
-                                            "Something Went Wrong. ${exception.localizedMessage}",
-                                            1
-                                        )
-                                        view.progressBar5.visibility = View.GONE
-                                    }.addOnSuccessListener {
-                                        view.progressBar5.visibility = View.GONE
-                                    }.addOnCompleteListener {
-                                        if (isAdded && !isDetached) {
-                                            view.connectTv.text =
-                                                getString(R.string.follow_as_a_friend)
-                                            view.connectTv.setChipBackgroundColorResource(R.color.agree_color)
-                                            view.connectTv.isCloseIconVisible = false
-                                            view.makeBfChip.visibility = View.GONE
-                                        }
-                                    }
-
-                            }
-                    } else {
+                    }.addOnFailureListener { exception ->
                         showMessage(
-                            "A best friend is also a friend. Can't make someone best friend and not friend. Get It?",
-                            2
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
                         )
+                        view.progressBar5.visibility = View.GONE
+                    }
+            }.addOnFailureListener { exception ->
+                showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                view.progressBar5.visibility = View.GONE
+            }
+    }
+
+    private fun addBestFriend(view: View) {
+        view.progressBar5.visibility = View.VISIBLE
+        val friendData = HashMap<String, Any>()
+        friendData["userId"] = askedBy
+        addBestfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
+            .collection("bestfriends")
+            .document(askedBy).set(friendData)
+            .addOnSuccessListener {
+                view.progressBar5.visibility = View.GONE
+            }.addOnCompleteListener {
+
+                val otherFriendData = HashMap<String, Any>()
+                otherFriendData["userId"] = mAuth.currentUser!!.uid
+
+                firestore.collection("users").document(askedBy)
+                    .collection("bestfriends").document(mAuth.currentUser!!.uid)
+                    .set(otherFriendData).addOnSuccessListener {
+                        view.progressBar5.visibility = View.GONE
+                    }.addOnCompleteListener {
+                        if (isAdded && !isDetached) {
+                            view.makeBfChip.isCloseIconVisible = true
+                            view.makeBfChip.text = getString(R.string.best_friends)
+                            view.makeBfChip.setChipBackgroundColorResource(R.color.agree_color)
+                            view.makeBfChip.setRippleColorResource(R.color.colorAccent)
+                        }
+                    }.addOnFailureListener { exception ->
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        view.progressBar5.visibility = View.GONE
+                    }
+            }.addOnFailureListener { exception ->
+                showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                view.progressBar5.visibility = View.GONE
+            }
+    }
+
+    private fun makefriend(view: View) {
+        val friendData = HashMap<String, Any>()
+        friendData["userId"] = askedBy
+
+        addfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
+            .collection("friends").document(askedBy).set(friendData)
+            .addOnSuccessListener {
+                view.progressBar5.visibility = View.GONE
+            }.addOnCompleteListener {
+
+                val otherFriendData = HashMap<String, Any>()
+                otherFriendData["userId"] = mAuth.currentUser!!.uid
+
+                firestore.collection("users").document(askedBy)
+                    .collection("friends").document(mAuth.currentUser!!.uid)
+                    .set(otherFriendData).addOnSuccessListener {
+                        view.progressBar5.visibility = View.GONE
+                    }.addOnCompleteListener {
+                        if (isAdded && !isDetached) {
+                            view.connectTv.text =
+                                getString(R.string.unfollow_as_a_friend)
+                            view.connectTv.setChipBackgroundColorResource(R.color.disagree_color)
+                            view.connectTv.isCloseIconVisible = false
+                            view.makeBfChip.visibility = View.VISIBLE
+                        }
+                    }.addOnFailureListener { exception ->
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        view.progressBar5.visibility = View.GONE
+                    }
+            }.addOnFailureListener { exception ->
+                showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                view.progressBar5.visibility = View.GONE
+            }
+    }
+
+    private fun defriend(view: View) {
+        deletefriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
+            .collection("friends").document(askedBy)
+            .delete()
+            .addOnFailureListener { exception ->
+                showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                view.progressBar5.visibility = View.GONE
+            }.addOnSuccessListener {
+                view.progressBar5.visibility = View.GONE
+            }.addOnCompleteListener {
+
+                firestore.collection("users").document(askedBy)
+                    .collection("friends").document(mAuth.currentUser!!.uid)
+                    .delete()
+                    .addOnFailureListener { exception ->
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        view.progressBar5.visibility = View.GONE
+                    }.addOnSuccessListener {
+                        view.progressBar5.visibility = View.GONE
+                    }.addOnCompleteListener {
+                        if (isAdded && !isDetached) {
+                            view.connectTv.text =
+                                getString(R.string.follow_as_a_friend)
+                            view.connectTv.setChipBackgroundColorResource(R.color.agree_color)
+                            view.connectTv.isCloseIconVisible = false
+                            view.makeBfChip.visibility = View.GONE
+                        }
                     }
 
-                } else {
-                    val friendData = HashMap<String, Any>()
-                    friendData["userId"] = askedBy
-
-                    addfriendfirestore.collection("users").document(mAuth.currentUser!!.uid)
-                        .collection("friends").document(askedBy).set(friendData)
-                        .addOnSuccessListener {
-                            view.progressBar5.visibility = View.GONE
-                        }.addOnCompleteListener {
-
-                            val otherFriendData = HashMap<String, Any>()
-                            otherFriendData["userId"] = mAuth.currentUser!!.uid
-
-                            firestore.collection("users").document(askedBy)
-                                .collection("friends").document(mAuth.currentUser!!.uid)
-                                .set(otherFriendData).addOnSuccessListener {
-                                    view.progressBar5.visibility = View.GONE
-                                }.addOnCompleteListener {
-                                    if (isAdded && !isDetached) {
-                                        view.connectTv.text =
-                                            getString(R.string.unfollow_as_a_friend)
-                                        view.connectTv.setChipBackgroundColorResource(R.color.disagree_color)
-                                        view.connectTv.isCloseIconVisible = false
-                                        view.makeBfChip.visibility = View.VISIBLE
-                                    }
-                                }.addOnFailureListener { exception ->
-                                    showMessage(
-                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                        1
-                                    )
-                                    view.progressBar5.visibility = View.GONE
-                                }
-                        }.addOnFailureListener { exception ->
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}",
-                                1
-                            )
-                            view.progressBar5.visibility = View.GONE
-                        }
-
-                }
             }
-        }
+    }
 
+    private fun setBackgroundImageMeasurement(view: View) {
         if (context != null) {
             val windMang: WindowManager =
                 context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -403,7 +374,51 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             view.background_image.maxHeight = height
             view.background_image.minimumWidth = height
         }
+    }
 
+    private fun doQuestionWork(view: View) {
+        view.friends_rv.visibility = View.GONE
+        view.bestFriends_rv.visibility = View.GONE
+        if (view.questions_rv.visibility == View.VISIBLE) {
+            view.questions_rv.visibility = View.GONE
+        } else {
+            if (allQues.size > 0) {
+                view.questions_rv.visibility = View.VISIBLE
+                view.questions_rv.startAnimation(Utility().inFromRightAnimation())
+            } else {
+                view.questions_rv.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun doFriendWork(view: View) {
+        view.questions_rv.visibility = View.GONE
+        view.bestFriends_rv.visibility = View.GONE
+        if (view.friendsVal_tv.text == "0") {
+            view.friends_rv.visibility = View.GONE
+        } else {
+            if (view.friends_rv.visibility == View.VISIBLE) {
+                view.friends_rv.visibility = View.GONE
+            } else {
+                view.friends_rv.visibility = View.VISIBLE
+                view.friends_rv.startAnimation(Utility().inFromRightAnimation())
+            }
+        }
+    }
+
+    private fun doBestFriendWork(view: View) {
+        view.questions_rv.visibility = View.GONE
+        view.friends_rv.visibility = View.GONE
+        if (view.bestFrnd_tv.text == "0") {
+            view.bestFriends_rv.visibility = View.GONE
+        } else {
+            if (view.bestFriends_rv.visibility == View.VISIBLE) {
+                view.bestFriends_rv.visibility = View.GONE
+            } else {
+                view.bestFriends_rv.visibility = View.VISIBLE
+                view.bestFriends_rv.startAnimation(Utility().inFromRightAnimation())
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -424,115 +439,107 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             getUserBestFriendList(view)
 
             // get selected user questions
-            getUserQuestionsList(view)
+            getUserQuestionsList()
 
             // get user data
             if (isAdded) {
-                firestore.collection("users").document(askedBy).get()
-                    .addOnSuccessListener { result ->
-                        if (result.exists()) {
+                getUserBackground(view)
+                getUserDetails(view)
+            }
+        }
+    }
 
-                            addfriendfirestore.collection("background_images")
-                                .document(result.getString("bg_option")!!).get()
-                                .addOnSuccessListener { resultBg ->
-                                    showLoading()
-                                    if (result.exists()) {
-                                        Glide.with(this).load(resultBg.getString("imageUrl")!!)
-                                            .listener(object :
-                                                RequestListener<Drawable> {
-                                                override fun onLoadFailed(
-                                                    exception: GlideException?,
-                                                    model: Any?,
-                                                    target: Target<Drawable>?,
-                                                    isFirstResource: Boolean
-                                                ): Boolean {
-                                                    view.progressBar5.visibility = View.GONE
-                                                    showMessage(
-                                                        "Something Went Wrong. ${exception?.localizedMessage}",
-                                                        1
-                                                    )
-                                                    return false
-                                                }
-
-                                                override fun onResourceReady(
-                                                    resource: Drawable?,
-                                                    model: Any?,
-                                                    target: Target<Drawable>?,
-                                                    dataSource: DataSource?,
-                                                    isFirstResource: Boolean
-                                                ): Boolean {
-                                                    view.progressBar5.visibility = View.GONE
-                                                    return false
-                                                }
-                                            }).into(view.background_image)
-                                        hideLoading()
-                                    } else {
-                                        showMessage(context!!.getString(R.string.not_found_bg), 1)
-                                        hideLoading()
-                                    }
-                                }.addOnFailureListener { exception ->
-                                    showMessage(
-                                        "Something Went Wrong. ${exception.localizedMessage}",
-                                        1
-                                    )
-                                    hideLoading()
-                                }.addOnCanceledListener {
-                                    showMessage(
-                                        context!!.getString(R.string.loading_image_cancel),
-                                        4
-                                    )
-                                    hideLoading()
-                                }
-
-                            hideLoading()
-                        }
-                    }.addOnFailureListener {
-                    showMessage(context!!.getString(R.string.something_went_wring_oops), 1)
-                    hideLoading()
-                }.addOnCanceledListener {
-                    showMessage(context!!.getString(R.string.getting_details), 4)
-                    hideLoading()
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private fun getUserDetails(view: View) {
+        firestore.collection("users").document(askedBy)
+            .addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
                 }
 
-                firestore.collection("users").document(askedBy)
-                    .addSnapshotListener { snapshot, exception ->
-                        if (exception != null) {
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}", 1
-                            )
+                if (isAdded && !isDetached) {
+                    if (snapshot != null && snapshot.exists()) {
+                        if (snapshot.data!!["questions"].toString().isNotEmpty()) {
+                            view.questionVal_tv.text =
+                                snapshot.data!!["questions"].toString()
+                            if (snapshot.data!!["questions"].toString() == "0") {
+                                view.friends_rv.visibility = View.GONE
+                            } else {
+                                getUserQuestionsList()
+                            }
                         }
+                        if (snapshot.data!!["friends"].toString().isNotEmpty()) {
+                            view.friendsVal_tv.text = snapshot.data!!["friends"].toString()
+                            if (snapshot.data!!["friends"].toString() == "0") {
+                                view.friends_rv.visibility = View.GONE
+                            } else {
+                                getUserFriendList(view)
+                            }
+                        }
+                        if (snapshot.data!!["best_friends"].toString().isNotEmpty()) {
+                            view.bestFrndVal_tv.text =
+                                snapshot.data!!["best_friends"].toString()
+                            if (snapshot.data!!["best_friends"].toString() == "0") {
+                                view.bestFriends_rv.visibility = View.GONE
+                            } else {
+                                getUserBestFriendList(view)
+                            }
+                        }
+                        view.userNameTv.text = snapshot.data!!["name"].toString()
 
-                        if (isAdded && !isDetached) {
-                            if (snapshot != null && snapshot.exists()) {
-                                if (snapshot.data!!["questions"].toString().isNotEmpty()) {
-                                    view.questionVal_tv.text =
-                                        snapshot.data!!["questions"].toString()
-                                    if (snapshot.data!!["questions"].toString() == "0") {
-                                        view.friends_rv.visibility = View.GONE
-                                    } else {
-                                        getUserQuestionsList(view)
-                                    }
+                        Glide.with(this).load(snapshot.data!!["imageUrl"].toString())
+                            .listener(object :
+                                RequestListener<Drawable> {
+                                override fun onLoadFailed(
+                                    exception: GlideException?,
+                                    model: Any?,
+                                    target: Target<Drawable>?,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    view.progressBar5.visibility = View.GONE
+                                    showMessage(
+                                        "Something Went Wrong. ${exception?.localizedMessage}",
+                                        1
+                                    )
+                                    return false
                                 }
-                                if (snapshot.data!!["friends"].toString().isNotEmpty()) {
-                                    view.friendsVal_tv.text = snapshot.data!!["friends"].toString()
-                                    if (snapshot.data!!["friends"].toString() == "0") {
-                                        view.friends_rv.visibility = View.GONE
-                                    } else {
-                                        getUserFriendList(view)
-                                    }
-                                }
-                                if (snapshot.data!!["best_friends"].toString().isNotEmpty()) {
-                                    view.bestFrndVal_tv.text =
-                                        snapshot.data!!["best_friends"].toString()
-                                    if (snapshot.data!!["best_friends"].toString() == "0") {
-                                        view.bestFriends_rv.visibility = View.GONE
-                                    } else {
-                                        getUserBestFriendList(view)
-                                    }
-                                }
-                                view.userNameTv.text = snapshot.data!!["name"].toString()
 
-                                Glide.with(this).load(snapshot.data!!["imageUrl"].toString())
+                                override fun onResourceReady(
+                                    resource: Drawable?,
+                                    model: Any?,
+                                    target: Target<Drawable>?,
+                                    dataSource: DataSource?,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    view.progressBar5.visibility = View.GONE
+                                    return false
+                                }
+                            }).into(view.user_iv)
+                        view.user_iv.borderWidth = 2
+                        view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+
+                        view.progressBar5.visibility = View.GONE
+                    } else {
+                        hideLoading()
+                        view.progressBar5.visibility = View.GONE
+                    }
+                }
+            }
+    }
+
+    private fun getUserBackground(view: View) {
+        firestore.collection("users").document(askedBy).get()
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+
+                    addfriendfirestore.collection("background_images")
+                        .document(result.getString("bg_option")!!).get()
+                        .addOnSuccessListener { resultBg ->
+                            showLoading()
+                            if (result.exists()) {
+                                Glide.with(this).load(resultBg.getString("imageUrl")!!)
                                     .listener(object :
                                         RequestListener<Drawable> {
                                         override fun onLoadFailed(
@@ -559,19 +566,35 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                             view.progressBar5.visibility = View.GONE
                                             return false
                                         }
-                                    }).into(view.user_iv)
-                                view.user_iv.borderWidth = 2
-                                view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
-
-                                view.progressBar5.visibility = View.GONE
-                            } else {
+                                    }).into(view.background_image)
                                 hideLoading()
-                                view.progressBar5.visibility = View.GONE
+                            } else {
+                                showMessage(context!!.getString(R.string.not_found_bg), 1)
+                                hideLoading()
                             }
+                        }.addOnFailureListener { exception ->
+                            showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}",
+                                1
+                            )
+                            hideLoading()
+                        }.addOnCanceledListener {
+                            showMessage(
+                                context!!.getString(R.string.loading_image_cancel),
+                                4
+                            )
+                            hideLoading()
                         }
-                    }
+
+                    hideLoading()
+                }
+            }.addOnFailureListener {
+                showMessage(context!!.getString(R.string.something_went_wring_oops), 1)
+                hideLoading()
+            }.addOnCanceledListener {
+                showMessage(context!!.getString(R.string.getting_details), 4)
+                hideLoading()
             }
-        }
     }
 
     private fun getUserBestFriendList(view: View) {
@@ -624,7 +647,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         }
     }
 
-    private fun getUserQuestionsList(view: View) {
+    private fun getUserQuestionsList() {
         firestore.collection("question")
             .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->

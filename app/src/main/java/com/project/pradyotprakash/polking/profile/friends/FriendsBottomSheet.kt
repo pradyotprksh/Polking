@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
+    private var type: Int = 1
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private val allFriends = ArrayList<FriendsListModel>()
@@ -66,9 +67,14 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
 
         if (mAuth.currentUser != null) {
             showLoading()
+            val from: String = if (type == 1) {
+                "friends"
+            } else {
+                "bestfriends"
+            }
 
             firestore.collection("users").document(mAuth.currentUser!!.uid)
-                .collection("friends").addSnapshotListener { snapshot, exception ->
+                .collection(from).addSnapshotListener { snapshot, exception ->
                     if (exception != null) {
                         showMessage(
                             "Something Went Wrong. ${exception.localizedMessage}", 1
@@ -118,5 +124,9 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
 
     override fun showMessage(message: String, type: Int) {
 
+    }
+
+    fun setType(type: Int) {
+        this.type = type
     }
 }
