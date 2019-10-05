@@ -5,35 +5,73 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
-               android:alpha="0.2"
-               android:src="@drawable/ic_about" app:layout_constraintTop_toTopOf="parent"
-               app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-               app:layout_constraintBottom_toBottomOf="parent" android:scaleType="centerCrop"/>
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.0"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_about"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-            android:text="@string/close"
+    <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back_tv"
+            app:lottie_autoPlay="true"
+            app:lottie_enableMergePathsForKitKatAndAbove="true"
+            app:lottie_fileName="wave.json"
+            app:lottie_loop="true" />
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/back_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/back_tv"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp"
-            android:textSize="15sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/muli"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"/>
+            android:layout_marginTop="15dp"
+            android:text="@string/close"
+            android:textColor="@color/white"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@color/disagree_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/disagree_color" />
+
+    <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/back_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_tv"
+            app:layout_constraintTop_toTopOf="@+id/back_tv" />
 
     <TextView
+            android:id="@+id/aboutUs_tv"
             android:layout_width="0dp"
-            android:layout_height="0dp" android:id="@+id/aboutUs_tv"
-            app:layout_constraintTop_toBottomOf="@+id/back_tv" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginEnd="20dp" android:layout_marginRight="20dp"
-            app:layout_constraintEnd_toEndOf="parent" android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp" android:layout_marginTop="25dp"
-            android:textColor="@color/black" android:textSize="18sp"
-            android:fontFamily="@font/muli_bold" android:layout_marginBottom="25dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            android:layout_height="0dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/muli_bold"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/back_tv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

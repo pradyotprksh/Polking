@@ -49,13 +49,14 @@ class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEdit
     }
 
     private fun initView(view: View) {
-        mAuth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
+        initVariables()
 
-        view.back_tv.setOnClickListener {
-            stopAct()
-        }
+        setOnClickListners(view)
 
+        getAboutData(view)
+    }
+
+    private fun getAboutData(view: View) {
         if (mAuth.currentUser != null) {
             showLoading()
 
@@ -68,15 +69,27 @@ class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEdit
                     }
 
                     if (snapshot != null && snapshot.exists()) {
+                        view.aboutUs_tv.visibility = View.VISIBLE
                         view.aboutUs_tv.text = snapshot.data!!["about_us"].toString()
                     } else {
-                        view.aboutUs_tv.text = getString(R.string.about_us_txt)
+                        view.aboutUs_tv.visibility = View.INVISIBLE
                     }
                 }
 
         } else {
             showMessage(getString(R.string.user_not_found), 1)
         }
+    }
+
+    private fun setOnClickListners(view: View) {
+        view.back_tv.setOnClickListener {
+            stopAct()
+        }
+    }
+
+    private fun initVariables() {
+        mAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
     }
 
     override fun showLoading() {
