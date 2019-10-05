@@ -262,11 +262,11 @@
             android:id="@+id/optionList_cl"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone">
+            app:layout_constraintTop_toTopOf="parent">
 
         <View
                 android:id="@+id/view7"
@@ -435,15 +435,41 @@
                         android:layout_marginTop="40dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginRight="8dp"
-                        android:layout_marginBottom="40dp"
                         android:fontFamily="@font/muli_semi_bold"
                         android:text="@string/about_us"
                         android:textColor="@color/white"
                         android:textSize="20sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/faq_tv" />
+
+                <TextView
+                        android:id="@+id/notificationchip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:fontFamily="@font/muli_semi_bold"
+                        android:text="@string/notifications_for_you"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/aboutUs_tv" />
+
+                <TextView
+                        android:id="@+id/notificationinfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="40dp"
+                        android:fontFamily="@font/muli_extra_light"
+                        android:text="@string/notification_info"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/notificationchip" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -457,27 +483,13 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="20dp"
                 android:contentDescription="@string/imagedescription"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_close"
                 tools:ignore="VectorDrawableCompat" />
-
-        <com.google.android.material.chip.Chip
-                android:id="@+id/notificationchip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:text="@string/alerts"
-                app:rippleColor="@color/colorPrimary"
-                android:theme="@style/Theme.MaterialComponents.Light"
-                app:chipIcon="@drawable/ic_notifications"
-                app:layout_constraintBottom_toBottomOf="@+id/iv_close"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/iv_close" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
