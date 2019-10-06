@@ -20,210 +20,150 @@
             android:scaleType="fitXY"
             tools:ignore="VectorDrawableCompat"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:fitsSystemWindows="true"
+        <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:elevation="0dp">
 
-            <com.google.android.material.appbar.AppBarLayout
-                    android:background="@android:color/transparent"
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:id="@+id/main.collapsing"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/appBarLayout"
-                    android:fitsSystemWindows="true"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                <com.google.android.material.appbar.CollapsingToolbarLayout
-                        android:background="@android:color/transparent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:expandedTitleTextAppearance="@android:color/transparent"
-                        android:fitsSystemWindows="true"
-                        app:layout_scrollFlags="enterAlways">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="30dp"
-                            android:paddingBottom="20dp">
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                                android:id="@+id/user_iv"
-                                android:layout_width="45dp"
-                                android:layout_height="45dp"
-                                android:layout_marginTop="20dp"
-                                android:layout_marginEnd="20dp"
-                                android:layout_marginRight="20dp"
-                                android:contentDescription="@string/imagedescription"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/ic_default_pic"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:ignore="VectorDrawableCompat" />
-
-                        <ProgressBar
-                                android:id="@+id/imageProgressBar"
-                                style="?android:attr/progressBarStyle"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:indeterminate="true"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="@+id/user_iv"
-                                app:layout_constraintEnd_toEndOf="@+id/user_iv"
-                                app:layout_constraintStart_toStartOf="@+id/user_iv"
-                                app:layout_constraintTop_toTopOf="@+id/user_iv" />
-
-                        <EditText
-                                android:id="@+id/addQuestion_et"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginEnd="10dp"
-                                android:layout_marginRight="10dp"
-                                android:background="@drawable/white_round_borders"
-                                android:elevation="3dp"
-                                android:ems="10"
-                                android:focusable="auto"
-                                android:fontFamily="@font/muli_light"
-                                android:hint="@string/enter_your_question"
-                                android:inputType="textNoSuggestions"
-                                android:paddingLeft="15dp"
-                                android:paddingTop="10dp"
-                                android:paddingRight="15dp"
-                                android:paddingBottom="10dp"
-                                android:textColor="@color/black"
-                                android:textSize="12sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/user_iv"
-                                app:layout_constraintEnd_toStartOf="@+id/post_Tv"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="@+id/user_iv" />
-
-                        <com.google.android.material.chip.Chip
-                                android:id="@+id/post_Tv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="10dp"
-                                android:layout_marginRight="10dp"
-                                android:fontFamily="@font/muli_bold"
-                                android:text="@string/post"
-                                android:textAlignment="center"
-                                android:textColor="@color/white"
-                                android:textSize="16sp"
-                                android:theme="@style/Theme.MaterialComponents.Light"
-                                android:visibility="gone"
-                                app:chipBackgroundColor="@color/colorPrimaryDark"
-                                app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et"
-                                app:layout_constraintEnd_toStartOf="@+id/user_iv"
-                                app:layout_constraintTop_toTopOf="@+id/addQuestion_et"
-                                app:rippleColor="@color/colorPrimary" />
-
-                        <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/bestFrndQuestion_rv"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="20dp"
-                                android:clipToPadding="false"
-                                android:paddingStart="20dp"
-                                android:paddingEnd="20dp"
-                                android:visibility="visible"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintHorizontal_bias="1.0"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/addQuestion_et"
-                                app:layout_constraintVertical_bias="0.0" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.appbar.CollapsingToolbarLayout>
-
-            </com.google.android.material.appbar.AppBarLayout>
-
-            <androidx.core.widget.NestedScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                    android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/titleContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recentQ_rv"
-                            android:layout_width="match_parent"
+                    <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/user_iv"
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="45dp"
+                            android:layout_marginBottom="20dp"
+                            android:contentDescription="@string/imagedescription"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_default_pic"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="VectorDrawableCompat" />
+
+                    <ProgressBar
+                            android:id="@+id/imageProgressBar"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:indeterminate="true"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="@+id/user_iv"
+                            app:layout_constraintEnd_toEndOf="@+id/user_iv"
+                            app:layout_constraintStart_toStartOf="@+id/user_iv"
+                            app:layout_constraintTop_toTopOf="@+id/user_iv" />
+
+                    <EditText
+                            android:id="@+id/addQuestion_et"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:clipToPadding="false"
-                            android:paddingTop="20dp"
-                            android:paddingBottom="30dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginRight="20dp"
+                            android:background="@drawable/white_round_borders"
+                            android:elevation="3dp"
+                            android:ems="10"
+                            android:focusable="auto"
+                            android:fontFamily="@font/muli_light"
+                            android:hint="@string/enter_your_question"
+                            android:inputType="textNoSuggestions"
+                            android:paddingLeft="15dp"
+                            android:paddingTop="10dp"
+                            android:paddingRight="15dp"
+                            android:paddingBottom="10dp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/colorPrimary"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="@+id/user_iv"
+                            app:layout_constraintEnd_toStartOf="@+id/post_Tv"
+                            app:layout_constraintStart_toEndOf="@+id/user_iv"
+                            app:layout_constraintTop_toTopOf="@+id/user_iv" />
+
+                    <com.google.android.material.chip.Chip
+                            android:id="@+id/post_Tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginRight="20dp"
+                            android:fontFamily="@font/muli_bold"
+                            android:text="@string/post"
+                            android:textAlignment="center"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:theme="@style/Theme.MaterialComponents.Light"
+                            android:visibility="gone"
+                            app:chipBackgroundColor="@color/colorPrimaryDark"
+                            app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/addQuestion_et"
+                            app:rippleColor="@color/colorPrimary" />
+
+                    <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginRight="20dp"
+                            android:background="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintStart_toStartOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </androidx.core.widget.NestedScrollView>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="none"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:ems="10"
-            android:background="@drawable/app_color_round_borders"
-            android:elevation="3dp"
-            android:id="@+id/addQuestion_et2"
-            android:paddingLeft="15dp"
-            android:paddingTop="10dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="10dp"
-            android:hint="@string/enter_your_question"
-            android:textSize="12sp"
-            android:fontFamily="@font/muli_light"
-            android:textColor="@color/black"
-            android:visibility="gone"
-            android:layout_marginStart="20dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="20dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="20dp"
-            android:layout_marginEnd="20dp" app:layout_constraintEnd_toStartOf="@+id/post_Tv2"
-            android:layout_marginRight="20dp"/>
-    <TextView
-            android:text="@string/post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/post_Tv2"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:elevation="3dp"
-            android:fontFamily="@font/muli_bold"
-            android:background="@drawable/appcolor_background"
-            android:visibility="gone"
-            android:paddingLeft="20dp"
-            android:paddingTop="5dp" android:paddingRight="20dp"
-            android:paddingBottom="5dp"
-            app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et2"
-            app:layout_constraintTop_toTopOf="@+id/addQuestion_et2" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginRight="20dp" android:layout_marginEnd="20dp"/>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recentQ_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="30dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <ProgressBar
             android:id="@+id/progressBar"
@@ -253,10 +193,9 @@
             android:visibility="gone"
             app:chipBackgroundColor="@color/colorPrimary"
             app:chipIcon="@drawable/ic_refresh"
-            app:chipStrokeColor="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:rippleColor="@color/agree_color" />
+            app:rippleColor="@color/colorPrimaryDark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

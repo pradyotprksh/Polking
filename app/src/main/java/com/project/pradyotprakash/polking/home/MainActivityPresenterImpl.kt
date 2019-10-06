@@ -8,8 +8,8 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.utility.FriendsListModel
 import com.project.pradyotprakash.polking.utility.QuestionModel
-import com.project.pradyotprakash.polking.utility.UserVotesModel
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -19,7 +19,8 @@ import kotlin.collections.HashMap
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     private val allQuestionList = ArrayList<QuestionModel>()
-    private val allVotesList = ArrayList<UserVotesModel>()
+    private val allBfQuestionList = ArrayList<QuestionModel>()
+    private val allBestFriends = ArrayList<FriendsListModel>()
     lateinit var mContext: Activity
     @Inject lateinit var mView: MainActivityView
     private lateinit var mAuth: FirebaseAuth
@@ -28,7 +29,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var getQuestionDataBase: FirebaseFirestore
     private lateinit var uploadQuestionDataBase: FirebaseFirestore
     private lateinit var addVotesDataBase: FirebaseFirestore
-    private lateinit var votesHashMap: HashMap<String, String>
+    private lateinit var getbestfriendfirestore: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -46,6 +47,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         getQuestionDataBase = FirebaseFirestore.getInstance()
         uploadQuestionDataBase = FirebaseFirestore.getInstance()
         addVotesDataBase = FirebaseFirestore.getInstance()
+        getbestfriendfirestore = FirebaseFirestore.getInstance()
     }
 
     override fun start() {
@@ -126,15 +128,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }.addOnCanceledListener {
             mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
             mView.hideLoading()
-        }
-    }
-
-    override fun getBestFrndQuestions() {
-        mView.showLoading()
-        if (currentUser != null) {
-
-        } else {
-            mView.hideOptions()
         }
     }
 

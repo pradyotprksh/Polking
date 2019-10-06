@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
+    private val allBfQuestionList = ArrayList<QuestionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -79,15 +80,40 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private fun initialize() {
         presenter.start()
 
-        user_iv.setOnClickListener {
-            presenter.isLoggedIn()
+        initVariables()
+
+        setOnClickListners()
+
+        textChangeListners()
+
+        adapters()
+
+        reloadPage()
+
+        getQuestions()
+    }
+
+    private fun getQuestions() {
+        presenter.getQuestions()
+    }
+
+    private fun reloadPage() {
+        reloadQuestions.setOnClickListener {
+            presenter.getQuestions()
+            Handler().postDelayed({
+                reloadQuestions.visibility = View.GONE
+            }, 1000)
         }
+    }
 
-        profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
-        otherProfileOptions = OtherProfileOptions.newInstance()
-        profileEditBtmSheet.isCancelable = false
-        userListBtmSheet = UserListBtmSheet.newInstance()
+    private fun adapters() {
+        questionsAdapter = QuestionsAdapter(allQues, this, this)
+        recentQ_rv.setHasFixedSize(true)
+        recentQ_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        recentQ_rv.adapter = questionsAdapter
+    }
 
+    private fun textChangeListners() {
         addQuestion_et.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -112,55 +138,23 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 }
             }
         })
+    }
 
-        addQuestion_et2.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s != null) {
-                    if (s.length > 5) {
-                        if (post_Tv2.visibility == View.GONE) {
-                            post_Tv2.startAnimation(Utility().inFromRightAnimation())
-                        }
-                        post_Tv2.visibility = View.VISIBLE
-                    } else {
-                        if (post_Tv2.visibility != View.GONE) {
-                            post_Tv2.startAnimation(Utility().outToRightAnimation())
-                            post_Tv2.visibility = View.GONE
-                        }
-                    }
-                } else {
-                    if (post_Tv2.visibility != View.GONE) {
-                        post_Tv2.startAnimation(Utility().outToRightAnimation())
-                        post_Tv2.visibility = View.GONE
-                    }
-                }
-            }
-        })
+    private fun setOnClickListners() {
+        user_iv.setOnClickListener {
+            presenter.isLoggedIn()
+        }
 
         post_Tv.setOnClickListener {
             presenter.uploadQuestion(addQuestion_et.text.toString())
         }
+    }
 
-        post_Tv2.setOnClickListener {
-            presenter.uploadQuestion(addQuestion_et2.text.toString())
-        }
-
-        questionsAdapter = QuestionsAdapter(allQues, this, this)
-        recentQ_rv.setHasFixedSize(true)
-        recentQ_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        recentQ_rv.adapter = questionsAdapter
-
-        reloadQuestions.setOnClickListener {
-            presenter.getBestFrndQuestions()
-            presenter.getQuestions()
-            Handler().postDelayed({
-                reloadQuestions.visibility = View.GONE
-            }, 1000)
-        }
-
-        presenter.getBestFrndQuestions()
-        presenter.getQuestions()
+    private fun initVariables() {
+        profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
+        otherProfileOptions = OtherProfileOptions.newInstance()
+        profileEditBtmSheet.isCancelable = false
+        userListBtmSheet = UserListBtmSheet.newInstance()
     }
 
     override fun onResume() {
@@ -200,7 +194,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun showUploadedSuccess() {
         addQuestion_et.setText("")
-        addQuestion_et2.setText("")
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
@@ -289,17 +282,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         super.onStop()
         logd(getString(R.string.stop))
         presenter.removeListener()
-    }
-
-    fun showVotes(docId: String) {
-        if (docId.isNotEmpty()) {
-            if (!userListBtmSheet.isAdded) {
-                userListBtmSheet.show(supportFragmentManager, "btmSheet")
-                userListBtmSheet.setQuestionDocId(docId)
-                userListBtmSheet.setContext(this)
-                userListBtmSheet.setActivity(this)
-            }
-        }
     }
 
     fun openProfileDetails(askedBy: String) {

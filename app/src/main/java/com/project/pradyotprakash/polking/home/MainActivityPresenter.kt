@@ -10,9 +10,6 @@ interface MainActivityPresenter: BasePresenter {
     // get profile data
     fun getProfileData()
 
-    // get best friend questions
-    fun getBestFrndQuestions()
-
     // upload the entered question
     fun uploadQuestion(question: String)
 
