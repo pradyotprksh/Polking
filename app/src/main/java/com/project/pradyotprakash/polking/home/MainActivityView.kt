@@ -36,4 +36,7 @@ interface MainActivityView: BaseView {
     // reload question
     fun showReloadOption()
 
+    // set vote
+    fun setVotes(voteType: Int, docId: String)
+
 }

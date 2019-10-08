@@ -406,4 +406,8 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
             otherProfileOptions.setUserId(notificationMessageBy)
         }
     }
+
+    override fun setVotes(voteType: Int, docId: String) {
+        presenter.setVote(voteType, docId)
+    }
 }

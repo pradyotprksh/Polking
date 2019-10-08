@@ -213,4 +213,35 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             }
     }
 
+    override fun setVote(voteType: Int, docId: String) {
+        mView.showLoading()
+
+        if (currentUser != null) {
+            val voteData = HashMap<String, Any>()
+            voteData["voteType"] = voteType
+            voteData["questionId"] = docId
+
+            addVotesDataBase
+                .collection("users")
+                .document(currentUser!!.uid)
+                .collection("votes")
+                .document(docId)
+                .set(voteData).addOnSuccessListener {
+                    mView.hideLoading()
+                }.addOnFailureListener { exception ->
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                    mView.hideLoading()
+                }.addOnCanceledListener {
+                    mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                    mView.hideLoading()
+                }
+
+        } else {
+            mView.hideOptions()
+        }
+    }
+
 }

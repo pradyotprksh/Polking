@@ -26,4 +26,7 @@ interface ProfileActivityView: BaseView {
 
     // set user data
     fun setUserDetails(question: String?, friends: String?, bestFriends: String?)
+
+    // set votes
+    fun setVotes(voteType: Int, docId: String)
 }

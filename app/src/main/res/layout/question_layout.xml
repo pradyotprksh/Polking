@@ -70,12 +70,13 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="10dp"
                     android:text="@string/yes_question"
                     android:theme="@style/Theme.MaterialComponents.Light"
+                    android:visibility="gone"
                     app:chipIcon="@drawable/ic_thumb_up"
                     app:chipStartPadding="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/seeStsts_tv"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/question_tv"
                     app:rippleColor="@color/agree_color" />
@@ -87,15 +88,33 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginRight="20dp"
-                    android:layout_marginBottom="20dp"
                     android:text="@string/no_question"
                     android:theme="@style/Theme.MaterialComponents.Light"
+                    android:visibility="gone"
                     app:chipIcon="@drawable/ic_thumb_down"
                     app:chipStartPadding="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/question_tv"
                     app:rippleColor="@color/disagree_color" />
+
+            <com.google.android.material.chip.Chip
+                    android:id="@+id/seeStsts_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="@font/muli_bold"
+                    android:text="@string/see_stats"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="0sp"
+                    android:theme="@style/Theme.MaterialComponents.Light"
+                    android:visibility="invisible"
+                    app:chipBackgroundColor="@color/colorAccent"
+                    app:chipCornerRadius="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/no_tv" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

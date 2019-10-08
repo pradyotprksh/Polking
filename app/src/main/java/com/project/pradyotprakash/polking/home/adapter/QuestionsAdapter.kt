@@ -1,6 +1,5 @@
 package com.project.pradyotprakash.polking.home.adapter
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -21,9 +20,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
+import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import de.hdodenhof.circleimageview.CircleImageView
-import java.text.SimpleDateFormat
 
 class QuestionsAdapter(
     private val allQues: List<QuestionModel>,
@@ -33,10 +32,7 @@ class QuestionsAdapter(
 
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    @SuppressLint("SimpleDateFormat")
-    var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
-    @SuppressLint("SimpleDateFormat")
-    var timeFormat: SimpleDateFormat = SimpleDateFormat("HH:mm:ss")
+    private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.question_layout, p0, false)
@@ -50,60 +46,19 @@ class QuestionsAdapter(
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onBindViewHolder(holder: ViewAdapter, pos: Int) {
 
-        userFirestore.collection("users").document(allQues[pos].askedBy).addSnapshotListener { snapshot, exception ->
-
-            if (exception != null) {
-                if (activity is MainActivity) {
-                    activity.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
-                    )
-                }
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-
-                try {
-                    Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                exception: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                if (activity is MainActivity) {
-                                    activity.showMessage(
-                                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
-                                    )
-                                }
-                                return false
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                return false
-                            }
-                        }).into(holder.profile_iv)
-
-                    holder.username_tv.text = snapshot.data!!["name"].toString()
-                } catch (exception: Exception) {
-                    if (activity is MainActivity) {
-                        activity.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-                }
-
-            }
-
-        }
+        getUserData(holder, pos)
 
         holder.question_tv.text = allQues[pos].question
+
+        if (mAuth.currentUser != null) {
+            if (mAuth.currentUser!!.uid == allQues[pos].askedBy) {
+                showStats(holder, pos)
+            } else {
+                checkIfVoteExists(holder, pos)
+            }
+        } else {
+            showStats(holder, pos)
+        }
 
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
@@ -132,6 +87,149 @@ class QuestionsAdapter(
                 }
             }
         }
+
+        holder.yes_tv.setOnClickListener {
+            if (context is MainActivity) {
+                if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        context.setVotes(1, allQues[pos].docId)
+                        showStats(holder, pos)
+                    }
+                } else {
+                    context.startLogin()
+                }
+            } else if (context is ProfileActivity) {
+                if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        context.setVotes(1, allQues[pos].docId)
+                        showStats(holder, pos)
+                    }
+                }
+            }
+        }
+
+        holder.no_tv.setOnClickListener {
+            if (context is MainActivity) {
+                if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        context.setVotes(2, allQues[pos].docId)
+                        showStats(holder, pos)
+                    }
+                } else {
+                    context.startLogin()
+                }
+            } else if (context is ProfileActivity) {
+                if (mAuth.currentUser != null) {
+                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        context.setVotes(1, allQues[pos].docId)
+                        showStats(holder, pos)
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun checkIfVoteExists(holder: ViewAdapter, pos: Int) {
+        getVotesFirestore
+            .collection("users")
+            .document(mAuth.currentUser!!.uid)
+            .collection("votes")
+            .document(allQues[pos].docId)
+            .get()
+            .addOnCanceledListener {
+                if (activity is MainActivity) {
+                    activity.showMessage(
+                        "Something Went Wrong. The request was cancelled.", 1
+                    )
+                }
+            }
+            .addOnFailureListener { exception ->
+                if (activity is MainActivity) {
+                    activity.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
+                }
+            }
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    showStats(holder, pos)
+                } else {
+                    hideStats(holder, pos)
+                }
+            }
+    }
+
+    private fun hideStats(holder: ViewAdapter, pos: Int) {
+        holder.seeStsts_tv.visibility = View.GONE
+        holder.yes_tv.visibility = View.VISIBLE
+        holder.no_tv.visibility = View.VISIBLE
+    }
+
+    private fun showStats(holder: ViewAdapter, pos: Int) {
+        holder.seeStsts_tv.visibility = View.VISIBLE
+        holder.yes_tv.visibility = View.GONE
+        holder.no_tv.visibility = View.GONE
+    }
+
+    private fun getUserData(holder: ViewAdapter, pos: Int) {
+        userFirestore.collection("users").document(allQues[pos].askedBy)
+            .addSnapshotListener { snapshot, exception ->
+
+                if (exception != null) {
+                    if (activity is MainActivity) {
+                        activity.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+
+                    try {
+                        Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                            .listener(object : RequestListener<Drawable> {
+                                override fun onLoadFailed(
+                                    exception: GlideException?,
+                                    model: Any?,
+                                    target: Target<Drawable>?,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    if (activity is MainActivity) {
+                                        activity.showMessage(
+                                            "Something Went Wrong. ${exception!!.localizedMessage}",
+                                            1
+                                        )
+                                    }
+                                    return false
+                                }
+
+                                override fun onResourceReady(
+                                    resource: Drawable?,
+                                    model: Any?,
+                                    target: Target<Drawable>?,
+                                    dataSource: DataSource?,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    return false
+                                }
+                            }).into(holder.profile_iv)
+                        holder.profile_iv.borderColor =
+                            context.resources.getColor(R.color.colorPrimary)
+                        holder.profile_iv.borderWidth = 2
+
+                        holder.username_tv.text = snapshot.data!!["name"].toString()
+                    } catch (exception: Exception) {
+                        if (activity is MainActivity) {
+                            activity.showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}", 1
+                            )
+                        }
+                    }
+
+                }
+
+            }
     }
 
     inner class ViewAdapter(context: View) : RecyclerView.ViewHolder(context) {
@@ -140,6 +238,7 @@ class QuestionsAdapter(
         val question_tv: TextView = context.findViewById(R.id.question_tv)
         val yes_tv: Chip = context.findViewById(R.id.yes_tv)
         val no_tv: Chip = context.findViewById(R.id.no_tv)
+        val seeStsts_tv: Chip = context.findViewById(R.id.seeStsts_tv)
     }
 
 }

@@ -12,4 +12,7 @@ interface ProfileActivityPresenter: BasePresenter {
 
     // change doc id of bg
     fun changeBgId(bgDocId: String)
+
+    // set vote
+    fun setVote(voteType: Int, docId: String)
 }

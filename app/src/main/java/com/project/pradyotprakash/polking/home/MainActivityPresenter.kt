@@ -22,4 +22,7 @@ interface MainActivityPresenter: BasePresenter {
     // remove listener
     fun removeListener()
 
+    // set vote
+    fun setVote(voteType: Int, docId: String)
+
 }

@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
-    private val allBfQuestionList = ArrayList<QuestionModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -289,6 +288,10 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             otherProfileOptions.show(supportFragmentManager, "btmSheet")
             otherProfileOptions.setUserId(askedBy)
         }
+    }
+
+    override fun setVotes(voteType: Int, docId: String) {
+        presenter.setVote(voteType, docId)
     }
 
 }

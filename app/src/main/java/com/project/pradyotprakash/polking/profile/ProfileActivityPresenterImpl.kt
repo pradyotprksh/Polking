@@ -18,6 +18,7 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     private var currentUser: FirebaseUser? = null
     private lateinit var dataBase: FirebaseFirestore
     private lateinit var bgDataBase: FirebaseFirestore
+    private lateinit var addVotesDataBase: FirebaseFirestore
     private val allBgList = ArrayList<BgModel>()
 
     @Inject
@@ -27,6 +28,7 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
         currentUser = mAuth.currentUser
         dataBase = FirebaseFirestore.getInstance()
         bgDataBase = FirebaseFirestore.getInstance()
+        addVotesDataBase = FirebaseFirestore.getInstance()
     }
 
     override fun getUserData() {
@@ -161,6 +163,35 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
                 mView.hideLoading()
                 mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
             }
+    }
+
+    override fun setVote(voteType: Int, docId: String) {
+        mView.showLoading()
+
+        if (currentUser != null) {
+            val voteData = HashMap<String, Any>()
+            voteData["voteType"] = voteType
+            voteData["questionId"] = docId
+
+            addVotesDataBase
+                .collection("users")
+                .document(currentUser!!.uid)
+                .collection("votes")
+                .document(docId)
+                .set(voteData).addOnSuccessListener {
+                    mView.hideLoading()
+                }.addOnFailureListener { exception ->
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                    mView.hideLoading()
+                }.addOnCanceledListener {
+                    mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                    mView.hideLoading()
+                }
+
+        }
     }
 
 }
