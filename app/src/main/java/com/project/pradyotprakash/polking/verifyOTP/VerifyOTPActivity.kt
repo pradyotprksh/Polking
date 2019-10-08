@@ -33,8 +33,23 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
         super.onCreate(savedInstanceState)
 
         // Make full screen
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        // set theme for notch if sdk is P
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        } else {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         setContentView(R.layout.activity_verify_otp)
 
@@ -47,6 +62,11 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
 
         callPhoneNumberValidation()
 
+        setOnClickListners()
+
+    }
+
+    private fun setOnClickListners() {
         saveTv.setOnClickListener {
             if (presenter.getStoredVerificationId()!=null) {
                 val code = otp1Tv.text.toString() + "" + otp2Tv.text.toString() + "" + otp3Tv.text.toString() + "" + otp4Tv.text.toString() + "" + otp5Tv.text.toString() + "" + otp6Tv.text.toString()
@@ -117,11 +137,6 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
                 }
             }
         }
-
-        closeIv.setOnClickListener {
-            finish()
-        }
-
     }
 
     private fun callPhoneNumberValidation() {

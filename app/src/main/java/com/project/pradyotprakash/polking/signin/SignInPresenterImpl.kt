@@ -99,30 +99,7 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
                         mView.hideLoading()
                         mView.stopAct()
                     } else {
-                        val userData = HashMap<String, Any>()
-                        userData["name"] = account.displayName!!
-                        userData["age"] = 18
-                        userData["birthDay"] = ""
-                        userData["gender"] = "-1"
-                        userData["questions"] = "0"
-                        userData["friends"] = "0"
-                        userData["best_friends"] = "0"
-                        userData["bg_option"] = "bg_one"
-                        firestore.collection("users")
-                            .document(mAuth.currentUser!!.uid)
-                            .update(userData).addOnSuccessListener {
-                                mView.hideLoading()
-                                mView.stopAct()
-                            }.addOnFailureListener { exception ->
-                                mView.showMessage(
-                                    "Something Went Wrong. ${exception.localizedMessage}",
-                                    1
-                                )
-                                mView.hideLoading()
-                            }.addOnCanceledListener {
-                                mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
-                                mView.hideLoading()
-                            }
+                        addDataNewUser(account)
                     }
                 }.addOnFailureListener { exception ->
                     mView.showMessage(
@@ -135,6 +112,33 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
                     mView.hideLoading()
                 }
         }
+    }
+
+    private fun addDataNewUser(account: GoogleSignInAccount) {
+        val userData = HashMap<String, Any>()
+        userData["name"] = account.displayName!!
+        userData["age"] = 18
+        userData["birthDay"] = ""
+        userData["gender"] = "-1"
+        userData["questions"] = "0"
+        userData["friends"] = "0"
+        userData["best_friends"] = "0"
+        userData["bg_option"] = "bg_one"
+        firestore.collection("users")
+            .document(mAuth.currentUser!!.uid)
+            .update(userData).addOnSuccessListener {
+                mView.hideLoading()
+                mView.stopAct()
+            }.addOnFailureListener { exception ->
+                mView.showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                mView.hideLoading()
+            }.addOnCanceledListener {
+                mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
+                mView.hideLoading()
+            }
     }
 
     override fun start() {

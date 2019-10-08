@@ -41,8 +41,23 @@ class SignInActivity : AppCompatActivity(), SignInView {
         super.onCreate(savedInstanceState)
 
         // Make full screen
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        // set theme for notch if sdk is P
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+            window.decorView.systemUiVisibility = (
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        } else {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
 
         setContentView(R.layout.activity_sign_in)
         logd(getString(R.string.create))
@@ -52,6 +67,36 @@ class SignInActivity : AppCompatActivity(), SignInView {
     private fun initialize() {
         presenter.start()
 
+        setOnClickListners()
+
+        onTextChangeListner()
+    }
+
+    private fun onTextChangeListner() {
+        phoneEt.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {}
+
+            override fun beforeTextChanged(
+                s: CharSequence, start: Int,
+                count: Int, after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence, start: Int,
+                before: Int, count: Int
+            ) {
+                if (s.isNotEmpty() && s.toString().isValidPhone()) {
+                    saveTv.visibility = View.VISIBLE
+                } else {
+                    saveTv.visibility = View.GONE
+                }
+            }
+        })
+    }
+
+    private fun setOnClickListners() {
         zeroDial.setOnClickListener {
             changePhoneNumber("0")
         }
@@ -92,24 +137,6 @@ class SignInActivity : AppCompatActivity(), SignInView {
             changePhoneNumber("9")
         }
 
-        phoneEt.addTextChangedListener(object : TextWatcher {
-
-            override fun afterTextChanged(s: Editable) {}
-
-            override fun beforeTextChanged(s: CharSequence, start: Int,
-                                           count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int,
-                                       before: Int, count: Int) {
-                if (s.isNotEmpty() && s.toString().isValidPhone()) {
-                    saveTv.visibility = View.VISIBLE
-                } else {
-                    saveTv.visibility = View.GONE
-                }
-            }
-        })
-
         backSpaceTv.setOnClickListener {
             var phoneNum = phoneEt.text.toString()
             if (phoneNum.isNotEmpty()) {
@@ -125,10 +152,6 @@ class SignInActivity : AppCompatActivity(), SignInView {
             } else {
                 showMessage(getString(R.string.enter_valid_phone), 1)
             }
-        }
-
-        closeIv.setOnClickListener {
-            finish()
         }
 
         googleSignInCl.setOnClickListener {
