@@ -109,7 +109,7 @@
                     android:textSize="0sp"
                     android:theme="@style/Theme.MaterialComponents.Light"
                     android:visibility="invisible"
-                    app:chipBackgroundColor="@color/colorAccent"
+                    app:chipBackgroundColor="@color/colorPrimaryDark"
                     app:chipCornerRadius="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -24,6 +23,7 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
+import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.usersList.UserListBtmSheet
@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
     lateinit var otherProfileOptions: OtherProfileOptions
+    lateinit var questionStatistics: QuestionStatistics
     lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
@@ -87,22 +88,11 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         adapters()
 
-        reloadPage()
-
         getQuestions()
     }
 
     private fun getQuestions() {
         presenter.getQuestions()
-    }
-
-    private fun reloadPage() {
-        reloadQuestions.setOnClickListener {
-            presenter.getQuestions()
-            Handler().postDelayed({
-                reloadQuestions.visibility = View.GONE
-            }, 1000)
-        }
     }
 
     private fun adapters() {
@@ -152,6 +142,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private fun initVariables() {
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
+        questionStatistics = QuestionStatistics.newInstance()
         profileEditBtmSheet.isCancelable = false
         userListBtmSheet = UserListBtmSheet.newInstance()
     }
@@ -161,12 +152,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         logd(getString(R.string.resume))
         presenter.addAuthStateListener()
         presenter.getProfileData()
-    }
-
-    override fun showReloadOption() {
-        if (reloadQuestions.visibility != View.VISIBLE) {
-            reloadQuestions.visibility = View.VISIBLE
-        }
     }
 
     override fun startProfileAct() {
@@ -292,6 +277,20 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun setVotes(voteType: Int, docId: String) {
         presenter.setVote(voteType, docId)
+    }
+
+    override fun showStats(docId: String) {
+        showLoading()
+        presenter.showStats(docId)
+    }
+
+    override fun showQuestionStats(docId: String) {
+        runOnUiThread {
+            if (!questionStatistics.isAdded) {
+                questionStatistics.show(supportFragmentManager, "btmSheet")
+                questionStatistics.setQuestionDocId(docId)
+            }
+        }
     }
 
 }

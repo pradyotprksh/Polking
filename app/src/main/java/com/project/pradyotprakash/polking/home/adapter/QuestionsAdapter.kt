@@ -57,6 +57,7 @@ class QuestionsAdapter(
                 checkIfVoteExists(holder, pos)
             }
         } else {
+            holder.seeStsts_tv.text = context.getString(R.string.please_login)
             showStats(holder, pos)
         }
 
@@ -93,6 +94,7 @@ class QuestionsAdapter(
                 if (mAuth.currentUser != null) {
                     if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
                         context.setVotes(1, allQues[pos].docId)
+                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.agree_color)
                         showStats(holder, pos)
                     }
                 } else {
@@ -101,6 +103,7 @@ class QuestionsAdapter(
             } else if (context is ProfileActivity) {
                 if (mAuth.currentUser != null) {
                     if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
                         context.setVotes(1, allQues[pos].docId)
                         showStats(holder, pos)
                     }
@@ -112,6 +115,7 @@ class QuestionsAdapter(
             if (context is MainActivity) {
                 if (mAuth.currentUser != null) {
                     if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
                         context.setVotes(2, allQues[pos].docId)
                         showStats(holder, pos)
                     }
@@ -121,9 +125,20 @@ class QuestionsAdapter(
             } else if (context is ProfileActivity) {
                 if (mAuth.currentUser != null) {
                     if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        context.setVotes(1, allQues[pos].docId)
+                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
+                        context.setVotes(2, allQues[pos].docId)
                         showStats(holder, pos)
                     }
+                }
+            }
+        }
+
+        holder.seeStsts_tv.setOnClickListener {
+            if (context is MainActivity) {
+                if (mAuth.currentUser != null) {
+                    context.showStats(allQues[pos].docId)
+                } else {
+                    context.startLogin()
                 }
             }
         }
@@ -153,6 +168,12 @@ class QuestionsAdapter(
             }
             .addOnSuccessListener { result ->
                 if (result.exists()) {
+                    val voteType = result.get("voteType")
+                    if (voteType == 1L) {
+                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.agree_color)
+                    } else {
+                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
+                    }
                     showStats(holder, pos)
                 } else {
                     hideStats(holder, pos)

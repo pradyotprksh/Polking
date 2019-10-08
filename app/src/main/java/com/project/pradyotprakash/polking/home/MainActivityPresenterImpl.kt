@@ -2,13 +2,14 @@ package com.project.pradyotprakash.polking.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.utility.FriendsListModel
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,8 +20,6 @@ import kotlin.collections.HashMap
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     private val allQuestionList = ArrayList<QuestionModel>()
-    private val allBfQuestionList = ArrayList<QuestionModel>()
-    private val allBestFriends = ArrayList<FriendsListModel>()
     lateinit var mContext: Activity
     @Inject lateinit var mView: MainActivityView
     private lateinit var mAuth: FirebaseAuth
@@ -30,6 +29,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var uploadQuestionDataBase: FirebaseFirestore
     private lateinit var addVotesDataBase: FirebaseFirestore
     private lateinit var getbestfriendfirestore: FirebaseFirestore
+    private lateinit var firebaseFunctions: FirebaseFunctions
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -48,6 +48,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         uploadQuestionDataBase = FirebaseFirestore.getInstance()
         addVotesDataBase = FirebaseFirestore.getInstance()
         getbestfriendfirestore = FirebaseFirestore.getInstance()
+        firebaseFunctions = FirebaseFunctions.getInstance()
     }
 
     override fun start() {
@@ -92,6 +93,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     }
                 }
         } else {
+            mView.hideLoading()
             mView.hideOptions()
         }
     }
@@ -101,7 +103,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             if (mAuth.currentUser != null) {
                 currentUser = mAuth.currentUser
                 getUserData()
-                mView.showOptions()
+                getQuestions()
             } else {
                 mView.hideOptions()
             }
@@ -189,16 +191,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                             doc.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
                         this.allQuestionList.add(0, quesList)
                     }
-
-                    for (doc in snapshot.documentChanges) {
-                        if (doc.type == DocumentChange.Type.ADDED ||
-                            doc.type == DocumentChange.Type.MODIFIED ||
-                            doc.type == DocumentChange.Type.REMOVED
-                        ) {
-                            mView.showReloadOption()
-                        }
-
-                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     mView.showMessage(e.localizedMessage, 1)
@@ -242,6 +234,50 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         } else {
             mView.hideOptions()
         }
+    }
+
+    override fun showStats(docId: String) {
+        callStatsFunction(docId)
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    if (task.exception != null) {
+                        val e = task.exception
+                        if (e != null) {
+                            if (e is FirebaseFunctionsException) {
+                                mView.hideLoading()
+                                mView.showMessage("Something Went Wrong. ${e.localizedMessage}", 1)
+                            } else {
+                                openStats(docId)
+                            }
+                        } else {
+                            openStats(docId)
+                        }
+                    } else {
+                        openStats(docId)
+                    }
+                } else {
+                    openStats(docId)
+                }
+            }
+    }
+
+    private fun openStats(docId: String) {
+        mView.hideLoading()
+        mView.showQuestionStats(docId)
+    }
+
+    private fun callStatsFunction(docId: String): Task<String> {
+        val data = HashMap<String, Any>()
+        data["questionId"] = docId
+        data["userId"] = mAuth.currentUser!!.uid
+
+        return firebaseFunctions
+            .getHttpsCallable("showQuestionStats")
+            .call(data)
+            .continueWith { task ->
+                val result = task.result?.data as String
+                result
+            }
     }
 
 }

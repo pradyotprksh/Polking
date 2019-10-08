@@ -159,4 +159,5 @@
     <string name="something_new">Something New</string>
     <string name="notification_info">(You Can Swipe Up In The Profile Page To Open The Notifications)</string>
     <string name="see_stats">See Stats</string>
+    <string name="please_login">Please Login</string>
 </resources>

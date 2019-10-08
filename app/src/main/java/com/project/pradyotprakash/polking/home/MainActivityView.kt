@@ -33,10 +33,13 @@ interface MainActivityView: BaseView {
     // show options if logged in
     fun showOptions()
 
-    // reload question
-    fun showReloadOption()
-
     // set vote
     fun setVotes(voteType: Int, docId: String)
+
+    // show question stats
+    fun showStats(docId: String)
+
+    // open btm sheet for the question
+    fun showQuestionStats(docId: String)
 
 }
