@@ -15,4 +15,7 @@ interface ProfileActivityPresenter: BasePresenter {
 
     // set vote
     fun setVote(voteType: Int, docId: String)
+
+    // show stats
+    fun showStats(docId: String)
 }

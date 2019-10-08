@@ -29,4 +29,10 @@ interface ProfileActivityView: BaseView {
 
     // set votes
     fun setVotes(voteType: Int, docId: String)
+
+    // show question stats
+    fun showStats(docId: String)
+
+    // open btm sheet for the question
+    fun showQuestionStats(docId: String)
 }

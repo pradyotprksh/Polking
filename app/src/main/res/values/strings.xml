@@ -160,4 +160,12 @@
     <string name="notification_info">(You Can Swipe Up In The Profile Page To Open The Notifications)</string>
     <string name="see_stats">See Stats</string>
     <string name="please_login">Please Login</string>
+    <string name="retry">Retry</string>
+    <string name="total_votes">Total Votes</string>
+    <string name="people_who_think_ike_you">People Who Thinks Like You</string>
+    <string name="voted_yes">YOU VOTED YES</string>
+    <string name="voted_no">YOU VOTED NO</string>
+    <string name="voted_yes_for_your_question">People Who Voted Yes</string>
+    <string name="voted_no_for_your_question">People Who Voted No</string>
+    <string name="your_quesitons">YOUR QUESTION STATISTICS</string>
 </resources>

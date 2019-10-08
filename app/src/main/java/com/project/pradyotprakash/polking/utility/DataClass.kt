@@ -59,3 +59,8 @@ data class NotificationModel(
     val notificationOn: String = "",
     val notificationIsRead: String = ""
 ) : GetId()
+
+// Votes
+data class VotesModel(
+    val votedBy: String = ""
+) : GetId()

@@ -140,6 +140,10 @@ class QuestionsAdapter(
                 } else {
                     context.startLogin()
                 }
+            } else if (context is ProfileActivity) {
+                if (mAuth.currentUser != null) {
+                    context.showStats(allQues[pos].docId)
+                }
             }
         }
 

@@ -25,6 +25,7 @@ import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAd
 import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
 import com.project.pradyotprakash.polking.profile.friends.FriendsBottomSheet
 import com.project.pradyotprakash.polking.profile.notification.NotificationBottomSheet
+import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
@@ -52,6 +53,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     private lateinit var friendsBottomSheet: FriendsBottomSheet
     private lateinit var notificationBottomSheet: NotificationBottomSheet
     private lateinit var otherProfileOptions: OtherProfileOptions
+    private lateinit var questionStatistics: QuestionStatistics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -178,6 +180,7 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         friendsBottomSheet = FriendsBottomSheet.newInstance()
         notificationBottomSheet = NotificationBottomSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
+        questionStatistics = QuestionStatistics.newInstance()
     }
 
     private fun setAdapters() {
@@ -409,5 +412,19 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
 
     override fun setVotes(voteType: Int, docId: String) {
         presenter.setVote(voteType, docId)
+    }
+
+    override fun showStats(docId: String) {
+        showLoading()
+        presenter.showStats(docId)
+    }
+
+    override fun showQuestionStats(docId: String) {
+        runOnUiThread {
+            if (!questionStatistics.isAdded) {
+                questionStatistics.show(supportFragmentManager, "btmSheet")
+                questionStatistics.setQuestionDocId(docId)
+            }
+        }
     }
 }

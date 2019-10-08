@@ -1,9 +1,12 @@
 package com.project.pradyotprakash.polking.profile
 
 import android.app.Activity
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.BgModel
 import java.util.*
@@ -19,6 +22,7 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     private lateinit var dataBase: FirebaseFirestore
     private lateinit var bgDataBase: FirebaseFirestore
     private lateinit var addVotesDataBase: FirebaseFirestore
+    private lateinit var firebaseFunctions: FirebaseFunctions
     private val allBgList = ArrayList<BgModel>()
 
     @Inject
@@ -29,6 +33,7 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
         dataBase = FirebaseFirestore.getInstance()
         bgDataBase = FirebaseFirestore.getInstance()
         addVotesDataBase = FirebaseFirestore.getInstance()
+        firebaseFunctions = FirebaseFunctions.getInstance()
     }
 
     override fun getUserData() {
@@ -192,6 +197,50 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
                 }
 
         }
+    }
+
+    override fun showStats(docId: String) {
+        callStatsFunction(docId)
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    if (task.exception != null) {
+                        val e = task.exception
+                        if (e != null) {
+                            if (e is FirebaseFunctionsException) {
+                                mView.hideLoading()
+                                mView.showMessage("Something Went Wrong. ${e.localizedMessage}", 1)
+                            } else {
+                                openStats(docId)
+                            }
+                        } else {
+                            openStats(docId)
+                        }
+                    } else {
+                        openStats(docId)
+                    }
+                } else {
+                    openStats(docId)
+                }
+            }
+    }
+
+    private fun openStats(docId: String) {
+        mView.hideLoading()
+        mView.showQuestionStats(docId)
+    }
+
+    private fun callStatsFunction(docId: String): Task<String> {
+        val data = HashMap<String, Any>()
+        data["questionId"] = docId
+        data["userId"] = mAuth.currentUser!!.uid
+
+        return firebaseFunctions
+            .getHttpsCallable("showQuestionStats")
+            .call(data)
+            .continueWith { task ->
+                val result = task.result?.data as String
+                result
+            }
     }
 
 }
