@@ -126,7 +126,7 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
         userData["bg_option"] = "bg_one"
         firestore.collection("users")
             .document(mAuth.currentUser!!.uid)
-            .update(userData).addOnSuccessListener {
+            .set(userData).addOnSuccessListener {
                 mView.hideLoading()
                 mView.stopAct()
             }.addOnFailureListener { exception ->
