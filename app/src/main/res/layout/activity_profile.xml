@@ -427,6 +427,19 @@
                         app:layout_constraintTop_toBottomOf="@+id/review_tv" />
 
                 <TextView
+                        android:id="@+id/notificationinfo2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/muli_extra_light"
+                        android:text="@string/adding_soon"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/faq_tv" />
+
+                <TextView
                         android:id="@+id/aboutUs_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -441,7 +454,7 @@
                         android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/faq_tv" />
+                        app:layout_constraintTop_toBottomOf="@+id/notificationinfo2" />
 
                 <TextView
                         android:id="@+id/notificationchip"

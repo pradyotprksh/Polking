@@ -24,14 +24,16 @@ import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
-import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
 import com.project.pradyotprakash.polking.profile.friends.FriendsBottomSheet
 import com.project.pradyotprakash.polking.profile.notification.NotificationBottomSheet
 import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
-import com.project.pradyotprakash.polking.utility.*
+import com.project.pradyotprakash.polking.utility.BgModel
+import com.project.pradyotprakash.polking.utility.InternetActivity
+import com.project.pradyotprakash.polking.utility.Utility
+import com.project.pradyotprakash.polking.utility.logd
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -153,7 +155,7 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         }
 
         faq_tv.setOnClickListener {
-            openActivity(FAQsActivity::class.java)
+            showMessage("We are working on this.", 2)
         }
 
         aboutUs_tv.setOnClickListener {
