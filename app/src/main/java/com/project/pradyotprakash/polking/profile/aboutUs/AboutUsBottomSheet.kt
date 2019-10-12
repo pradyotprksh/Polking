@@ -1,6 +1,7 @@
 package com.project.pradyotprakash.polking.profile.aboutUs
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.RoundBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
@@ -21,6 +23,7 @@ class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEdit
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    lateinit var messageBtmSheet: ShowMessage
 
     companion object {
         fun newInstance(): AboutUsBottomSheet =
@@ -105,6 +108,18 @@ class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEdit
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 }

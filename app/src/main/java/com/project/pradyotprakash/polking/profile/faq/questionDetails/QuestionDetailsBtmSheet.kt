@@ -2,6 +2,7 @@ package com.project.pradyotprakash.polking.profile.faq.questionDetails
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
@@ -30,6 +32,7 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
     private var helpFullNo: Float = 0.0f
     private var yesPercent: Double = 0.00
     private var noPercent: Double = 0.00
+    lateinit var messageBtmSheet: ShowMessage
 
     companion object {
         fun newInstance(): QuestionDetailsBtmSheet =
@@ -204,7 +207,19 @@ class QuestionDetailsBtmSheet @Inject constructor() : BottomSheetDialogFragment(
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
 }

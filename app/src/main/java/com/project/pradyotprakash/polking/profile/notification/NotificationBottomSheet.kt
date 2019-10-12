@@ -1,6 +1,7 @@
 package com.project.pradyotprakash.polking.profile.notification
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.NotificationModel
 import com.project.pradyotprakash.polking.utility.RoundBottomSheet
@@ -24,6 +26,7 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
 
     private lateinit var notificationFirestore: FirebaseFirestore
     private lateinit var mAuth: FirebaseAuth
+    lateinit var messageBtmSheet: ShowMessage
     private val allNotification = ArrayList<NotificationModel>()
     private val allNotificationsList = ArrayList<NotificationModel>()
     private var notificationsAdapter: NotificationsAdapter? = null
@@ -124,6 +127,18 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 }

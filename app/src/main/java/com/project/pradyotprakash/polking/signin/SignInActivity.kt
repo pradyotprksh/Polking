@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,13 +16,14 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.utility.AppConstants.Companion.PERMISSIONS_REQUEST_CONTACT
 import com.project.pradyotprakash.polking.utility.AppConstants.Companion.RC_SIGN_IN
+import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.isValidPhone
 import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
@@ -30,7 +32,7 @@ import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import javax.inject.Inject
 
-class SignInActivity : AppCompatActivity(), SignInView {
+class SignInActivity : InternetActivity(), SignInView {
 
     @Inject
     lateinit var presenter: SignInPresenter
@@ -246,7 +248,19 @@ class SignInActivity : AppCompatActivity(), SignInView {
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
 }

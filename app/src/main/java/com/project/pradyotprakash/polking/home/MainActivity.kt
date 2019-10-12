@@ -6,12 +6,12 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,30 +21,26 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
-import com.project.pradyotprakash.polking.usersList.UserListBtmSheet
-import com.project.pradyotprakash.polking.utility.QuestionModel
-import com.project.pradyotprakash.polking.utility.Utility
-import com.project.pradyotprakash.polking.utility.logd
-import com.project.pradyotprakash.polking.utility.openActivity
+import com.project.pradyotprakash.polking.utility.*
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), MainActivityView {
+class MainActivity : InternetActivity(), MainActivityView {
 
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
     lateinit var otherProfileOptions: OtherProfileOptions
     lateinit var questionStatistics: QuestionStatistics
-    lateinit var userListBtmSheet: UserListBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
 
@@ -144,7 +140,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         otherProfileOptions = OtherProfileOptions.newInstance()
         questionStatistics = QuestionStatistics.newInstance()
         profileEditBtmSheet.isCancelable = false
-        userListBtmSheet = UserListBtmSheet.newInstance()
     }
 
     override fun onResume() {
@@ -178,6 +173,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun showUploadedSuccess() {
         addQuestion_et.setText("")
+        Utility().hideSoftKeyboard(addQuestion_et)
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
@@ -226,7 +222,19 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -289,6 +297,12 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             if (!questionStatistics.isAdded) {
                 questionStatistics.show(supportFragmentManager, "btmSheet")
                 questionStatistics.setQuestionDocId(docId)
+            } else {
+                questionStatistics.dismiss()
+                if (!questionStatistics.isAdded) {
+                    questionStatistics.show(supportFragmentManager, "btmSheet")
+                    questionStatistics.setQuestionDocId(docId)
+                }
             }
         }
     }

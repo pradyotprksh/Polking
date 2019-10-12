@@ -6,11 +6,12 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.RequiresApi
 import androidx.core.view.MotionEventCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -19,6 +20,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
@@ -29,17 +31,14 @@ import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatisti
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
-import com.project.pradyotprakash.polking.utility.BgModel
-import com.project.pradyotprakash.polking.utility.Utility
-import com.project.pradyotprakash.polking.utility.logd
-import com.project.pradyotprakash.polking.utility.openActivity
+import com.project.pradyotprakash.polking.utility.*
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_profile.*
 import java.util.*
 import javax.inject.Inject
 
-class ProfileActivity : AppCompatActivity(), ProfileActivityView {
+class ProfileActivity : InternetActivity(), ProfileActivityView {
 
     @Inject
     lateinit var presenter: ProfileActivityPresenter
@@ -349,7 +348,19 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     override fun setUserDetails(question: String?, friends: String?, bestFriends: String?) {
@@ -379,28 +390,31 @@ class ProfileActivity : AppCompatActivity(), ProfileActivityView {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun setBgImage(imageUrl: String, docId: String) {
-        Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                exception: GlideException?,
-                model: Any?,
-                target: Target<Drawable>?,
-                isFirstResource: Boolean
-            ): Boolean {
-                return false
-            }
+        if (!this.isDestroyed) {
+            Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    exception: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
 
-            override fun onResourceReady(
-                resource: Drawable?,
-                model: Any?,
-                target: Target<Drawable>?,
-                dataSource: DataSource?,
-                isFirstResource: Boolean
-            ): Boolean {
-                return false
-            }
-        }).into(user_iv)
-        bgDocId = docId
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    return false
+                }
+            }).into(user_iv)
+            bgDocId = docId
+        }
     }
 
     fun openProfileDetails(notificationMessageBy: String) {

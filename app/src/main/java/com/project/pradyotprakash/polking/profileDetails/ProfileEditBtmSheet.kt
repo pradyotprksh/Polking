@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.utility.*
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -52,6 +54,7 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     private var userMainImageURI: Uri? = null
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    lateinit var messageBtmSheet: ShowMessage
 
     /*
     0 - Male
@@ -212,7 +215,7 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                         addDataToDatabase(view)
 
                     } else {
-                        showMessage(getString(R.string.not_uploaded), 4)
+                        showMessage(getString(R.string.not_uploaded), 1)
                         view.mainProgressBar.visibility = View.GONE
                     }
 
@@ -223,12 +226,12 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                     )
                     view.mainProgressBar.visibility = View.GONE
                 }.addOnCanceledListener {
-                    showMessage(getString(R.string.not_uploaded), 4)
+                    showMessage(getString(R.string.not_uploaded), 1)
                     view.mainProgressBar.visibility = View.GONE
                 }
 
             } else if (task.isCanceled) {
-                showMessage(getString(R.string.not_uploaded), 4)
+                showMessage(getString(R.string.not_uploaded), 1)
                 view.mainProgressBar.visibility = View.GONE
             }
         } else {
@@ -255,6 +258,10 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
             .document(mAuth.currentUser!!.uid)
             .set(userData).addOnSuccessListener {
 
+                showMessage(
+                    "Data Uploaded Successfully.",
+                    3
+                )
                 view.mainProgressBar.visibility = View.GONE
                 stopAct()
 
@@ -403,7 +410,19 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     fun getImageUri(imageUri: Uri?) {

@@ -153,6 +153,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             dataBase.collection("question").add(questionData).addOnSuccessListener {
                 mView.hideLoading()
                 mView.showUploadedSuccess()
+                mView.showMessage("Successfully Uploaded.", 3)
             }.addOnFailureListener { exception ->
                 mView.showMessage(
                     "Something Went Wrong. ${exception.localizedMessage}",
@@ -174,7 +175,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         mView.showLoading()
 
         dataBase.collection("question")
-            .orderBy("askedOn", Query.Direction.ASCENDING)
+            .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     mView.showMessage(
@@ -189,7 +190,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                         val docId = doc.id
                         val quesList: QuestionModel =
                             doc.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
-                        this.allQuestionList.add(0, quesList)
+                        this.allQuestionList.add(quesList)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

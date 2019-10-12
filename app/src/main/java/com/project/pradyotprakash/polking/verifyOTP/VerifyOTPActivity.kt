@@ -6,22 +6,24 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.PhoneAuthProvider
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.utility.AppConstants
+import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_verify_otp.*
 import javax.inject.Inject
 
-class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
+class VerifyOTPActivity : InternetActivity(), VerifyOTPView {
 
     @Inject
     lateinit var presenter: VerifyOTPPresenter
@@ -64,14 +66,19 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
 
         setOnClickListners()
 
+        showLoading()
     }
 
     private fun setOnClickListners() {
         saveTv.setOnClickListener {
-            if (presenter.getStoredVerificationId()!=null) {
-                val code = otp1Tv.text.toString() + "" + otp2Tv.text.toString() + "" + otp3Tv.text.toString() + "" + otp4Tv.text.toString() + "" + otp5Tv.text.toString() + "" + otp6Tv.text.toString()
-                val credential = PhoneAuthProvider.getCredential(presenter.getStoredVerificationId()!!, code)
-                presenter.signInWithPhoneAuthCredential(credential)
+            if (progressBar2.visibility == View.GONE) {
+                if (presenter.getStoredVerificationId() != null) {
+                    val code =
+                        otp1Tv.text.toString() + "" + otp2Tv.text.toString() + "" + otp3Tv.text.toString() + "" + otp4Tv.text.toString() + "" + otp5Tv.text.toString() + "" + otp6Tv.text.toString()
+                    val credential =
+                        PhoneAuthProvider.getCredential(presenter.getStoredVerificationId()!!, code)
+                    presenter.signInWithPhoneAuthCredential(credential)
+                }
             }
         }
 
@@ -135,6 +142,12 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
                 otp1Tv.text.toString() != "" -> {
                     otp1Tv.setText("")
                 }
+            }
+        }
+
+        cancleTv.setOnClickListener {
+            if (progressBar2.visibility == View.GONE) {
+                finish()
             }
         }
     }
@@ -234,7 +247,19 @@ class VerifyOTPActivity : AppCompatActivity(), VerifyOTPView {
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
 }

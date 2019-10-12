@@ -6,15 +6,16 @@ import android.os.Handler
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
+import com.project.pradyotprakash.polking.message.ShowMessage
+import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.logd
 import com.project.pradyotprakash.polking.utility.openActivity
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
-class SplashActivity : AppCompatActivity(), SplashView {
+class SplashActivity : InternetActivity(), SplashView {
 
     @Inject
     lateinit var presenter: SplashPresenter
@@ -67,7 +68,19 @@ class SplashActivity : AppCompatActivity(), SplashView {
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
 }

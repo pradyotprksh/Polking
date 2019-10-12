@@ -1,6 +1,7 @@
 package com.project.pradyotprakash.polking.profile.friends
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profile.friendsAdapter.FriendsAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.FriendsListModel
@@ -24,6 +26,7 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
 
     private var type: Int = 1
     private lateinit var mAuth: FirebaseAuth
+    lateinit var messageBtmSheet: ShowMessage
     private lateinit var firestore: FirebaseFirestore
     private val allFriends = ArrayList<FriendsListModel>()
     private val allFriendsList = ArrayList<FriendsListModel>()
@@ -123,7 +126,19 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     fun setType(type: Int) {

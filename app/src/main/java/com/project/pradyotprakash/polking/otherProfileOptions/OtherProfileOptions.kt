@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.FrameLayout
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profile.friendsAdapter.FriendsAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.*
@@ -37,6 +39,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     private lateinit var addBestfriendfirestore: FirebaseFirestore
     private lateinit var deletefriendfirestore: FirebaseFirestore
     private lateinit var getfriendfirestore: FirebaseFirestore
+    lateinit var messageBtmSheet: ShowMessage
     private lateinit var getbestfriendfirestore: FirebaseFirestore
     private lateinit var askedBy: String
     private lateinit var mAuth: FirebaseAuth
@@ -745,11 +748,23 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     override fun stopAct() {
-
+        dismiss()
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     fun setUserId(askedBy: String) {

@@ -3,10 +3,12 @@ package com.project.pradyotprakash.polking.profile.backgroundAdapter
 import android.app.Activity
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -33,6 +35,7 @@ class BackgroundAdapter(
         return bgList.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         Glide.with(context).load(bgList[p1].imageUrl).listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
@@ -58,7 +61,9 @@ class BackgroundAdapter(
 
         p0.itemView.setOnClickListener {
             if (activity is ProfileActivity) {
-                activity.setBgImage(bgList[p1].imageUrl, bgList[p1].docId)
+                if (p0.progressBar.visibility == View.GONE) {
+                    activity.setBgImage(bgList[p1].imageUrl, bgList[p1].docId)
+                }
             }
         }
     }

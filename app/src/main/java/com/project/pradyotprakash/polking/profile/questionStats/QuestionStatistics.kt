@@ -2,6 +2,7 @@ package com.project.pradyotprakash.polking.profile.questionStats
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.VotesModel
@@ -40,7 +42,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private val allVoteList = ArrayList<VotesModel>()
     private val voteList = ArrayList<VotesModel>()
     private var votesAdapter: VotesAdapter? = null
-
+    lateinit var messageBtmSheet: ShowMessage
     private val allNoVoteList = ArrayList<VotesModel>()
     private val noVoteList = ArrayList<VotesModel>()
     private var noVotesAdapter: VotesAdapter? = null
@@ -88,12 +90,14 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun initAdapter(view: View) {
+        allVoteList.clear()
         votesAdapter = VotesAdapter(allVoteList, context!!, activity!!)
         view.userYesVotesRv.setHasFixedSize(true)
         view.userYesVotesRv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         view.userYesVotesRv.adapter = votesAdapter
 
+        allNoVoteList.clear()
         noVotesAdapter = VotesAdapter(allNoVoteList, context!!, activity!!)
         view.userNoVotesRv.setHasFixedSize(true)
         view.userNoVotesRv.layoutManager =
@@ -166,6 +170,8 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun getNoVoteIfSameUser(view: View) {
+        this.allNoVoteList.clear()
+        noVotesAdapter?.notifyDataSetChanged()
         getSimilarVoteFirestore.collection(questionId)
             .document(mAuth.currentUser!!.uid)
             .collection("noVotes")
@@ -196,7 +202,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                     view.votesUserTv2.visibility = View.VISIBLE
                     view.votesUserTv2.text = getString(R.string.voted_no_for_your_question)
                     this.allNoVoteList.clear()
-                    this.allNoVoteList.addAll(voteList)
+                    this.allNoVoteList.addAll(noVoteList)
                     noVotesAdapter?.notifyDataSetChanged()
                 } else {
                     view.votesUserTv2.visibility = View.GONE
@@ -206,6 +212,8 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun getYesVoteIfSameUser(view: View) {
+        this.allVoteList.clear()
+        votesAdapter?.notifyDataSetChanged()
         getSimilarVoteFirestore.collection(questionId)
             .document(mAuth.currentUser!!.uid)
             .collection("yesVotes")
@@ -459,7 +467,19 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(childFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(childFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     fun setQuestionDocId(docId: String) {

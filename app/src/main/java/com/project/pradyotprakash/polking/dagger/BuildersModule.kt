@@ -2,8 +2,6 @@ package com.project.pradyotprakash.polking.dagger
 
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.home.MainActivityModule
-import com.project.pradyotprakash.polking.otherUsers.OtherUserProfileActivity
-import com.project.pradyotprakash.polking.otherUsers.OtherUserProfileModule
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivityModule
 import com.project.pradyotprakash.polking.profile.faq.FAQsActivity
@@ -43,8 +41,4 @@ abstract class BuildersModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = [FAQsActivityModule::class])
     abstract fun faqsActivity(): FAQsActivity
-
-    @ActivityScoped
-    @ContributesAndroidInjector(modules = [OtherUserProfileModule::class])
-    abstract fun otherUserProfileActivity(): OtherUserProfileActivity
 }

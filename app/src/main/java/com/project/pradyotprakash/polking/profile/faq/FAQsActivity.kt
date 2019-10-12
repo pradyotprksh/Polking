@@ -2,14 +2,15 @@ package com.project.pradyotprakash.polking.profile.faq
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profile.faq.adapter.BlockReportAdapter
 import com.project.pradyotprakash.polking.profile.faq.adapter.FriendBestFriendAdapter
 import com.project.pradyotprakash.polking.profile.faq.adapter.QuestionResponseAdapter
@@ -17,12 +18,13 @@ import com.project.pradyotprakash.polking.profile.faq.adapter.TopQuestionAdapter
 import com.project.pradyotprakash.polking.profile.faq.questionDetails.QuestionDetailsBtmSheet
 import com.project.pradyotprakash.polking.utility.CustomLayoutManager
 import com.project.pradyotprakash.polking.utility.FAQsQuestionModel
+import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_faqs_actvity.*
 import javax.inject.Inject
 
-class FAQsActivity : AppCompatActivity(), FAQsActivityView {
+class FAQsActivity : InternetActivity(), FAQsActivityView {
 
     @Inject
     lateinit var presenter: FAQsActivityPresenter
@@ -156,7 +158,19 @@ class FAQsActivity : AppCompatActivity(), FAQsActivityView {
     }
 
     override fun showMessage(message: String, type: Int) {
-
+        messageBtmSheet = ShowMessage.newInstance()
+        if (!messageBtmSheet.isAdded) {
+            messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.setMessage(message, type)
+        } else {
+            messageBtmSheet.dismiss()
+            Handler().postDelayed({
+                if (!messageBtmSheet.isAdded) {
+                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.setMessage(message, type)
+                }
+            }, 1500)
+        }
     }
 
     override fun loadQuestionResponse(questionResponseModelList: ArrayList<FAQsQuestionModel>) {
