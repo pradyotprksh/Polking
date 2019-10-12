@@ -2,6 +2,12 @@ package com.project.pradyotprakash.polking.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -10,12 +16,12 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
-
 
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
@@ -98,16 +104,33 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     override fun addAuthStateListener() {
         mAuth.addAuthStateListener { mAuth ->
             if (mAuth.currentUser != null) {
                 currentUser = mAuth.currentUser
                 getUserData()
                 getQuestions()
+                setDynamicShortcuts()
             } else {
                 mView.hideOptions()
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
+    private fun setDynamicShortcuts() {
+        val shortcutManager = mContext.getSystemService(ShortcutManager::class.java)
+        val intent = Intent(mContext, ProfileActivity::class.java)
+        intent.action = "PROFILE_ACTIVITY"
+        val shortcut = ShortcutInfo.Builder(mContext, "profile")
+            .setShortLabel("My Profile")
+            .setLongLabel("Open My Profile")
+            .setIcon(Icon.createWithResource(mContext, R.drawable.ic_default_appcolor))
+            .setIntent(intent)
+            .build()
+        if (shortcutManager != null)
+            shortcutManager.dynamicShortcuts = listOf(shortcut)
     }
 
     private fun getUserData() {

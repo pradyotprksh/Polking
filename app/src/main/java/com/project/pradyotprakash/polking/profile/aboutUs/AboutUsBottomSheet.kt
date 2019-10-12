@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.profile.aboutUs
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -13,13 +14,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
-import com.project.pradyotprakash.polking.utility.RoundBottomSheet
+import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.question_details_btm_sheet.view.*
+import kotlinx.android.synthetic.main.about_us_btm_sheet.view.*
+import kotlinx.android.synthetic.main.question_details_btm_sheet.view.aboutUs_tv
+import kotlinx.android.synthetic.main.question_details_btm_sheet.view.back_tv
 import javax.inject.Inject
 
-class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
+class AboutUsBottomSheet @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
     private lateinit var mAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -75,6 +78,7 @@ class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEdit
                         view.aboutUs_tv.visibility = View.VISIBLE
                         view.aboutUs_tv.text = snapshot.data!!["about_us"].toString()
                     } else {
+                        view.aboutUs_tv.text = getString(R.string.about_us_txt)
                         view.aboutUs_tv.visibility = View.INVISIBLE
                     }
                 }
@@ -88,6 +92,20 @@ class AboutUsBottomSheet @Inject constructor() : RoundBottomSheet(), ProfileEdit
         view.back_tv.setOnClickListener {
             stopAct()
         }
+
+        view.share_tv.setOnClickListener {
+            shareApplication()
+        }
+    }
+
+    private fun shareApplication() {
+        val playStoreLink =
+            "Share Polking Between Your Friends \n LINK: " + getString(R.string.link_play_store)
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, playStoreLink)
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Share Polking Between Your Friends")
+        startActivity(Intent.createChooser(shareIntent, "Share Polking..."))
     }
 
     private fun initVariables() {

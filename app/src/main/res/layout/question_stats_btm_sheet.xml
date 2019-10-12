@@ -319,6 +319,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/muli_bold"
+            android:clickable="false"
+            android:enabled="false"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:theme="@style/Theme.MaterialComponents.Light"

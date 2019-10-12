@@ -199,14 +199,25 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
 
     private fun openFriendSheet(type: Int) {
         if (!friendsBottomSheet.isAdded) {
-            friendsBottomSheet.show(supportFragmentManager, "btmSheet")
-            friendsBottomSheet.setType(type)
+            if (type == 1) {
+                if (friendsVal_tv.text != "0") {
+                    friendsBottomSheet.show(supportFragmentManager, "btmSheet")
+                    friendsBottomSheet.setType(type)
+                }
+            } else {
+                if (bestFrndVal_tv.text != "0") {
+                    friendsBottomSheet.show(supportFragmentManager, "btmSheet")
+                    friendsBottomSheet.setType(type)
+                }
+            }
         }
     }
 
     private fun openQuestionSheet() {
         if (!questionBottomSheet.isAdded) {
-            questionBottomSheet.show(supportFragmentManager, "btmSheet")
+            if (questionVal_tv.text != "0") {
+                questionBottomSheet.show(supportFragmentManager, "btmSheet")
+            }
         }
     }
 

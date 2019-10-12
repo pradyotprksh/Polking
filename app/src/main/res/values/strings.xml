@@ -98,13 +98,7 @@
     <string name="nofeedback_txt">Thank you for your feedback. We will make the answers more understandable.</string>
     <string name="was_it_helpful">Was it helpful?</string>
     <string name="search_here">Search Here</string>
-    <string name="about_us_txt">Hello Guys, Polking. An android application which will help you to deal with not all but
-        some of the problems you face in your day to day life. Like should I buy this phone, should I rent a home at
-        that place or thaaat place. You want to know what people think about your ideas before going all out. You want
-        to know others thinking also. So that\'s why we build an application where you can have a vote not once in 5
-        years but many in single day for not a government party but on your daily decisions. Use it to have fun but
-        don\'t hurt others also. Last but not the least, Thank you for downloading our application Polking. Have Fun. If
-        you want you can share this app using the below link to your family, friends and enemies. ;-)
+    <string name="about_us_txt">Hello Polking\'s Member. We, the creators of Polking, welcome you to our Polking Family. We hope you are having a great day. And this application is helping you in your daily life. This is not a high end application with ML/AI integration. Just a normal application with normal usage. You ask normal question, People will give normal answer (Yes 👍/ No 👎). No other way. So no lectures. No knowledge. Just a Head and Tail situation. In between we also play a part of seeing the questions asked. So that it doesn\'t make a Chaos between the family ☹️. So as a family member you also need to see this. Enjoy your life because it\'s short with this short application. 🥰😍😘.  And yeah. One more thing. Please add your review on the Play Store, if you have time.  And one more 😅, please share this application to others also. And make our family big. Because more the better. 🥺😉.
     </string>
     <string name="reviewbottomsheet">ReviewBottomSheet onCreateView</string>
     <string name="faqbottomsheet">Ask FAQs Btm Sheet onCreateView</string>
@@ -169,4 +163,8 @@
     <string name="voted_no_for_your_question">People Who Voted No</string>
     <string name="your_quesitons">YOUR QUESTION STATISTICS</string>
     <string name="adding_soon">Adding Soon</string>
+    <string name="share">Share Poliking</string>
+    <string name="unable_to_generate_link">Unable to generate share link. Please try again.</string>
+    <string name="link_play_store">https://play.google.com/store/apps/details?id=com.project.pradyotprakash.polking</string>
+    <string name="review_on_play_store">Review On Play Store</string>
 </resources>

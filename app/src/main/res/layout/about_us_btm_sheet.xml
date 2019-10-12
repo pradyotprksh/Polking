@@ -1,32 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:paddingBottom="20dp"
+        android:background="@color/transparent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-    <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:alpha="0.0"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_about"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    <com.airbnb.lottie.LottieAnimationView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/back_tv"
-            app:lottie_autoPlay="true"
-            app:lottie_enableMergePathsForKitKatAndAbove="true"
-            app:lottie_fileName="wave.json"
-            app:lottie_loop="true" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/back_tv"
@@ -50,26 +27,55 @@
             android:layout_marginLeft="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
-            android:background="@color/black"
+            android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="@+id/back_tv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/back_tv"
             app:layout_constraintTop_toTopOf="@+id/back_tv" />
 
-    <TextView
-            android:id="@+id/aboutUs_tv"
-            android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:fontFamily="@font/muli_bold"
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/top_round_white"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/back_tv" />
+            app:layout_constraintTop_toBottomOf="@+id/back_tv">
+
+        <TextView
+                android:id="@+id/aboutUs_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:fontFamily="@font/muli_bold"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.chip.Chip
+                android:id="@+id/share_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/share"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:theme="@style/Theme.MaterialComponents.Light"
+                app:chipBackgroundColor="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/aboutUs_tv"
+                app:layout_constraintStart_toStartOf="@+id/aboutUs_tv"
+                app:layout_constraintTop_toBottomOf="@+id/aboutUs_tv"
+                app:rippleColor="@color/colorPrimaryDark" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

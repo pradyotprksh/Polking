@@ -83,8 +83,6 @@ class MainActivity : InternetActivity(), MainActivityView {
         textChangeListners()
 
         adapters()
-
-        getQuestions()
     }
 
     private fun getQuestions() {
@@ -147,6 +145,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         logd(getString(R.string.resume))
         presenter.addAuthStateListener()
         presenter.getProfileData()
+        getQuestions()
     }
 
     override fun startProfileAct() {

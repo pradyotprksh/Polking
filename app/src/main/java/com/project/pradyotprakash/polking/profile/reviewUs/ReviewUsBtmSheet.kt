@@ -1,6 +1,8 @@
 package com.project.pradyotprakash.polking.profile.reviewUs
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -21,6 +23,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
+
 
 class ReviewUsBtmSheet @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
@@ -121,6 +124,19 @@ class ReviewUsBtmSheet @Inject constructor() : TransparentBottomSheet(), Profile
                 showMessage(getString(R.string.user_not_found), 1)
             }
         }
+
+        view.review_playstore_tv.setOnClickListener {
+            reviewOnPlayStore()
+        }
+    }
+
+    private fun reviewOnPlayStore() {
+        val intent =
+            Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("market://details?id=com.project.pradyotprakash.polking")
+            )
+        startActivity(intent)
     }
 
     private fun saveDataToDatabase(
