@@ -121,16 +121,25 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun setDynamicShortcuts() {
         val shortcutManager = mContext.getSystemService(ShortcutManager::class.java)
-        val intent = Intent(mContext, ProfileActivity::class.java)
-        intent.action = "PROFILE_ACTIVITY"
-        val shortcut = ShortcutInfo.Builder(mContext, "profile")
+        val profileIntent = Intent(mContext, ProfileActivity::class.java)
+        profileIntent.action = "PROFILE_ACTIVITY"
+        val profileShortcut = ShortcutInfo.Builder(mContext, "profile")
             .setShortLabel("My Profile")
             .setLongLabel("Open My Profile")
             .setIcon(Icon.createWithResource(mContext, R.drawable.ic_default_appcolor))
-            .setIntent(intent)
+            .setIntent(profileIntent)
+            .build()
+        val bestFriendProfileIntent = Intent(mContext, ProfileActivity::class.java)
+        bestFriendProfileIntent.putExtra("openBestFriend", "yes")
+        bestFriendProfileIntent.action = "BEST_FRIEND_PROFILE_ACTIVITY"
+        val bestFriendShortcut = ShortcutInfo.Builder(mContext, "bestFriendProfile")
+            .setShortLabel("Best Friends")
+            .setLongLabel("Open Best Friend List")
+            .setIcon(Icon.createWithResource(mContext, R.drawable.ic_best_friend))
+            .setIntent(bestFriendProfileIntent)
             .build()
         if (shortcutManager != null)
-            shortcutManager.dynamicShortcuts = listOf(shortcut)
+            shortcutManager.dynamicShortcuts = listOf(profileShortcut, bestFriendShortcut)
     }
 
     private fun getUserData() {

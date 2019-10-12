@@ -167,4 +167,7 @@
     <string name="unable_to_generate_link">Unable to generate share link. Please try again.</string>
     <string name="link_play_store">https://play.google.com/store/apps/details?id=com.project.pradyotprakash.polking</string>
     <string name="review_on_play_store">Review On Play Store</string>
+    <string name="no_friend">You don\'t have any friend right now</string>
+    <string name="no_best_friend">You haven\'t added any friend as your best friend</string>
+    <string name="no_question_added">You haven\'t added any question</string>
 </resources>

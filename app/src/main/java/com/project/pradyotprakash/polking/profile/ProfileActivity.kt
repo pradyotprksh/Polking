@@ -93,6 +93,18 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         initvariables()
 
         setAdapters()
+
+        getIntentData()
+    }
+
+    private fun getIntentData() {
+        if (intent != null) {
+            if (intent.getStringExtra("openBestFriend") != null && intent.getStringExtra("openBestFriend") != "") {
+                if (intent.getStringExtra("openBestFriend") == "yes") {
+                    openFriendSheet(2)
+                }
+            }
+        }
     }
 
     private fun setOnClickListners() {
@@ -203,11 +215,15 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
                 if (friendsVal_tv.text != "0") {
                     friendsBottomSheet.show(supportFragmentManager, "btmSheet")
                     friendsBottomSheet.setType(type)
+                } else {
+                    showMessage(getString(R.string.no_friend), 2)
                 }
             } else {
                 if (bestFrndVal_tv.text != "0") {
                     friendsBottomSheet.show(supportFragmentManager, "btmSheet")
                     friendsBottomSheet.setType(type)
+                } else {
+                    showMessage(getString(R.string.no_best_friend), 2)
                 }
             }
         }
@@ -217,6 +233,8 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         if (!questionBottomSheet.isAdded) {
             if (questionVal_tv.text != "0") {
                 questionBottomSheet.show(supportFragmentManager, "btmSheet")
+            } else {
+                showMessage(getString(R.string.no_question_added), 2)
             }
         }
     }
