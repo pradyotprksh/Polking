@@ -28,4 +28,7 @@ interface MainActivityPresenter: BasePresenter {
     // show stats
     fun showStats(docId: String)
 
+    // check for updates
+    fun checkForUpdates()
+
 }

@@ -7,6 +7,7 @@ class AppConstants {
         const val PERMISSIONS_REQUEST_READ_STORAGE = 12
         const val PERMISSIONS_REQUEST_WRITE_STORAGE = 13
         const val RC_SIGN_IN = 14
+        const val REQUEST_CODE_UPDATE = 15
 
     }
 

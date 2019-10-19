@@ -8,6 +8,10 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import com.google.android.gms.tasks.Task
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,6 +20,7 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
+import com.project.pradyotprakash.polking.utility.AppConstants.Companion.REQUEST_CODE_UPDATE
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -101,6 +106,23 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         } else {
             mView.hideLoading()
             mView.hideOptions()
+        }
+    }
+
+    override fun checkForUpdates() {
+        val updateManager = AppUpdateManagerFactory.create(mContext)
+        updateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                updateManager.startUpdateFlowForResult(
+                    updateManager.appUpdateInfo.result,
+                    AppUpdateType.IMMEDIATE,
+                    mContext,
+                    REQUEST_CODE_UPDATE
+                )
+            }
+            if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                updateManager.completeUpdate()
+            }
         }
     }
 

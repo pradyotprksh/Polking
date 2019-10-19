@@ -28,6 +28,7 @@ import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatisti
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.utility.*
+import com.project.pradyotprakash.polking.utility.AppConstants.Companion.REQUEST_CODE_UPDATE
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
@@ -153,6 +154,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         logd(getString(R.string.resume))
         presenter.addAuthStateListener()
         presenter.getProfileData()
+        presenter.checkForUpdates()
         getQuestions()
     }
 
@@ -255,6 +257,10 @@ class MainActivity : InternetActivity(), MainActivityView {
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 showMessage(getString(R.string.went_wrong_image), 1)
+            }
+        } else if (requestCode == REQUEST_CODE_UPDATE) {
+            if (requestCode != RESULT_OK) {
+
             }
         }
     }
