@@ -1,22 +1,14 @@
 package com.project.pradyotprakash.polking.verifyOTP
 
-import android.Manifest
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import com.google.firebase.auth.PhoneAuthProvider
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
-import com.project.pradyotprakash.polking.utility.AppConstants
 import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.logd
 import dagger.android.AndroidInjection
@@ -27,8 +19,6 @@ class VerifyOTPActivity : InternetActivity(), VerifyOTPView {
 
     @Inject
     lateinit var presenter: VerifyOTPPresenter
-
-    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -74,7 +64,9 @@ class VerifyOTPActivity : InternetActivity(), VerifyOTPView {
             if (progressBar2.visibility == View.GONE) {
                 if (presenter.getStoredVerificationId() != null) {
                     val code =
-                        otp1Tv.text.toString() + "" + otp2Tv.text.toString() + "" + otp3Tv.text.toString() + "" + otp4Tv.text.toString() + "" + otp5Tv.text.toString() + "" + otp6Tv.text.toString()
+                        otp1Tv.text.toString() + "" + otp2Tv.text.toString() + "" +
+                                otp3Tv.text.toString() + "" + otp4Tv.text.toString() + "" +
+                                otp5Tv.text.toString() + "" + otp6Tv.text.toString()
                     val credential =
                         PhoneAuthProvider.getCredential(presenter.getStoredVerificationId()!!, code)
                     presenter.signInWithPhoneAuthCredential(credential)
@@ -153,12 +145,11 @@ class VerifyOTPActivity : InternetActivity(), VerifyOTPView {
     }
 
     private fun callPhoneNumberValidation() {
-        if (presenter.checkForSMSPermission()) {
-            if (intent!=null && intent.getBundleExtra("phoneBundle")!=null) {
-                val phoneNumber = intent.getBundleExtra("phoneBundle").getString("phoneNumber")!!
-                if (phoneNumber.isNotEmpty()) {
-                    presenter.otpCallBacks(phoneNumber)
-                }
+        if (intent != null && intent.getBundleExtra("phoneBundle") != null) {
+            val phoneNumber = intent.getBundleExtra("phoneBundle")
+                .getString("phoneNumber")!!
+            if (phoneNumber.isNotEmpty()) {
+                presenter.otpCallBacks(phoneNumber)
             }
         }
     }
@@ -189,49 +180,6 @@ class VerifyOTPActivity : InternetActivity(), VerifyOTPView {
     override fun onResume() {
         super.onResume()
         logd("Resume")
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            AppConstants.PERMISSIONS_REQUEST_READ_SMS -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.READ_SMS
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        callPhoneNumberValidation()
-                    } else {
-                        presenter.checkForSMSPermission()
-                    }
-                } else {
-                    presenter.checkForSMSPermission()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_SMS)) {
-                            count++
-                            if (count > 1) {
-                                showMessageOKCancel(
-                                    getString(R.string.readSMSPermission)
-                                ) { _, _ ->
-                                    val intent = Intent()
-                                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                    val uri = Uri.fromParts("package", packageName, null)
-                                    intent.data = uri
-                                    startActivity(intent)
-                                }
-                            }
-                        }
-                    }
-                }
-                return
-            }
-        }
-    }
-
-    private fun showMessageOKCancel(message: String, okListener: (Any, Any) -> Unit) {
-        AlertDialog.Builder(this)
-            .setMessage(message).setPositiveButton(getString(R.string.ok_string), okListener)
-            .setNegativeButton(getString(R.string.cancel_string), null).create().show()
     }
 
     override fun showLoading() {

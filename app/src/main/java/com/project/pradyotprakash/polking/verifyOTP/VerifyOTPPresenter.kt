@@ -5,9 +5,6 @@ import com.project.pradyotprakash.polking.BasePresenter
 
 interface VerifyOTPPresenter: BasePresenter {
 
-    // check for sms read permission
-    fun checkForSMSPermission(): Boolean
-
     // otp call backs
     fun otpCallBacks(phoneNumber: String)
 

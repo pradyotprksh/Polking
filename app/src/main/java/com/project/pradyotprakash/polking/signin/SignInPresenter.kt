@@ -5,9 +5,6 @@ import com.project.pradyotprakash.polking.BasePresenter
 
 interface SignInPresenter: BasePresenter {
 
-    // check for contact permission
-    fun checkContactForPermission(): Boolean
-
     // ask for google sign method
     fun askForGoogleSignIn()
 

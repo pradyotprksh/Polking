@@ -46,8 +46,6 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     private var friends: String? = "0"
     private var best_friends: String? = "0"
     private var bg_option: String? = "bg_one"
-    private var title: String = ""
-    private var isClosable: Boolean = false
     private var count = 0
     private var count1 = 0
     private var imageUrl: String? = null
@@ -97,14 +95,14 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
 
         addOnClickListners(view)
 
-        setTitle(view)
+        isCancalableCase(view)
     }
 
-    private fun setTitle(view: View) {
-        if (title.isNotEmpty()) {
-            view.back_tv.text = title
+    private fun isCancalableCase(view: View) {
+        if (isCancelable) {
+            view.back_tv.visibility = View.VISIBLE
         } else {
-            view.back_tv.text = activity!!.getString(R.string.can_t_close_this)
+            view.back_tv.visibility = View.GONE
         }
     }
 
@@ -118,10 +116,7 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
         }
 
         view.back_tv.setOnClickListener {
-            if (isClosable) {
-                dismiss()
-            }
-            return@setOnClickListener
+            dismiss()
         }
 
         view.male_tv.setOnClickListener {
@@ -567,11 +562,6 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                 .setMessage(message).setPositiveButton(getString(R.string.ok_string), okListener)
                 .setNegativeButton(getString(R.string.cancel_string), null).create().show()
         }
-    }
-
-    fun setCloseTitle(title: String, isClosable: Boolean) {
-        this.title = title
-        this.isClosable = isClosable
     }
 
 }

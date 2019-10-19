@@ -1,10 +1,6 @@
 package com.project.pradyotprakash.polking.verifyOTP
 
-import android.Manifest
 import android.app.Activity
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
@@ -12,7 +8,6 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.utility.AppConstants
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -99,30 +94,6 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
                 mView.hideLoading()
                 mView.showMessage("Oops Something Went Wrong. ${exception.localizedMessage}", 1)
             }
-        }
-    }
-
-    override fun checkForSMSPermission(): Boolean {
-        return if (ContextCompat.checkSelfPermission(mContext,
-                Manifest.permission.READ_SMS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.READ_SMS)) {
-                ActivityCompat.requestPermissions(
-                    mContext,
-                    arrayOf(Manifest.permission.READ_SMS),
-                    AppConstants.PERMISSIONS_REQUEST_READ_SMS
-                )
-            } else {
-                ActivityCompat.requestPermissions(
-                    mContext,
-                    arrayOf(Manifest.permission.READ_SMS),
-                    AppConstants.PERMISSIONS_REQUEST_READ_SMS
-                )
-            }
-            false
-        } else {
-            true
         }
     }
 }

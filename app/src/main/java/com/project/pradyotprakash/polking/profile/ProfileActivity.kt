@@ -340,7 +340,7 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     override fun openAddProfileDetails() {
         if (!profileEditBtmSheet.isAdded) {
             profileEditBtmSheet.show(supportFragmentManager, "btmSheet")
-            profileEditBtmSheet.setCloseTitle(getString(R.string.close), true)
+            profileEditBtmSheet.isCancelable = true
         }
     }
 

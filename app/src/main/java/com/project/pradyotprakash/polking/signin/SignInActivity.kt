@@ -1,27 +1,20 @@
 package com.project.pradyotprakash.polking.signin
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
-import com.project.pradyotprakash.polking.utility.AppConstants.Companion.PERMISSIONS_REQUEST_CONTACT
 import com.project.pradyotprakash.polking.utility.AppConstants.Companion.RC_SIGN_IN
 import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.isValidPhone
@@ -36,7 +29,6 @@ class SignInActivity : InternetActivity(), SignInView {
 
     @Inject
     lateinit var presenter: SignInPresenter
-    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -157,46 +149,7 @@ class SignInActivity : InternetActivity(), SignInView {
         }
 
         googleSignInCl.setOnClickListener {
-            if (presenter.checkContactForPermission()) {
-                presenter.askForGoogleSignIn()
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            PERMISSIONS_REQUEST_CONTACT -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(
-                            this,
-                            Manifest.permission.READ_SMS
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        presenter.askForGoogleSignIn()
-                    } else {
-                        presenter.checkContactForPermission()
-                    }
-                } else {
-                    presenter.checkContactForPermission()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_SMS)) {
-                            count++
-                            if (count > 1) {
-                                showMessageOKCancel(
-                                    getString(R.string.contactPermission)
-                                ) { _, _ ->
-                                    val intent = Intent()
-                                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                    val uri = Uri.fromParts("package", packageName, null)
-                                    intent.data = uri
-                                    startActivity(intent)
-                                }
-                            }
-                        }
-                    }
-                }
-                return
-            }
+            presenter.askForGoogleSignIn()
         }
     }
 
@@ -215,12 +168,6 @@ class SignInActivity : InternetActivity(), SignInView {
                 }
             }
         }
-    }
-
-    private fun showMessageOKCancel(message: String, okListener: (Any, Any) -> Unit) {
-        AlertDialog.Builder(this)
-            .setMessage(message).setPositiveButton(getString(R.string.ok_string), okListener)
-            .setNegativeButton(getString(R.string.cancel_string), null).create().show()
     }
 
     private fun openOTPScreen() {

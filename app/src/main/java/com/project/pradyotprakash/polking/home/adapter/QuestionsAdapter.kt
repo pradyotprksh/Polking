@@ -52,6 +52,7 @@ class QuestionsAdapter(
 
         if (mAuth.currentUser != null) {
             if (mAuth.currentUser!!.uid == allQues[pos].askedBy) {
+                holder.seeStsts_tv.text = context.getString(R.string.see_stats)
                 showStats(holder, pos)
             } else {
                 checkIfVoteExists(holder, pos)

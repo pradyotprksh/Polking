@@ -129,17 +129,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             .setIcon(Icon.createWithResource(mContext, R.drawable.ic_default_appcolor))
             .setIntent(profileIntent)
             .build()
-        val bestFriendProfileIntent = Intent(mContext, ProfileActivity::class.java)
-        bestFriendProfileIntent.putExtra("openBestFriend", "yes")
-        bestFriendProfileIntent.action = "BEST_FRIEND_PROFILE_ACTIVITY"
-        val bestFriendShortcut = ShortcutInfo.Builder(mContext, "bestFriendProfile")
-            .setShortLabel("Best Friends")
-            .setLongLabel("Open Best Friend List")
-            .setIcon(Icon.createWithResource(mContext, R.drawable.ic_best_friend))
-            .setIntent(bestFriendProfileIntent)
-            .build()
         if (shortcutManager != null)
-            shortcutManager.dynamicShortcuts = listOf(profileShortcut, bestFriendShortcut)
+            shortcutManager.dynamicShortcuts = listOf(profileShortcut)
     }
 
     private fun getUserData() {

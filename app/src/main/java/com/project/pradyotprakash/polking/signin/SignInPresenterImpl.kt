@@ -1,10 +1,6 @@
 package com.project.pradyotprakash.polking.signin
 
-import android.Manifest
 import android.app.Activity
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -37,31 +33,6 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
             .build()
         googleSignInClient = GoogleSignIn.getClient(mContext, gso)
         mAuth = FirebaseAuth.getInstance()
-    }
-
-    override fun checkContactForPermission(): Boolean {
-        return if (ContextCompat.checkSelfPermission(
-                mContext,
-                Manifest.permission.READ_CONTACTS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.READ_CONTACTS)) {
-                ActivityCompat.requestPermissions(
-                    mContext,
-                    arrayOf(Manifest.permission.READ_CONTACTS),
-                    AppConstants.PERMISSIONS_REQUEST_CONTACT
-                )
-            } else {
-                ActivityCompat.requestPermissions(
-                    mContext,
-                    arrayOf(Manifest.permission.READ_CONTACTS),
-                    AppConstants.PERMISSIONS_REQUEST_CONTACT
-                )
-            }
-            false
-        } else {
-            true
-        }
     }
 
     override fun askForGoogleSignIn() {
