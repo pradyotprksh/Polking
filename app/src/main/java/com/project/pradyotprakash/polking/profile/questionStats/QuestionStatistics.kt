@@ -108,7 +108,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private fun getVotes(view: View) {
         if (context != null && questionId != "" && mAuth.currentUser != null) {
             if (mAuth.currentUser!!.uid != askedBy) {
-                var voteText: String
+                val voteText: String
                 if (voteType != "-1") {
                     voteText = if (voteType == "1") {
                         "yesVotes"
@@ -143,14 +143,17 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                                 showMessage(e.localizedMessage, 1)
                             }
 
-                            if (voteList.size > 0) {
-                                view.votesUserTv.visibility = View.VISIBLE
-                                view.votesUserTv.text = getString(R.string.people_who_think_ike_you)
-                                this.allVoteList.clear()
-                                this.allVoteList.addAll(voteList)
-                                votesAdapter?.notifyDataSetChanged()
-                            } else {
-                                view.votesUserTv.visibility = View.GONE
+                            if (context != null) {
+                                if (voteList.size > 0) {
+                                    view.votesUserTv.visibility = View.VISIBLE
+                                    view.votesUserTv.text =
+                                        getString(R.string.people_who_think_ike_you)
+                                    this.allVoteList.clear()
+                                    this.allVoteList.addAll(voteList)
+                                    votesAdapter?.notifyDataSetChanged()
+                                } else {
+                                    view.votesUserTv.visibility = View.GONE
+                                }
                             }
 
                         }
@@ -170,87 +173,95 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun getNoVoteIfSameUser(view: View) {
-        this.allNoVoteList.clear()
-        noVotesAdapter?.notifyDataSetChanged()
-        getSimilarVoteFirestore.collection(questionId)
-            .document(mAuth.currentUser!!.uid)
-            .collection("noVotes")
-            .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
-                    showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
-                    )
-                }
+        if (context != null) {
+            this.allNoVoteList.clear()
+            noVotesAdapter?.notifyDataSetChanged()
+            getSimilarVoteFirestore.collection(questionId)
+                .document(mAuth.currentUser!!.uid)
+                .collection("noVotes")
+                .addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
 
-                noVoteList.clear()
+                    noVoteList.clear()
 
-                try {
-                    for (doc in snapshot!!) {
-                        val docId = doc.id
-                        val voteList: VotesModel =
-                            doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
-                        if (mAuth.currentUser!!.uid != voteList.votedBy) {
-                            this.noVoteList.add(voteList)
+                    try {
+                        for (doc in snapshot!!) {
+                            val docId = doc.id
+                            val voteList: VotesModel =
+                                doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
+                            if (mAuth.currentUser!!.uid != voteList.votedBy) {
+                                this.noVoteList.add(voteList)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        showMessage(e.localizedMessage, 1)
+                    }
+
+                    if (context != null) {
+                        if (noVoteList.size > 0) {
+                            view.votesUserTv2.visibility = View.VISIBLE
+                            view.votesUserTv2.text = getString(R.string.voted_no_for_your_question)
+                            this.allNoVoteList.clear()
+                            this.allNoVoteList.addAll(noVoteList)
+                            noVotesAdapter?.notifyDataSetChanged()
+                        } else {
+                            view.votesUserTv2.visibility = View.GONE
                         }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    showMessage(e.localizedMessage, 1)
-                }
 
-                if (noVoteList.size > 0) {
-                    view.votesUserTv2.visibility = View.VISIBLE
-                    view.votesUserTv2.text = getString(R.string.voted_no_for_your_question)
-                    this.allNoVoteList.clear()
-                    this.allNoVoteList.addAll(noVoteList)
-                    noVotesAdapter?.notifyDataSetChanged()
-                } else {
-                    view.votesUserTv2.visibility = View.GONE
                 }
-
-            }
+        }
     }
 
     private fun getYesVoteIfSameUser(view: View) {
-        this.allVoteList.clear()
-        votesAdapter?.notifyDataSetChanged()
-        getSimilarVoteFirestore.collection(questionId)
-            .document(mAuth.currentUser!!.uid)
-            .collection("yesVotes")
-            .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
-                    showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
-                    )
-                }
+        if (context != null) {
+            this.allVoteList.clear()
+            votesAdapter?.notifyDataSetChanged()
+            getSimilarVoteFirestore.collection(questionId)
+                .document(mAuth.currentUser!!.uid)
+                .collection("yesVotes")
+                .addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                        )
+                    }
 
-                voteList.clear()
+                    voteList.clear()
 
-                try {
-                    for (doc in snapshot!!) {
-                        val docId = doc.id
-                        val voteList: VotesModel =
-                            doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
-                        if (mAuth.currentUser!!.uid != voteList.votedBy) {
-                            this.voteList.add(voteList)
+                    try {
+                        for (doc in snapshot!!) {
+                            val docId = doc.id
+                            val voteList: VotesModel =
+                                doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
+                            if (mAuth.currentUser!!.uid != voteList.votedBy) {
+                                this.voteList.add(voteList)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        showMessage(e.localizedMessage, 1)
+                    }
+
+                    if (context != null) {
+                        if (voteList.size > 0) {
+                            view.votesUserTv.visibility = View.VISIBLE
+                            view.votesUserTv.text = getString(R.string.voted_yes_for_your_question)
+                            this.allVoteList.clear()
+                            this.allVoteList.addAll(voteList)
+                            votesAdapter?.notifyDataSetChanged()
+                        } else {
+                            view.votesUserTv.visibility = View.GONE
                         }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    showMessage(e.localizedMessage, 1)
-                }
 
-                if (voteList.size > 0) {
-                    view.votesUserTv.visibility = View.VISIBLE
-                    view.votesUserTv.text = getString(R.string.voted_yes_for_your_question)
-                    this.allVoteList.clear()
-                    this.allVoteList.addAll(voteList)
-                    votesAdapter?.notifyDataSetChanged()
-                } else {
-                    view.votesUserTv.visibility = View.GONE
                 }
-
-            }
+        }
     }
 
     private fun getUserVote(view: View) {
@@ -276,13 +287,16 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                     }
                     .addOnSuccessListener { result ->
                         if (result.exists()) {
-                            voteType = result.get("voteType").toString()
-                            if (voteType == "1") {
-                                view.userVote.text = getString(R.string.voted_yes)
-                                view.userVote.setChipBackgroundColorResource(R.color.agree_color)
-                            } else {
-                                view.userVote.text = getString(R.string.voted_no)
-                                view.userVote.setChipBackgroundColorResource(R.color.disagree_color)
+
+                            if (context != null) {
+                                voteType = result.get("voteType").toString()
+                                if (voteType == "1") {
+                                    view.userVote.text = getString(R.string.voted_yes)
+                                    view.userVote.setChipBackgroundColorResource(R.color.agree_color)
+                                } else {
+                                    view.userVote.text = getString(R.string.voted_no)
+                                    view.userVote.setChipBackgroundColorResource(R.color.disagree_color)
+                                }
                             }
 
                             getVotes(view)
@@ -402,6 +416,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
 
     private fun setUserData(snapshot: DocumentSnapshot, view: View) {
         Glide.with(context!!).load(snapshot.data!!["imageUrl"].toString())
+            .placeholder(R.drawable.ic_default_appcolor)
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     exception: GlideException?,
@@ -409,10 +424,6 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                     target: Target<Drawable>?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    showMessage(
-                        "Something Went Wrong. ${exception!!.localizedMessage}",
-                        1
-                    )
                     return false
                 }
 

@@ -175,8 +175,10 @@ class QuestionsAdapter(
                 if (result.exists()) {
                     val voteType = result.get("voteType")
                     if (voteType == 1L) {
+                        holder.seeStsts_tv.text = context.getString(R.string.see_stats)
                         holder.seeStsts_tv.setChipBackgroundColorResource(R.color.agree_color)
                     } else {
+                        holder.seeStsts_tv.text = context.getString(R.string.see_stats)
                         holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
                     }
                     showStats(holder, pos)
@@ -214,6 +216,7 @@ class QuestionsAdapter(
 
                     try {
                         Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                            .placeholder(R.drawable.ic_default_appcolor)
                             .listener(object : RequestListener<Drawable> {
                                 override fun onLoadFailed(
                                     exception: GlideException?,
@@ -221,12 +224,6 @@ class QuestionsAdapter(
                                     target: Target<Drawable>?,
                                     isFirstResource: Boolean
                                 ): Boolean {
-                                    if (activity is MainActivity) {
-                                        activity.showMessage(
-                                            "Something Went Wrong. ${exception!!.localizedMessage}",
-                                            1
-                                        )
-                                    }
                                     return false
                                 }
 

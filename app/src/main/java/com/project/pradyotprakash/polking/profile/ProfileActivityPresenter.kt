@@ -18,4 +18,7 @@ interface ProfileActivityPresenter: BasePresenter {
 
     // show stats
     fun showStats(docId: String)
+
+    // call the method to make all the notifications marked as read
+    fun callNotificationIsReadMethod()
 }

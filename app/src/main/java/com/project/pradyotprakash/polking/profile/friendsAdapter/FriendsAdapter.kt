@@ -59,6 +59,7 @@ class FriendsAdapter(
                     p0.name_tv.text = snapshot.data!!["name"].toString()
 
                     Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                        .placeholder(R.drawable.ic_default_appcolor)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
                                 exception: GlideException?,

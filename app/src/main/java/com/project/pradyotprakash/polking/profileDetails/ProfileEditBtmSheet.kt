@@ -162,35 +162,39 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     private fun addInitalDataToDatabase(view: View) {
         view.mainProgressBar.visibility = View.VISIBLE
 
-        val storage = FirebaseStorage.getInstance().reference
-        val imagePath: StorageReference =
-            storage.child("user_profile_image").child("${mAuth.currentUser!!.uid}.jpg")
-        imagePath.putFile(userMainImageURI!!)
-            .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let { exception ->
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}",
-                            1
-                        )
-                        view.mainProgressBar.visibility = View.GONE
-                        throw exception
+        if (userMainImageURI != null) {
+            val storage = FirebaseStorage.getInstance().reference
+            val imagePath: StorageReference =
+                storage.child("user_profile_image").child("${mAuth.currentUser!!.uid}.jpg")
+            imagePath.putFile(userMainImageURI!!)
+                .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let { exception ->
+                            showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}",
+                                1
+                            )
+                            view.mainProgressBar.visibility = View.GONE
+                            throw exception
+                        }
                     }
+                    return@Continuation imagePath.downloadUrl
+                }).addOnCanceledListener {
+                    showMessage(getString(R.string.not_uploaded), 4)
+                    view.mainProgressBar.visibility = View.GONE
+                }.addOnFailureListener { exception ->
+                    showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
+                    view.mainProgressBar.visibility = View.GONE
+                }.addOnCompleteListener { task ->
+
+                    uploadTheImageUrlWithData(view, task, imagePath)
+
+                }.addOnSuccessListener {
+                    showMessage(getString(R.string.save_properly), 3)
                 }
-                return@Continuation imagePath.downloadUrl
-            }).addOnCanceledListener {
-                showMessage(getString(R.string.not_uploaded), 4)
-                view.mainProgressBar.visibility = View.GONE
-            }.addOnFailureListener { exception ->
-                showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
-                view.mainProgressBar.visibility = View.GONE
-            }.addOnCompleteListener { task ->
-
-                uploadTheImageUrlWithData(view, task, imagePath)
-
-            }.addOnSuccessListener {
-                showMessage(getString(R.string.save_properly), 3)
-            }
+        } else {
+            addDataToDatabase(view)
+        }
     }
 
     private fun uploadTheImageUrlWithData(
@@ -237,7 +241,11 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
 
     private fun addDataToDatabase(view: View) {
         val userData = HashMap<String, Any>()
-        userData["imageUrl"] = imageUrl!!
+        if (imageUrl == null || imageUrl == "") {
+            userData["imageUrl"] = ""
+        } else {
+            userData["imageUrl"] = imageUrl!!
+        }
         userData["name"] = view.addQuestion_et.text.toString()
         userData["age"] =
             Utility().getAge(view.age_et.text.toString())
@@ -273,26 +281,22 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun allDataIsThere(view: View): Boolean {
-        if (userMainImageURI != null) {
-            if (view.addQuestion_et.text.toString().length > 3) {
-                if (view.age_et.text.toString().isNotEmpty()) {
-                    if (Utility().getAge(view.age_et.text.toString()) > 13) {
-                        if (genderType != -1) {
-                            return true
-                        } else {
-                            showMessage(getString(R.string.select_gender), 1)
-                        }
+        if (view.addQuestion_et.text.toString().length > 3) {
+            if (view.age_et.text.toString().isNotEmpty()) {
+                if (Utility().getAge(view.age_et.text.toString()) > 13) {
+                    if (genderType != -1) {
+                        return true
                     } else {
-                        showMessage(getString(R.string.above_thirteen_msg), 1)
+                        showMessage(getString(R.string.select_gender), 1)
                     }
                 } else {
-                    showMessage(getString(R.string.enter_birthdate), 1)
+                    showMessage(getString(R.string.above_thirteen_msg), 1)
                 }
             } else {
-                showMessage(getString(R.string.name_length_restriction), 1)
+                showMessage(getString(R.string.enter_birthdate), 1)
             }
         } else {
-            showMessage(getString(R.string.select_picture), 1)
+            showMessage(getString(R.string.name_length_restriction), 1)
         }
         return false
     }
@@ -315,7 +319,10 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
 
                 imageUrl = result.getString("imageUrl")
 
-                Glide.with(this).load(result.getString("imageUrl")).listener(object : RequestListener<Drawable> {
+                Glide.with(this)
+                    .load(result.getString("imageUrl"))
+                    .placeholder(R.drawable.ic_default_appcolor)
+                    .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         exception: GlideException?,
                         model: Any?,
@@ -323,7 +330,6 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                         isFirstResource: Boolean
                     ): Boolean {
                         view.imagePrgBsr.visibility = View.GONE
-                        showMessage("Something Went Wrong. ${exception?.localizedMessage}", 1)
                         return false
                     }
 
@@ -431,8 +437,6 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     private fun openCamera() {
         if (activity != null) {
             CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).start(activity!!)
-        } else {
-            showMessage(getString(R.string.check_permission), 1)
         }
     }
 

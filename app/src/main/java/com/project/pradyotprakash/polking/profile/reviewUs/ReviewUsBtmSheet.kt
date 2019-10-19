@@ -153,7 +153,7 @@ class ReviewUsBtmSheet @Inject constructor() : TransparentBottomSheet(), Profile
             Utility().expandCollapse(view.addFeed_et3)
             Utility().expandCollapse(view.val_tv)
             Utility().expandCollapse(view.post_Tv)
-
+            view.addFeed_et3.setText("")
             Utility().hideSoftKeyboard(view.addFeed_et3)
         }.addOnFailureListener { exception ->
             showMessage(

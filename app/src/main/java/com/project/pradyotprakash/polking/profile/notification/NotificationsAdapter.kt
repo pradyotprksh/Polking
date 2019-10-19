@@ -15,7 +15,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.chip.Chip
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
@@ -30,8 +29,6 @@ class NotificationsAdapter(
 ) : RecyclerView.Adapter<NotificationsAdapter.ViewHolder>() {
 
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var notificationFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
@@ -59,7 +56,9 @@ class NotificationsAdapter(
                 if (snapshot != null && snapshot.exists()) {
                     p0.name_chio.text = snapshot.data!!["name"].toString()
 
-                    Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                    Glide.with(context)
+                        .load(snapshot.data!!["imageUrl"].toString())
+                        .placeholder(R.drawable.ic_default_appcolor)
                         .listener(object :
                             RequestListener<Drawable> {
                             override fun onLoadFailed(
@@ -68,10 +67,6 @@ class NotificationsAdapter(
                                 target: Target<Drawable>?,
                                 isFirstResource: Boolean
                             ): Boolean {
-                                (context as ProfileActivity).showMessage(
-                                    "Something Went Wrong. ${exception?.localizedMessage}",
-                                    1
-                                )
                                 return false
                             }
 
@@ -88,18 +83,6 @@ class NotificationsAdapter(
                 }
 
             }
-
-        if (allNotificationsList[p1].notificationIsRead == "false") {
-            val notificationData = HashMap<String, Any>()
-            notificationData["notificationIsRead"] = "true"
-            notificationFirestore.collection("users").document(mAuth.currentUser!!.uid)
-                .collection("notifications").document(allNotificationsList[p1].docId)
-                .update(notificationData).addOnFailureListener { exception ->
-                    (context as MainActivity).showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
-                    )
-                }
-        }
 
         p0.name_chio.setOnClickListener {
             openUserDetails(allNotificationsList[p1].notificationMessageBy)

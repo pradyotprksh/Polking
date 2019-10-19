@@ -292,29 +292,13 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             .addOnSuccessListener {
                 view.progressBar5.visibility = View.GONE
             }.addOnCompleteListener {
-
-                val otherFriendData = HashMap<String, Any>()
-                otherFriendData["userId"] = mAuth.currentUser!!.uid
-
-                firestore.collection("users").document(askedBy)
-                    .collection("friends").document(mAuth.currentUser!!.uid)
-                    .set(otherFriendData).addOnSuccessListener {
-                        view.progressBar5.visibility = View.GONE
-                    }.addOnCompleteListener {
-                        if (isAdded && !isDetached) {
-                            view.connectTv.text =
-                                getString(R.string.unfollow_as_a_friend)
-                            view.connectTv.setChipBackgroundColorResource(R.color.disagree_color)
-                            view.connectTv.isCloseIconVisible = false
-                            view.makeBfChip.visibility = View.VISIBLE
-                        }
-                    }.addOnFailureListener { exception ->
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}",
-                            1
-                        )
-                        view.progressBar5.visibility = View.GONE
-                    }
+                if (isAdded && !isDetached) {
+                    view.connectTv.text =
+                        getString(R.string.unfollow_as_a_friend)
+                    view.connectTv.setChipBackgroundColorResource(R.color.disagree_color)
+                    view.connectTv.isCloseIconVisible = false
+                    view.makeBfChip.visibility = View.VISIBLE
+                }
             }.addOnFailureListener { exception ->
                 showMessage(
                     "Something Went Wrong. ${exception.localizedMessage}",
@@ -338,26 +322,13 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                 view.progressBar5.visibility = View.GONE
             }.addOnCompleteListener {
 
-                firestore.collection("users").document(askedBy)
-                    .collection("friends").document(mAuth.currentUser!!.uid)
-                    .delete()
-                    .addOnFailureListener { exception ->
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}",
-                            1
-                        )
-                        view.progressBar5.visibility = View.GONE
-                    }.addOnSuccessListener {
-                        view.progressBar5.visibility = View.GONE
-                    }.addOnCompleteListener {
-                        if (isAdded && !isDetached) {
-                            view.connectTv.text =
-                                getString(R.string.follow_as_a_friend)
-                            view.connectTv.setChipBackgroundColorResource(R.color.agree_color)
-                            view.connectTv.isCloseIconVisible = false
-                            view.makeBfChip.visibility = View.GONE
-                        }
-                    }
+                if (isAdded && !isDetached) {
+                    view.connectTv.text =
+                        getString(R.string.follow_as_a_friend)
+                    view.connectTv.setChipBackgroundColorResource(R.color.agree_color)
+                    view.connectTv.isCloseIconVisible = false
+                    view.makeBfChip.visibility = View.GONE
+                }
 
             }
     }
@@ -493,6 +464,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                         view.userNameTv.text = snapshot.data!!["name"].toString()
 
                         Glide.with(this).load(snapshot.data!!["imageUrl"].toString())
+                            .placeholder(R.drawable.ic_default_appcolor)
                             .listener(object :
                                 RequestListener<Drawable> {
                                 override fun onLoadFailed(
@@ -502,10 +474,6 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                                     isFirstResource: Boolean
                                 ): Boolean {
                                     view.progressBar5.visibility = View.GONE
-                                    showMessage(
-                                        "Something Went Wrong. ${exception?.localizedMessage}",
-                                        1
-                                    )
                                     return false
                                 }
 
@@ -543,6 +511,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                             showLoading()
                             if (result.exists()) {
                                 Glide.with(this).load(resultBg.getString("imageUrl")!!)
+                                    .placeholder(R.drawable.pbg_two)
                                     .listener(object :
                                         RequestListener<Drawable> {
                                         override fun onLoadFailed(

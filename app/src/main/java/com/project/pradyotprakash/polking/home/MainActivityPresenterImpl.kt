@@ -7,7 +7,6 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -92,6 +91,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     if (snapshot != null && snapshot.exists()) {
                         mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
                         mView.setUserName(snapshot.data!!["name"].toString())
+                        mView.setNotificationIcon(snapshot.data!!["notificationCount"].toString())
                         mView.hideLoading()
                     } else {
                         mView.openAddProfileDetails()
@@ -104,7 +104,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
     override fun addAuthStateListener() {
         mAuth.addAuthStateListener { mAuth ->
             if (mAuth.currentUser != null) {
@@ -118,19 +117,20 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun setDynamicShortcuts() {
-        val shortcutManager = mContext.getSystemService(ShortcutManager::class.java)
-        val profileIntent = Intent(mContext, ProfileActivity::class.java)
-        profileIntent.action = "PROFILE_ACTIVITY"
-        val profileShortcut = ShortcutInfo.Builder(mContext, "profile")
-            .setShortLabel("My Profile")
-            .setLongLabel("Open My Profile")
-            .setIcon(Icon.createWithResource(mContext, R.drawable.ic_default_appcolor))
-            .setIntent(profileIntent)
-            .build()
-        if (shortcutManager != null)
-            shortcutManager.dynamicShortcuts = listOf(profileShortcut)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val shortcutManager = mContext.getSystemService(ShortcutManager::class.java)
+            val profileIntent = Intent(mContext, ProfileActivity::class.java)
+            profileIntent.action = "PROFILE_ACTIVITY"
+            val profileShortcut = ShortcutInfo.Builder(mContext, "profile")
+                .setShortLabel("My Profile")
+                .setLongLabel("Open My Profile")
+                .setIcon(Icon.createWithResource(mContext, R.drawable.ic_default_appcolor))
+                .setIntent(profileIntent)
+                .build()
+            if (shortcutManager != null)
+                shortcutManager.dynamicShortcuts = listOf(profileShortcut)
+        }
     }
 
     private fun getUserData() {

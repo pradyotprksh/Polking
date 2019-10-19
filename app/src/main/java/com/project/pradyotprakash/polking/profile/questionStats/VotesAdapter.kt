@@ -56,7 +56,10 @@ class VotesAdapter(
 
                 if (snapshot != null && snapshot.exists()) {
 
+                    p0.nameTv.text = snapshot.data!!["name"].toString()
+
                     Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                        .placeholder(R.drawable.ic_default_appcolor)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
                                 exception: GlideException?,
@@ -64,6 +67,7 @@ class VotesAdapter(
                                 target: Target<Drawable>?,
                                 isFirstResource: Boolean
                             ): Boolean {
+                                p0.progressBar.visibility = View.GONE
                                 return false
                             }
 
@@ -85,27 +89,32 @@ class VotesAdapter(
 
             }
 
-        p0.nameTv.visibility = View.GONE
+        p0.nameTv.setOnClickListener {
+            openProfileOptions(p0, p1)
+        }
+        p0.itemView.setOnClickListener {
+            openProfileOptions(p0, p1)
+        }
 
-        p0.bgImage.setOnClickListener {
-            when (context) {
-                is MainActivity -> if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
-                        context.openProfileDetails(allVotesModel[p1].votedBy)
-                    } else {
-                        context.startProfileAct()
-                    }
+    }
+
+    private fun openProfileOptions(p0: ViewHolder, p1: Int) {
+        when (context) {
+            is MainActivity -> if (mAuth.currentUser != null) {
+                if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
+                    context.openProfileDetails(allVotesModel[p1].votedBy)
                 } else {
-                    context.startLogin()
+                    context.startProfileAct()
                 }
-                is ProfileActivity -> if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
-                        context.openProfileDetails(allVotesModel[p1].votedBy)
-                    }
+            } else {
+                context.startLogin()
+            }
+            is ProfileActivity -> if (mAuth.currentUser != null) {
+                if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
+                    context.openProfileDetails(allVotesModel[p1].votedBy)
                 }
             }
         }
-
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {

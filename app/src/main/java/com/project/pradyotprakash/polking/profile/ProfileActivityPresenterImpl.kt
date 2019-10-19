@@ -104,11 +104,45 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
                     )
                     mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
                     mView.setUserName(snapshot.data!!["name"].toString())
+                    mView.setNotificationIcon(
+                        snapshot.data!!["notificationCount"].toString(),
+                        snapshot.data!!["notificationMsg"].toString()
+                    )
                     mView.hideLoading()
                 } else {
                     mView.openAddProfileDetails()
                     mView.hideLoading()
                 }
+            }
+    }
+
+    override fun callNotificationIsReadMethod() {
+        callNotificationFunction()
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    if (task.exception != null) {
+                        val e = task.exception
+                        if (e != null) {
+                            if (e is FirebaseFunctionsException) {
+                                mView.hideLoading()
+                                mView.showMessage("Something Went Wrong. ${e.localizedMessage}", 1)
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun callNotificationFunction(): Task<String> {
+        val data = HashMap<String, Any>()
+        data["userId"] = mAuth.currentUser!!.uid
+
+        return firebaseFunctions
+            .getHttpsCallable("markedNotificationRead")
+            .call(data)
+            .continueWith { task ->
+                val result = task.result?.data as String
+                result
             }
     }
 

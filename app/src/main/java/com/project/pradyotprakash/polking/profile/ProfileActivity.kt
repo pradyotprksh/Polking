@@ -19,6 +19,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
@@ -95,6 +96,25 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         setAdapters()
 
         getIntentData()
+    }
+
+    private fun setBehaviorListner() {
+        if (notificationBottomSheet.view != null) {
+            val bottomSheetBehavior = BottomSheetBehavior.from(notificationBottomSheet.view)
+
+            bottomSheetBehavior.setBottomSheetCallback(object :
+                BottomSheetBehavior.BottomSheetCallback() {
+                override fun onSlide(p0: View, slideOffset: Float) {
+
+                }
+
+                override fun onStateChanged(p0: View, newState: Int) {
+                    if (BottomSheetBehavior.STATE_COLLAPSED == newState) {
+                        presenter.callNotificationIsReadMethod()
+                    }
+                }
+            })
+        }
     }
 
     private fun getIntentData() {
@@ -183,6 +203,10 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         notificationchip.setOnClickListener {
             openNotificationBtmSheet()
         }
+
+        notification_tv.setOnClickListener {
+            openNotificationBtmSheet()
+        }
     }
 
     private fun initvariables() {
@@ -206,6 +230,10 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     private fun openNotificationBtmSheet() {
         if (!notificationBottomSheet.isAdded) {
             notificationBottomSheet.show(supportFragmentManager, "btmSheet")
+            setBehaviorListner()
+            Handler().postDelayed({
+                presenter.callNotificationIsReadMethod()
+            }, 3500)
         }
     }
 
@@ -266,16 +294,8 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
-        return if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
-            if (optionList_cl.visibility == View.VISIBLE) {
-                optionList_cl.startAnimation(Utility().outToDownAnimation())
-                optionList_cl.visibility = View.GONE
-                true
-            } else {
-                false
-            }
-        } else if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
-            openNotificationBtmSheet()
+        return if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
+//            openNotificationBtmSheet()
             true
         } else {
             super.onTouchEvent(event)
@@ -286,14 +306,16 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         if (imageUrl != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 if (!this.isDestroyed) {
-                    Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
+                    Glide.with(this)
+                        .load(imageUrl)
+                        .placeholder(R.drawable.ic_default_appcolor)
+                        .listener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(
                             exception: GlideException?,
                             model: Any?,
                             target: Target<Drawable>?,
                             isFirstResource: Boolean
                         ): Boolean {
-                            showMessage("Something Went Wrong. ${exception?.localizedMessage}", 1)
                             return false
                         }
 
@@ -424,7 +446,10 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun setBgImage(imageUrl: String, docId: String) {
         if (!this.isDestroyed) {
-            Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.pbg_two)
+                .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     exception: GlideException?,
                     model: Any?,
@@ -452,6 +477,19 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         if (!otherProfileOptions.isAdded) {
             otherProfileOptions.show(supportFragmentManager, "btmSheet")
             otherProfileOptions.setUserId(notificationMessageBy)
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun setNotificationIcon(
+        notificationCount: String,
+        notificaitonMsg: String
+    ) {
+        if (notificationCount == "0") {
+            notification_tv.visibility = View.GONE
+        } else {
+            notification_tv.visibility = View.VISIBLE
+            notification_tv.text = "You have got $notificaitonMsg notification."
         }
     }
 

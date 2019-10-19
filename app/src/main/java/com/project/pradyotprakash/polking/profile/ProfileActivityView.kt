@@ -35,4 +35,7 @@ interface ProfileActivityView: BaseView {
 
     // open btm sheet for the question
     fun showQuestionStats(docId: String)
+
+    // set notification view
+    fun setNotificationIcon(notificationCount: String, notificaitonMsg: String)
 }

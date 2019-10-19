@@ -1,6 +1,7 @@
 package com.project.pradyotprakash.polking.message
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +50,17 @@ class ShowMessage @Inject constructor() : TransparentBottomSheet(), ProfileEditV
 
         initView(view)
 
+        dismissAfterOnePointFiveSec(view)
+
         return view
+    }
+
+    private fun dismissAfterOnePointFiveSec(view: View) {
+        Handler().postDelayed({
+            if (!isDetached && isVisible) {
+                dismiss()
+            }
+        }, 2500)
     }
 
     private fun initView(view: View) {

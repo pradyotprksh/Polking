@@ -123,6 +123,14 @@ class MainActivity : InternetActivity(), MainActivityView {
         })
     }
 
+    override fun setNotificationIcon(notificationCount: String) {
+        if (notificationCount == "0") {
+            notification_iv.visibility = View.GONE
+        } else {
+            notification_iv.visibility = View.VISIBLE
+        }
+    }
+
     private fun setOnClickListners() {
         user_iv.setOnClickListener {
             presenter.isLoggedIn()
@@ -178,7 +186,9 @@ class MainActivity : InternetActivity(), MainActivityView {
     override fun setUserProfileImage(imageUrl: String?) {
         if (imageUrl != null) {
             imageProgressBar.visibility = View.VISIBLE
-            Glide.with(this).load(imageUrl).listener(object : RequestListener<Drawable> {
+            Glide.with(this).load(imageUrl)
+                .placeholder(R.drawable.ic_default_appcolor)
+                .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(
                     exception: GlideException?,
                     model: Any?,
@@ -186,7 +196,6 @@ class MainActivity : InternetActivity(), MainActivityView {
                     isFirstResource: Boolean
                 ): Boolean {
                     imageProgressBar.visibility = View.GONE
-                    showMessage("Something Went Wrong. ${exception?.localizedMessage}", 1)
                     return false
                 }
 
@@ -293,14 +302,16 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun showQuestionStats(docId: String) {
         runOnUiThread {
-            if (!questionStatistics.isAdded) {
-                questionStatistics.show(supportFragmentManager, "btmSheet")
-                questionStatistics.setQuestionDocId(docId)
-            } else {
-                questionStatistics.dismiss()
+            if (!isFinishing) {
                 if (!questionStatistics.isAdded) {
                     questionStatistics.show(supportFragmentManager, "btmSheet")
                     questionStatistics.setQuestionDocId(docId)
+                } else {
+                    questionStatistics.dismiss()
+                    if (!questionStatistics.isAdded) {
+                        questionStatistics.show(supportFragmentManager, "btmSheet")
+                        questionStatistics.setQuestionDocId(docId)
+                    }
                 }
             }
         }
