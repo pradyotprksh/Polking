@@ -26,6 +26,13 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.play.core.appupdate.AppUpdateInfo
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.tasks.Task
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.message.ShowMessage
@@ -35,6 +42,7 @@ import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatisti
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.utility.*
+import com.project.pradyotprakash.polking.utility.AppConstants.Companion.REQUEST_CODE_UPDATE
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
@@ -55,6 +63,10 @@ class MainActivity : InternetActivity(), MainActivityView {
     private var count = 0
     private var count1 = 0
     private var isOptionForQuestion: Boolean = false
+
+    private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+    private val appUpdateInfo: Task<AppUpdateInfo> by lazy { appUpdateManager.appUpdateInfo }
+    private lateinit var installStateUpdatedListener: InstallStateUpdatedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -86,6 +98,8 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     private fun initialize() {
+        checkForUpdates()
+
         presenter.start()
 
         initVariables()
@@ -341,11 +355,80 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun onResume() {
         super.onResume()
+        checkNewAppVersionState()
         logd(getString(R.string.resume))
         presenter.addAuthStateListener()
         presenter.getProfileData()
-        presenter.checkForUpdates()
         getQuestions()
+    }
+
+    private fun checkNewAppVersionState() {
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                updateDownloaded()
+            }
+
+            if (appUpdateInfo.updateAvailability()
+                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+            ) {
+                startAppUpdateImmediate(appUpdateInfo)
+            }
+        }
+    }
+
+    private fun startAppUpdateImmediate(appUpdateInfo: AppUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                AppUpdateType.IMMEDIATE,
+                this,
+                REQUEST_CODE_UPDATE
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onDestroy() {
+        unregisterInstallStateUpdListener()
+        super.onDestroy()
+    }
+
+    private fun checkForUpdates() {
+        installStateUpdatedListener = InstallStateUpdatedListener { installState ->
+            if (installState.installStatus() == InstallStatus.DOWNLOADED) {
+                updateDownloaded()
+            }
+        }
+
+        appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                    startAppUpdateImmediate(appUpdateInfo)
+                } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                    startAppUpdateFlexible(appUpdateInfo)
+                }
+            }
+        }
+    }
+
+    private fun startAppUpdateFlexible(appUpdateInfo: AppUpdateInfo?) {
+        appUpdateManager.registerListener(installStateUpdatedListener)
+        try {
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                AppUpdateType.FLEXIBLE,
+                this,
+                REQUEST_CODE_UPDATE
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun updateDownloaded() {
+        appUpdateManager.completeUpdate()
+        unregisterInstallStateUpdListener()
     }
 
     override fun startProfileAct() {
@@ -447,6 +530,7 @@ class MainActivity : InternetActivity(), MainActivityView {
                     camera_iv.setImageURI(picOptionUri)
                     camera_iv.borderColor = resources.getColor(R.color.white)
                     camera_iv.borderWidth = 2
+                    isOptionForQuestion = false
                 } else {
                     if (profileEditBtmSheet.isAdded) {
                         profileEditBtmSheet.getImageUri(result.uri)
@@ -455,7 +539,16 @@ class MainActivity : InternetActivity(), MainActivityView {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 showMessage(getString(R.string.went_wrong_image), 1)
             }
+        } else if (requestCode == REQUEST_CODE_UPDATE) {
+            if (resultCode != Activity.RESULT_OK) {
+                unregisterInstallStateUpdListener()
+            }
         }
+    }
+
+    private fun unregisterInstallStateUpdListener() {
+        if (appUpdateManager != null)
+            appUpdateManager.unregisterListener(installStateUpdatedListener)
     }
 
     override fun hideOptions() {

@@ -171,4 +171,7 @@
     <string name="no_best_friend">You haven\'t added any friend as your best friend</string>
     <string name="no_question_added">You haven\'t added any question</string>
     <string name="add_images_question">You can add images as a part of your question.</string>
+    <string name="updated_successfully">Polking is updated to the latest version</string>
+    <string name="better_to_update">It\'s better to keep the application up-to-date</string>
+    <string name="restart_polking">Re-open the application to retry the updates</string>
 </resources>
