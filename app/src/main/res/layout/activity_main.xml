@@ -86,12 +86,35 @@
                             app:layout_constraintStart_toStartOf="@+id/user_iv"
                             app:layout_constraintTop_toTopOf="@+id/user_iv" />
 
+                    <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/camera_iv"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_camera"
+                            app:layout_constraintBottom_toBottomOf="@+id/addQuestion_et"
+                            app:layout_constraintStart_toEndOf="@+id/user_iv"
+                            app:layout_constraintTop_toTopOf="@+id/addQuestion_et" />
+
+                    <ImageView
+                            android:id="@+id/imageView8"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/camera_iv"
+                            app:layout_constraintStart_toEndOf="@+id/camera_iv"
+                            app:layout_constraintTop_toTopOf="@+id/camera_iv"
+                            app:srcCompat="@drawable/ic_add"
+                            tools:ignore="VectorDrawableCompat" />
+
                     <EditText
                             android:id="@+id/addQuestion_et"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginLeft="20dp"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginLeft="5dp"
                             android:layout_marginEnd="20dp"
                             android:layout_marginRight="20dp"
                             android:background="@drawable/white_round_borders"
@@ -110,7 +133,7 @@
                             android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="@+id/user_iv"
                             app:layout_constraintEnd_toStartOf="@+id/post_Tv"
-                            app:layout_constraintStart_toEndOf="@+id/user_iv"
+                            app:layout_constraintStart_toEndOf="@+id/imageView8"
                             app:layout_constraintTop_toTopOf="@+id/user_iv" />
 
                     <com.google.android.material.chip.Chip

@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.home
 
+import android.net.Uri
 import com.project.pradyotprakash.polking.BasePresenter
 
 interface MainActivityPresenter: BasePresenter {
@@ -30,5 +31,8 @@ interface MainActivityPresenter: BasePresenter {
 
     // check for updates
     fun checkForUpdates()
+
+    // upload question with images
+    fun uploadQuestionWithImage(question: String, picOptionUri: Uri)
 
 }

@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
+import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
@@ -18,6 +20,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.AppConstants.Companion.REQUEST_CODE_UPDATE
@@ -109,6 +114,120 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
+    override fun uploadQuestionWithImage(question: String, picOptionUri: Uri) {
+        mView.showLoading()
+        if (currentUser != null) {
+            val randomString = (1..32).map { ('0'..'z').toList().toTypedArray().random() }
+                .joinToString("")
+            val storage = FirebaseStorage.getInstance().reference
+            val imagePath: StorageReference =
+                storage.child("user_question_images")
+                    .child("${mAuth.currentUser!!.uid}$randomString.jpg")
+            imagePath.putFile(picOptionUri)
+                .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let { exception ->
+                            mView.showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}",
+                                1
+                            )
+                            mView.hideLoading()
+                            throw exception
+                        }
+                    }
+                    return@Continuation imagePath.downloadUrl
+                }).addOnCanceledListener {
+                    mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
+                    mView.hideLoading()
+                }.addOnFailureListener { exception ->
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}"
+                        , 1
+                    )
+                    mView.hideLoading()
+                }.addOnCompleteListener { task ->
+                    uploadQuestionImage(
+                        task,
+                        imagePath,
+                        question,
+                        "${mAuth.currentUser!!.uid}$randomString.jpg"
+                    )
+                }.addOnSuccessListener {
+                    mView.showMessage(mContext.getString(R.string.save_properly), 3)
+                }
+        }
+    }
+
+    private fun uploadQuestionImage(
+        task: Task<Uri>,
+        imagePath: StorageReference,
+        question: String,
+        imageName: String
+    ) {
+        if (task.isComplete) {
+            if (task.isSuccessful) {
+
+                imagePath.downloadUrl.addOnSuccessListener { uri ->
+
+                    val imageUrl = uri.toString()
+
+                    addDataToDatabase(imageUrl, question, imageName)
+
+                }.addOnFailureListener { exception ->
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                    mView.hideLoading()
+                }.addOnCanceledListener {
+                    mView.showMessage(mContext.getString(R.string.not_uploaded), 1)
+                    mView.hideLoading()
+                }
+
+            } else if (task.isCanceled) {
+                mView.showMessage(mContext.getString(R.string.not_uploaded), 1)
+                mView.hideLoading()
+            }
+        } else {
+            mView.showMessage(mContext.getString(R.string.something_went_wrong), 1)
+            mView.hideLoading()
+        }
+    }
+
+    private fun addDataToDatabase(
+        imageUrl: String,
+        question: String,
+        imageName: String
+    ) {
+        val date = Date()
+        val questionData = HashMap<String, Any>()
+        questionData["question"] = question
+        questionData["imageUrl"] = imageUrl
+        questionData["imageName"] = imageName
+        questionData["askedBy"] = currentUser!!.uid
+        questionData["askedOn"] = dateTimeFormat.format(date)
+        questionData["askedOnDate"] = dateFormat.format(date)
+        questionData["askedOnTime"] = timeFormat.format(date)
+        questionData["yesVote"] = "0"
+        questionData["noVote"] = "0"
+
+        dataBase.collection("question").add(questionData)
+            .addOnSuccessListener {
+                mView.hideLoading()
+                mView.showUploadedSuccess()
+                mView.showMessage("Successfully Uploaded.", 3)
+            }.addOnFailureListener { exception ->
+                mView.showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                mView.hideLoading()
+            }.addOnCanceledListener {
+                mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                mView.hideLoading()
+            }
+    }
+
     override fun checkForUpdates() {
         val updateManager = AppUpdateManagerFactory.create(mContext)
         updateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
@@ -156,7 +275,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     }
 
     private fun getUserData() {
-        dataBase.collection("users").document(currentUser!!.uid).get().addOnSuccessListener { result ->
+        dataBase.collection("users").document(currentUser!!.uid).get()
+            .addOnSuccessListener { result ->
 
             if (result.exists()) {
                 mView.setUserProfileImage(result.data!!["imageUrl"].toString())
@@ -195,7 +315,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             questionData["yesVote"] = "0"
             questionData["noVote"] = "0"
 
-            dataBase.collection("question").add(questionData).addOnSuccessListener {
+            dataBase.collection("question").add(questionData)
+                .addOnSuccessListener {
                 mView.hideLoading()
                 mView.showUploadedSuccess()
                 mView.showMessage("Successfully Uploaded.", 3)
@@ -291,7 +412,10 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                         if (e != null) {
                             if (e is FirebaseFunctionsException) {
                                 mView.hideLoading()
-                                mView.showMessage("Something Went Wrong. ${e.localizedMessage}", 1)
+                                mView.showMessage(
+                                    "Something Went Wrong." +
+                                            " ${e.localizedMessage}", 1
+                                )
                             } else {
                                 openStats(docId)
                             }

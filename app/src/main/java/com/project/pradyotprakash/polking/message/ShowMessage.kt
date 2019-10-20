@@ -50,8 +50,6 @@ class ShowMessage @Inject constructor() : TransparentBottomSheet(), ProfileEditV
 
         initView(view)
 
-        dismissAfterOnePointFiveSec(view)
-
         return view
     }
 
@@ -71,6 +69,7 @@ class ShowMessage @Inject constructor() : TransparentBottomSheet(), ProfileEditV
                 view.information_animation.visibility = View.GONE
                 view.success_animation.visibility = View.GONE
                 view.no_network_animation.visibility = View.GONE
+                dismissAfterOnePointFiveSec(view)
             }
             2 -> {
                 view.error_animation.visibility = View.GONE
@@ -83,6 +82,7 @@ class ShowMessage @Inject constructor() : TransparentBottomSheet(), ProfileEditV
                 view.information_animation.visibility = View.GONE
                 view.success_animation.visibility = View.VISIBLE
                 view.no_network_animation.visibility = View.GONE
+                dismissAfterOnePointFiveSec(view)
             }
             else -> {
                 view.error_animation.visibility = View.GONE

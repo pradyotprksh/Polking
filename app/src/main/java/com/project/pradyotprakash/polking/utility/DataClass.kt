@@ -10,7 +10,9 @@ data class QuestionModel(
     val askedOnDate: String = "",
     val askedOnTime: String = "",
     val yesVote: String = "",
-    val noVote: String = ""
+    val noVote: String = "",
+    val imageUrl: String = "",
+    val imageName: String = ""
 ) : GetId()
 
 // FAQs Questions

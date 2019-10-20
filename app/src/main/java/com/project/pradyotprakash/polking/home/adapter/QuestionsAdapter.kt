@@ -7,9 +7,11 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -23,16 +25,19 @@ import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import de.hdodenhof.circleimageview.CircleImageView
+import rm.com.longpresspopup.*
 
 class QuestionsAdapter(
     private val allQues: List<QuestionModel>,
     private val context: Context,
     private val activity: Activity
-) : RecyclerView.Adapter<QuestionsAdapter.ViewAdapter>() {
+) : RecyclerView.Adapter<QuestionsAdapter.ViewAdapter>(), PopupInflaterListener, PopupStateListener,
+    PopupOnHoverListener {
 
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var question_image: ImageView? = null
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.question_layout, p0, false)
@@ -52,6 +57,7 @@ class QuestionsAdapter(
 
         if (mAuth.currentUser != null) {
             if (mAuth.currentUser!!.uid == allQues[pos].askedBy) {
+                holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
                 holder.seeStsts_tv.text = context.getString(R.string.see_stats)
                 showStats(holder, pos)
             } else {
@@ -61,6 +67,51 @@ class QuestionsAdapter(
             holder.seeStsts_tv.text = context.getString(R.string.please_login)
             showStats(holder, pos)
         }
+
+        if (allQues[pos].imageUrl == "") {
+            holder.question_image_Iv.visibility = View.GONE
+            holder.question_loading.visibility = View.GONE
+        } else {
+            holder.question_image_Iv.visibility = View.VISIBLE
+            holder.question_loading.visibility = View.VISIBLE
+            Glide.with(context).load(allQues[pos].imageUrl)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        exception: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        holder.question_loading.visibility = View.GONE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        holder.question_loading.visibility = View.GONE
+                        return false
+                    }
+                }).into(holder.question_image_Iv)
+        }
+
+        val popUp: LongPressPopup = LongPressPopupBuilder(context)
+            .setTarget(holder.question_image_Iv)
+            .setPopupView(R.layout.question_image_popup, this)
+            .setLongPressDuration(150)
+            .setTag(allQues[pos].imageUrl)
+            .setDismissOnLongPressStop(true)
+            .setDismissOnTouchOutside(true)
+            .setDismissOnBackPressed(true)
+            .setCancelTouchOnDragOutsideView(true)
+            .setPopupListener(this)
+            .setAnimationType(LongPressPopup.ANIMATION_TYPE_FROM_CENTER)
+            .build()
+        popUp.register()
 
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
@@ -147,6 +198,44 @@ class QuestionsAdapter(
                 }
             }
         }
+
+    }
+
+    override fun onViewInflated(popupTag: String?, root: View?) {
+        question_image = root?.findViewById(R.id.question_image)
+    }
+
+    override fun onPopupDismiss(popupTag: String?) {
+
+    }
+
+    override fun onPopupShow(popupTag: String?) {
+        if (popupTag != null && question_image != null) {
+            Glide.with(context).load(popupTag)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        exception: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
+                }).into(question_image!!)
+        }
+    }
+
+    override fun onHoverChanged(view: View?, isHovered: Boolean) {
 
     }
 
@@ -262,6 +351,8 @@ class QuestionsAdapter(
         val yes_tv: Chip = context.findViewById(R.id.yes_tv)
         val no_tv: Chip = context.findViewById(R.id.no_tv)
         val seeStsts_tv: Chip = context.findViewById(R.id.seeStsts_tv)
+        val question_loading: LottieAnimationView = context.findViewById(R.id.question_loading)
+        val question_image_Iv: ImageView = context.findViewById(R.id.question_image_Iv)
     }
 
 }

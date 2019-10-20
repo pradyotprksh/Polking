@@ -51,6 +51,36 @@
                     app:layout_constraintTop_toTopOf="@+id/user_iv"
                     app:rippleColor="@color/colorPrimary" />
 
+            <ImageView
+                    android:id="@+id/question_image_Iv"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/app_color_border"
+                    android:padding="2dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/user_iv" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/question_loading"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/question_image_Iv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/question_image_Iv"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="loading.json"
+                    app:lottie_loop="true" />
+
             <TextView
                     android:id="@+id/question_tv"
                     android:layout_width="0dp"
@@ -61,7 +91,7 @@
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="@+id/username_tv"
                     app:layout_constraintStart_toStartOf="@+id/user_iv"
-                    app:layout_constraintTop_toBottomOf="@+id/user_iv" />
+                    app:layout_constraintTop_toBottomOf="@+id/question_image_Iv" />
 
             <com.google.android.material.chip.Chip
                     android:id="@+id/yes_tv"

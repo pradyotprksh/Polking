@@ -170,4 +170,5 @@
     <string name="no_friend">You don\'t have any friend right now</string>
     <string name="no_best_friend">You haven\'t added any friend as your best friend</string>
     <string name="no_question_added">You haven\'t added any question</string>
+    <string name="add_images_question">You can add images as a part of your question.</string>
 </resources>

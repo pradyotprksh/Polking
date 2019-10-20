@@ -1,17 +1,24 @@
 package com.project.pradyotprakash.polking.home
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -28,8 +35,8 @@ import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatisti
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.utility.*
-import com.project.pradyotprakash.polking.utility.AppConstants.Companion.REQUEST_CODE_UPDATE
 import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -44,6 +51,10 @@ class MainActivity : InternetActivity(), MainActivityView {
     lateinit var questionStatistics: QuestionStatistics
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
+    private var picOptionUri: Uri? = null
+    private var count = 0
+    private var count1 = 0
+    private var isOptionForQuestion: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -93,7 +104,10 @@ class MainActivity : InternetActivity(), MainActivityView {
     private fun adapters() {
         questionsAdapter = QuestionsAdapter(allQues, this, this)
         recentQ_rv.setHasFixedSize(true)
-        recentQ_rv.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        recentQ_rv.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.VERTICAL, false
+        )
         recentQ_rv.adapter = questionsAdapter
     }
 
@@ -133,12 +147,85 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     private fun setOnClickListners() {
+        camera_iv.setOnClickListener {
+            if (checkReadPermission() && checkWritePermission()) {
+                openCamera()
+            }
+        }
+
+        camera_iv.setOnLongClickListener {
+            showMessage(getString(R.string.add_images_question), 2)
+            true
+        }
+
         user_iv.setOnClickListener {
             presenter.isLoggedIn()
         }
 
         post_Tv.setOnClickListener {
-            presenter.uploadQuestion(addQuestion_et.text.toString())
+            if (picOptionUri == null) {
+                presenter.uploadQuestion(addQuestion_et.text.toString())
+            } else {
+                presenter.uploadQuestionWithImage(addQuestion_et.text.toString(), picOptionUri!!)
+            }
+        }
+    }
+
+    private fun checkReadPermission(): Boolean {
+        return if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_READ_STORAGE
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_READ_STORAGE
+                )
+            }
+            false
+        } else {
+            true
+        }
+    }
+
+    private fun checkWritePermission(): Boolean {
+        return if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_WRITE_STORAGE
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    AppConstants.PERMISSIONS_REQUEST_WRITE_STORAGE
+                )
+            }
+            false
+        } else {
+            true
         }
     }
 
@@ -147,6 +234,109 @@ class MainActivity : InternetActivity(), MainActivityView {
         otherProfileOptions = OtherProfileOptions.newInstance()
         questionStatistics = QuestionStatistics.newInstance()
         profileEditBtmSheet.isCancelable = false
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            AppConstants.PERMISSIONS_REQUEST_READ_STORAGE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        openCamera()
+                    } else {
+                        checkReadPermission()
+                    }
+                } else {
+                    checkReadPermission()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (!shouldShowRequestPermissionRationale(
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            )
+                        ) {
+                            count1++
+                            if (count1 > 1) {
+                                showMessageOKCancel(
+                                    getString(R.string.readStoragePermission)
+                                ) { _, _ ->
+                                    val intent = Intent()
+                                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                    val uri = Uri.fromParts(
+                                        "package",
+                                        this.packageName, null
+                                    )
+                                    intent.data = uri
+                                    startActivity(intent)
+                                }
+                            }
+                        }
+                    }
+                }
+                return
+            }
+
+            AppConstants.PERMISSIONS_REQUEST_WRITE_STORAGE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    if (ContextCompat.checkSelfPermission(
+                            this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        openCamera()
+                    } else {
+                        checkWritePermission()
+                    }
+                } else {
+                    checkWritePermission()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (!shouldShowRequestPermissionRationale(
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            )
+                        ) {
+                            count++
+                            if (count > 1) {
+                                showMessageOKCancel(
+                                    getString(R.string.writeStoragePermission)
+                                ) { _, _ ->
+                                    val intent = Intent()
+                                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                    val uri = Uri.fromParts(
+                                        "package",
+                                        this.packageName, null
+                                    )
+                                    intent.data = uri
+                                    startActivity(intent)
+                                }
+                            }
+                        }
+                    }
+                }
+                return
+            }
+        }
+    }
+
+    private fun openCamera() {
+        isOptionForQuestion = true
+        CropImage.activity().setGuidelines(CropImageView.Guidelines.ON)
+            .setAspectRatio(1, 1).start(this)
+    }
+
+    private fun showMessageOKCancel(message: String, okListener: (Any, Any) -> Unit) {
+        AlertDialog.Builder(this)
+            .setMessage(message).setPositiveButton(getString(R.string.ok_string), okListener)
+            .setNegativeButton(getString(R.string.cancel_string), null).create().show()
     }
 
     override fun onResume() {
@@ -252,15 +442,18 @@ class MainActivity : InternetActivity(), MainActivityView {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             val result = CropImage.getActivityResult(data)
             if (resultCode == Activity.RESULT_OK) {
-                if (profileEditBtmSheet.isAdded) {
-                    profileEditBtmSheet.getImageUri(result.uri)
+                if (isOptionForQuestion) {
+                    this.picOptionUri = result.uri
+                    camera_iv.setImageURI(picOptionUri)
+                    camera_iv.borderColor = resources.getColor(R.color.white)
+                    camera_iv.borderWidth = 2
+                } else {
+                    if (profileEditBtmSheet.isAdded) {
+                        profileEditBtmSheet.getImageUri(result.uri)
+                    }
                 }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 showMessage(getString(R.string.went_wrong_image), 1)
-            }
-        } else if (requestCode == REQUEST_CODE_UPDATE) {
-            if (requestCode != RESULT_OK) {
-
             }
         }
     }
