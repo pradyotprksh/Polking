@@ -174,4 +174,5 @@
     <string name="updated_successfully">Polking is updated to the latest version</string>
     <string name="better_to_update">It\'s better to keep the application up-to-date</string>
     <string name="restart_polking">Re-open the application to retry the updates</string>
+    <string name="a_new_update_is_available_click_here">A New Update Is Available. Click Here.</string>
 </resources>

@@ -28,9 +28,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.install.InstallStateUpdatedListener
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.Task
 import com.project.pradyotprakash.polking.R
@@ -41,8 +38,8 @@ import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
+import com.project.pradyotprakash.polking.updateTheApp.UpdateBtmSheet
 import com.project.pradyotprakash.polking.utility.*
-import com.project.pradyotprakash.polking.utility.AppConstants.Companion.REQUEST_CODE_UPDATE
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
@@ -57,6 +54,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
     lateinit var otherProfileOptions: OtherProfileOptions
     lateinit var questionStatistics: QuestionStatistics
+    lateinit var updateBtmSheet: UpdateBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
     private var picOptionUri: Uri? = null
@@ -66,7 +64,6 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val appUpdateInfo: Task<AppUpdateInfo> by lazy { appUpdateManager.appUpdateInfo }
-    private lateinit var installStateUpdatedListener: InstallStateUpdatedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -247,6 +244,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
         questionStatistics = QuestionStatistics.newInstance()
+        updateBtmSheet = UpdateBtmSheet.newInstance()
         profileEditBtmSheet.isCancelable = false
     }
 
@@ -364,71 +362,27 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     private fun checkNewAppVersionState() {
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
-                updateDownloaded()
-            }
-
             if (appUpdateInfo.updateAvailability()
                 == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
             ) {
-                startAppUpdateImmediate(appUpdateInfo)
+                showUpdate()
             }
         }
     }
 
-    private fun startAppUpdateImmediate(appUpdateInfo: AppUpdateInfo) {
-        try {
-            appUpdateManager.startUpdateFlowForResult(
-                appUpdateInfo,
-                AppUpdateType.IMMEDIATE,
-                this,
-                REQUEST_CODE_UPDATE
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
+    private fun showUpdate() {
+        if (!updateBtmSheet.isAdded) {
+            updateBtmSheet.show(supportFragmentManager, "btmSheet")
+            updateBtmSheet.isCancelable = false
         }
-    }
-
-    override fun onDestroy() {
-        unregisterInstallStateUpdListener()
-        super.onDestroy()
     }
 
     private fun checkForUpdates() {
-        installStateUpdatedListener = InstallStateUpdatedListener { installState ->
-            if (installState.installStatus() == InstallStatus.DOWNLOADED) {
-                updateDownloaded()
-            }
-        }
-
         appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
-                if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-                    startAppUpdateImmediate(appUpdateInfo)
-                } else if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
-                    startAppUpdateFlexible(appUpdateInfo)
-                }
+                showUpdate()
             }
         }
-    }
-
-    private fun startAppUpdateFlexible(appUpdateInfo: AppUpdateInfo?) {
-        appUpdateManager.registerListener(installStateUpdatedListener)
-        try {
-            appUpdateManager.startUpdateFlowForResult(
-                appUpdateInfo,
-                AppUpdateType.FLEXIBLE,
-                this,
-                REQUEST_CODE_UPDATE
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun updateDownloaded() {
-        appUpdateManager.completeUpdate()
-        unregisterInstallStateUpdListener()
     }
 
     override fun startProfileAct() {
@@ -539,16 +493,7 @@ class MainActivity : InternetActivity(), MainActivityView {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 showMessage(getString(R.string.went_wrong_image), 1)
             }
-        } else if (requestCode == REQUEST_CODE_UPDATE) {
-            if (resultCode != Activity.RESULT_OK) {
-                unregisterInstallStateUpdListener()
-            }
         }
-    }
-
-    private fun unregisterInstallStateUpdListener() {
-        if (appUpdateManager != null)
-            appUpdateManager.unregisterListener(installStateUpdatedListener)
     }
 
     override fun hideOptions() {
