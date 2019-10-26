@@ -85,6 +85,9 @@ dependencies {
 
     // popup for images
     implementation 'com.rm:longpresspopup:1.0.1'
+
+    // whatif
+    implementation "com.github.skydoves:whatif:1.0.4"
 }
 
 apply plugin: 'com.google.gms.google-services'

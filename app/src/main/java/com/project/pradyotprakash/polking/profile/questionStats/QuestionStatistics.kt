@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -25,11 +26,15 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.VotesModel
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.question_stats_btm_sheet.view.*
+import rm.com.longpresspopup.*
 import javax.inject.Inject
 
-class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
+class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), ProfileEditView,
+    PopupInflaterListener, PopupStateListener,
+    PopupOnHoverListener {
 
     private lateinit var askedBy: String
     private var voteType: String = "-1"
@@ -46,6 +51,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private val allNoVoteList = ArrayList<VotesModel>()
     private val noVoteList = ArrayList<VotesModel>()
     private var noVotesAdapter: VotesAdapter? = null
+    private var question_image: ImageView? = null
 
     companion object {
         fun newInstance(): QuestionStatistics =
@@ -336,6 +342,8 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                             val noVote = snapshot.data!!["noVote"].toString()
                             val question = snapshot.data!!["question"].toString()
                             val yesVote = snapshot.data!!["yesVote"].toString()
+                            val imageName = snapshot.data!!["imageName"].toString()
+                            val imageUrl = snapshot.data!!["imageUrl"]
                             val totalVote = (yesVote.toInt() + noVote.toInt())
                             view.question_tv.text = question
                             view.totalVoteTv.text = (yesVote.toInt() + noVote.toInt()).toString()
@@ -372,6 +380,17 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                                     (noVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
                             }
 
+                            imageUrl.whatIfNotNull(
+                                whatIf = {
+                                    setQuestionImage(view, imageUrl.toString())
+                                    setPopUpImageRegister(view, imageUrl.toString())
+                                },
+                                whatIfNot = {
+                                    view.question_image_Iv.visibility = View.GONE
+                                    view.question_loading.visibility = View.GONE
+                                }
+                            )
+
                             getUserData(askedBy, view)
 
                             getUserVote(view)
@@ -387,6 +406,94 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
         } else {
             stopAct()
         }
+    }
+
+    private fun setPopUpImageRegister(view: View, imageUrl: String) {
+        val popUp: LongPressPopup = LongPressPopupBuilder(context)
+            .setTarget(view.question_image_Iv)
+            .setPopupView(R.layout.question_image_popup, this)
+            .setLongPressDuration(2000)
+            .setTag(imageUrl)
+            .setDismissOnLongPressStop(true)
+            .setDismissOnTouchOutside(true)
+            .setDismissOnBackPressed(true)
+            .setCancelTouchOnDragOutsideView(true)
+            .setPopupListener(this)
+            .setAnimationType(LongPressPopup.ANIMATION_TYPE_FROM_CENTER)
+            .build()
+        popUp.register()
+    }
+
+    private fun setQuestionImage(view: View, imageUrl: String) {
+        context.whatIfNotNull {
+            view.question_image_Iv.visibility = View.VISIBLE
+            view.question_loading.visibility = View.VISIBLE
+            Glide.with(context!!).load(imageUrl)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        exception: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        view.question_loading.visibility = View.GONE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        view.question_loading.visibility = View.GONE
+                        return false
+                    }
+                }).into(view.question_image_Iv)
+        }
+    }
+
+    override fun onViewInflated(popupTag: String?, root: View?) {
+        question_image = root?.findViewById(R.id.question_image)
+    }
+
+    override fun onPopupDismiss(popupTag: String?) {
+
+    }
+
+    override fun onPopupShow(popupTag: String?) {
+        question_image.whatIfNotNull {
+            popupTag.whatIfNotNull {
+                context.whatIfNotNull {
+                    Glide.with(context!!).load(popupTag)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(
+                                exception: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
+
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
+                        }).into(question_image!!)
+                }
+            }
+        }
+    }
+
+    override fun onHoverChanged(view: View?, isHovered: Boolean) {
+
     }
 
     private fun getUserData(askedBy: String, view: View) {

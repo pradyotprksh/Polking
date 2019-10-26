@@ -24,6 +24,7 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
+import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 import rm.com.longpresspopup.*
 
@@ -55,18 +56,21 @@ class QuestionsAdapter(
 
         holder.question_tv.text = allQues[pos].question
 
-        if (mAuth.currentUser != null) {
-            if (mAuth.currentUser!!.uid == allQues[pos].askedBy) {
-                holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
-                holder.seeStsts_tv.text = context.getString(R.string.see_stats)
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                if (mAuth.currentUser!!.uid == allQues[pos].askedBy) {
+                    holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+                    holder.seeStsts_tv.text = context.getString(R.string.see_stats)
+                    showStats(holder, pos)
+                } else {
+                    checkIfVoteExists(holder, pos)
+                }
+            },
+            whatIfNot = {
+                holder.seeStsts_tv.text = context.getString(R.string.please_login)
                 showStats(holder, pos)
-            } else {
-                checkIfVoteExists(holder, pos)
             }
-        } else {
-            holder.seeStsts_tv.text = context.getString(R.string.please_login)
-            showStats(holder, pos)
-        }
+        )
 
         if (allQues[pos].imageUrl == "") {
             holder.question_image_Iv.visibility = View.GONE
@@ -102,7 +106,7 @@ class QuestionsAdapter(
         val popUp: LongPressPopup = LongPressPopupBuilder(context)
             .setTarget(holder.question_image_Iv)
             .setPopupView(R.layout.question_image_popup, this)
-            .setLongPressDuration(150)
+            .setLongPressDuration(2000)
             .setTag(allQues[pos].imageUrl)
             .setDismissOnLongPressStop(true)
             .setDismissOnTouchOutside(true)
@@ -115,87 +119,108 @@ class QuestionsAdapter(
 
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        context.openProfileDetails(allQues[pos].askedBy)
-                    } else {
-                        context.startProfileAct()
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                            context.openProfileDetails(allQues[pos].askedBy)
+                        } else {
+                            context.startProfileAct()
+                        }
+                    },
+                    whatIfNot = {
+                        context.startLogin()
                     }
-                } else {
-                    context.startLogin()
-                }
+                )
             }
         }
 
         holder.username_tv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        context.openProfileDetails(allQues[pos].askedBy)
-                    } else {
-                        context.startProfileAct()
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                            context.openProfileDetails(allQues[pos].askedBy)
+                        } else {
+                            context.startProfileAct()
+                        }
+                    },
+                    whatIfNot = {
+                        context.startLogin()
                     }
-                } else {
-                    context.startLogin()
-                }
+                )
             }
         }
 
         holder.yes_tv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        context.setVotes(1, allQues[pos].docId)
-                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.agree_color)
-                        showStats(holder, pos)
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                            context.setVotes(1, allQues[pos].docId)
+                            holder.seeStsts_tv.setChipBackgroundColorResource(R.color.agree_color)
+                            showStats(holder, pos)
+                        }
+                    },
+                    whatIfNot = {
+                        context.startLogin()
                     }
-                } else {
-                    context.startLogin()
-                }
+                )
             } else if (context is ProfileActivity) {
-                if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
-                        context.setVotes(1, allQues[pos].docId)
-                        showStats(holder, pos)
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                            holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
+                            context.setVotes(1, allQues[pos].docId)
+                            showStats(holder, pos)
+                        }
                     }
-                }
+                )
             }
         }
 
         holder.no_tv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
-                        context.setVotes(2, allQues[pos].docId)
-                        showStats(holder, pos)
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                            holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
+                            context.setVotes(2, allQues[pos].docId)
+                            showStats(holder, pos)
+                        }
+                    },
+                    whatIfNot = {
+                        context.startLogin()
                     }
-                } else {
-                    context.startLogin()
-                }
+                )
             } else if (context is ProfileActivity) {
-                if (mAuth.currentUser != null) {
-                    if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                        holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
-                        context.setVotes(2, allQues[pos].docId)
-                        showStats(holder, pos)
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                            holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
+                            context.setVotes(1, allQues[pos].docId)
+                            showStats(holder, pos)
+                        }
                     }
-                }
+                )
             }
         }
 
         holder.seeStsts_tv.setOnClickListener {
             if (context is MainActivity) {
-                if (mAuth.currentUser != null) {
-                    context.showStats(allQues[pos].docId)
-                } else {
-                    context.startLogin()
-                }
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        context.showStats(allQues[pos].docId)
+                    },
+                    whatIfNot = {
+                        context.startLogin()
+                    }
+                )
             } else if (context is ProfileActivity) {
-                if (mAuth.currentUser != null) {
-                    context.showStats(allQues[pos].docId)
-                }
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        context.showStats(allQues[pos].docId)
+                    }
+                )
             }
         }
 
@@ -210,28 +235,32 @@ class QuestionsAdapter(
     }
 
     override fun onPopupShow(popupTag: String?) {
-        if (popupTag != null && question_image != null) {
-            Glide.with(context).load(popupTag)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        exception: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
+        question_image.whatIfNotNull {
+            popupTag.whatIfNotNull {
+                context.whatIfNotNull {
+                    Glide.with(context).load(popupTag)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(
+                                exception: GlideException?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
-                }).into(question_image!!)
+                            override fun onResourceReady(
+                                resource: Drawable?,
+                                model: Any?,
+                                target: Target<Drawable>?,
+                                dataSource: DataSource?,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
+                        }).into(question_image!!)
+                }
+            }
         }
     }
 
@@ -293,54 +322,57 @@ class QuestionsAdapter(
         userFirestore.collection("users").document(allQues[pos].askedBy)
             .addSnapshotListener { snapshot, exception ->
 
-                if (exception != null) {
+                exception.whatIfNotNull {
                     if (activity is MainActivity) {
                         activity.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                        )
+                    } else if (activity is ProfileActivity) {
+                        activity.showMessage(
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
                         )
                     }
                 }
 
-                if (snapshot != null && snapshot.exists()) {
+                snapshot.whatIfNotNull {
+                    if (snapshot!!.exists()) {
+                        try {
+                            Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
+                                .placeholder(R.drawable.ic_default_appcolor)
+                                .listener(object : RequestListener<Drawable> {
+                                    override fun onLoadFailed(
+                                        exception: GlideException?,
+                                        model: Any?,
+                                        target: Target<Drawable>?,
+                                        isFirstResource: Boolean
+                                    ): Boolean {
+                                        return false
+                                    }
 
-                    try {
-                        Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
-                            .placeholder(R.drawable.ic_default_appcolor)
-                            .listener(object : RequestListener<Drawable> {
-                                override fun onLoadFailed(
-                                    exception: GlideException?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    isFirstResource: Boolean
-                                ): Boolean {
-                                    return false
-                                }
+                                    override fun onResourceReady(
+                                        resource: Drawable?,
+                                        model: Any?,
+                                        target: Target<Drawable>?,
+                                        dataSource: DataSource?,
+                                        isFirstResource: Boolean
+                                    ): Boolean {
+                                        return false
+                                    }
+                                }).into(holder.profile_iv)
+                            holder.profile_iv.borderColor =
+                                context.resources.getColor(R.color.colorPrimary)
+                            holder.profile_iv.borderWidth = 2
 
-                                override fun onResourceReady(
-                                    resource: Drawable?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    dataSource: DataSource?,
-                                    isFirstResource: Boolean
-                                ): Boolean {
-                                    return false
-                                }
-                            }).into(holder.profile_iv)
-                        holder.profile_iv.borderColor =
-                            context.resources.getColor(R.color.colorPrimary)
-                        holder.profile_iv.borderWidth = 2
-
-                        holder.username_tv.text = snapshot.data!!["name"].toString()
-                    } catch (exception: Exception) {
-                        if (activity is MainActivity) {
-                            activity.showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}", 1
-                            )
+                            holder.username_tv.text = snapshot.data!!["name"].toString()
+                        } catch (exception: Exception) {
+                            if (activity is MainActivity) {
+                                activity.showMessage(
+                                    "Something Went Wrong. ${exception.localizedMessage}", 1
+                                )
+                            }
                         }
                     }
-
                 }
-
             }
     }
 

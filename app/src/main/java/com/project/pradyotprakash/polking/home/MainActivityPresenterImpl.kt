@@ -16,12 +16,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
+import com.google.firebase.ml.vision.face.FirebaseVisionFaceLandmark
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -153,6 +158,93 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
+    override fun checkIfHumanFace(picOptionUri: Uri) {
+        mView.showLoading()
+        val image: FirebaseVisionImage
+        val options = FirebaseVisionFaceDetectorOptions.Builder()
+            .setClassificationMode(FirebaseVisionFaceDetectorOptions.ACCURATE)
+            .setLandmarkMode(FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS)
+            .setClassificationMode(FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS)
+            .setMinFaceSize(0.15f)
+            .enableTracking()
+            .build()
+        try {
+            image = FirebaseVisionImage.fromFilePath(mContext, picOptionUri)
+            val detector = FirebaseVision.getInstance()
+                .getVisionFaceDetector(options)
+            detector.detectInImage(image)
+                .addOnSuccessListener { faces ->
+                    var isFaceDetected = false
+                    for (face in faces) {
+
+                        // If landmark detection was enabled (mouth, ears, eyes, cheeks, and
+                        // nose available):
+                        val leftEar = face.getLandmark(FirebaseVisionFaceLandmark.LEFT_EAR)
+                        val rightEar = face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EAR)
+                        val leftCheek = face.getLandmark(FirebaseVisionFaceLandmark.LEFT_CHEEK)
+                        val leftEye = face.getLandmark(FirebaseVisionFaceLandmark.LEFT_EYE)
+                        val rightEye = face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_EYE)
+                        val rightCheek = face.getLandmark(FirebaseVisionFaceLandmark.RIGHT_CHEEK)
+                        val mouthLeft = face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_LEFT)
+                        val mouthBottom = face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_BOTTOM)
+                        val mouthRight = face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_RIGHT)
+                        val noseBase = face.getLandmark(FirebaseVisionFaceLandmark.NOSE_BASE)
+
+                        if (leftEar != null || rightEar != null || leftCheek != null || leftEye != null
+                            || rightEye != null || rightCheek != null || mouthLeft != null ||
+                            mouthBottom != null || mouthRight != null || noseBase != null
+                        ) {
+
+                            if (leftEar?.position!!.x > 0 || rightEar?.position!!.x > 0 ||
+                                leftCheek?.position!!.x > 0 || leftEye?.position!!.x > 0 ||
+                                rightEye?.position!!.x > 0 || rightCheek?.position!!.x > 0 ||
+                                mouthLeft?.position!!.x > 0 || mouthBottom?.position!!.x > 0 ||
+                                mouthRight?.position!!.x > 0 || noseBase?.position!!.x > 0
+                            ) {
+
+                                if (leftEar.position.y > 0 || rightEar?.position!!.y > 0 ||
+                                    leftCheek?.position!!.y > 0 || leftEye?.position!!.y > 0 ||
+                                    rightEye?.position!!.y > 0 || rightCheek?.position!!.y > 0 ||
+                                    mouthLeft?.position!!.y > 0 || mouthBottom?.position!!.y > 0 ||
+                                    mouthRight?.position!!.y > 0 || noseBase?.position!!.y > 0
+                                ) {
+
+                                    isFaceDetected = true
+
+                                }
+
+                            }
+
+                        } else {
+                            isFaceDetected = false
+                        }
+                    }
+
+                    if (isFaceDetected) {
+                        mView.showMessage(
+                            mContext.getString(R.string.faces_not_allowed),
+                            2
+                        )
+                        mView.deleteQuestionImageUri()
+                    } else {
+                        mView.setQuestionImage(picOptionUri)
+                    }
+                    mView.hideLoading()
+
+                }
+                .addOnFailureListener { e ->
+                    mView.hideLoading()
+                    mView.showMessage("Something Went Wrong ${e.localizedMessage}", 1)
+                    mView.setQuestionImage(picOptionUri)
+                }
+        } catch (e: IOException) {
+            mView.hideLoading()
+            mView.showMessage("Something Went Wrong ${e.localizedMessage}", 1)
+            mView.setQuestionImage(picOptionUri)
+            e.printStackTrace()
+        }
+    }
+
     private fun uploadQuestionImage(
         task: Task<Uri>,
         imagePath: StorageReference,
@@ -256,24 +348,24 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         dataBase.collection("users").document(currentUser!!.uid).get()
             .addOnSuccessListener { result ->
 
-            if (result.exists()) {
-                mView.setUserProfileImage(result.data!!["imageUrl"].toString())
-                mView.setUserName(result.data!!["name"].toString())
-                mView.hideLoading()
-            } else {
-                mView.hideOptions()
-            }
+                if (result.exists()) {
+                    mView.setUserProfileImage(result.data!!["imageUrl"].toString())
+                    mView.setUserName(result.data!!["name"].toString())
+                    mView.hideLoading()
+                } else {
+                    mView.hideOptions()
+                }
 
-        }.addOnFailureListener { exception ->
-            mView.showMessage(
-                "Something Went Wrong. ${exception.localizedMessage}",
-                1
-            )
-            mView.hideLoading()
-        }.addOnCanceledListener {
-            mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-            mView.hideLoading()
-        }
+            }.addOnFailureListener { exception ->
+                mView.showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                mView.hideLoading()
+            }.addOnCanceledListener {
+                mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                mView.hideLoading()
+            }
     }
 
     override fun removeListener() {
@@ -295,19 +387,19 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
             dataBase.collection("question").add(questionData)
                 .addOnSuccessListener {
-                mView.hideLoading()
-                mView.showUploadedSuccess()
-                mView.showMessage("Successfully Uploaded.", 3)
-            }.addOnFailureListener { exception ->
-                mView.showMessage(
-                    "Something Went Wrong. ${exception.localizedMessage}",
-                    1
-                )
-                mView.hideLoading()
-            }.addOnCanceledListener {
-                mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                mView.hideLoading()
-            }
+                    mView.hideLoading()
+                    mView.showUploadedSuccess()
+                    mView.showMessage("Successfully Uploaded.", 3)
+                }.addOnFailureListener { exception ->
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                    mView.hideLoading()
+                }.addOnCanceledListener {
+                    mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                    mView.hideLoading()
+                }
 
         } else {
             mView.hideOptions()

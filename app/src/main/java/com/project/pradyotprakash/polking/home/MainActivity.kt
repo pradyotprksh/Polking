@@ -40,6 +40,7 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.updateTheApp.UpdateBtmSheet
 import com.project.pradyotprakash.polking.utility.*
+import com.skydoves.whatif.whatIfNotNull
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
@@ -149,6 +150,13 @@ class MainActivity : InternetActivity(), MainActivityView {
         })
     }
 
+    override fun deleteQuestionImageUri() {
+        if (picOptionUri != null) {
+            picOptionUri = null
+            camera_iv.setImageDrawable(resources.getDrawable(R.drawable.ic_camera))
+        }
+    }
+
     override fun setNotificationIcon(notificationCount: String) {
         if (notificationCount == "0") {
             notification_iv.visibility = View.GONE
@@ -161,6 +169,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         camera_iv.setOnClickListener {
             if (checkReadPermission() && checkWritePermission()) {
                 openCamera()
+                deleteQuestionImageUri()
             }
         }
 
@@ -174,11 +183,13 @@ class MainActivity : InternetActivity(), MainActivityView {
         }
 
         post_Tv.setOnClickListener {
-            if (picOptionUri == null) {
-                presenter.uploadQuestion(addQuestion_et.text.toString())
-            } else {
-                presenter.uploadQuestionWithImage(addQuestion_et.text.toString(), picOptionUri!!)
-            }
+            picOptionUri.whatIfNotNull(
+                whatIf = {
+                    presenter
+                        .uploadQuestionWithImage(addQuestion_et.text.toString(), picOptionUri!!)
+                },
+                whatIfNot = { presenter.uploadQuestion(addQuestion_et.text.toString()) }
+            )
         }
     }
 
@@ -209,6 +220,13 @@ class MainActivity : InternetActivity(), MainActivityView {
         } else {
             true
         }
+    }
+
+    override fun setQuestionImage(picOptionUri: Uri) {
+        camera_iv.setImageURI(picOptionUri)
+        camera_iv.borderColor = resources.getColor(R.color.white)
+        camera_iv.borderWidth = 2
+        isOptionForQuestion = false
     }
 
     private fun checkWritePermission(): Boolean {
@@ -409,6 +427,7 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun showUploadedSuccess() {
         addQuestion_et.setText("")
+        deleteQuestionImageUri()
         Utility().hideSoftKeyboard(addQuestion_et)
     }
 
@@ -418,27 +437,27 @@ class MainActivity : InternetActivity(), MainActivityView {
             Glide.with(this).load(imageUrl)
                 .placeholder(R.drawable.ic_default_appcolor)
                 .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    exception: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    imageProgressBar.visibility = View.GONE
-                    return false
-                }
+                    override fun onLoadFailed(
+                        exception: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        imageProgressBar.visibility = View.GONE
+                        return false
+                    }
 
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    imageProgressBar.visibility = View.GONE
-                    return false
-                }
-            }).into(user_iv)
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        imageProgressBar.visibility = View.GONE
+                        return false
+                    }
+                }).into(user_iv)
             user_iv.borderWidth = 2
             user_iv.borderColor = resources.getColor(R.color.colorPrimary)
         } else {
@@ -481,10 +500,7 @@ class MainActivity : InternetActivity(), MainActivityView {
             if (resultCode == Activity.RESULT_OK) {
                 if (isOptionForQuestion) {
                     this.picOptionUri = result.uri
-                    camera_iv.setImageURI(picOptionUri)
-                    camera_iv.borderColor = resources.getColor(R.color.white)
-                    camera_iv.borderWidth = 2
-                    isOptionForQuestion = false
+                    presenter.checkIfHumanFace(picOptionUri!!)
                 } else {
                     if (profileEditBtmSheet.isAdded) {
                         profileEditBtmSheet.getImageUri(result.uri)

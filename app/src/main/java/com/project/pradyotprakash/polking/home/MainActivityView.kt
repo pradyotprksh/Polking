@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.home
 
+import android.net.Uri
 import com.project.pradyotprakash.polking.BaseView
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import java.util.*
@@ -44,5 +45,11 @@ interface MainActivityView: BaseView {
 
     // set notification view
     fun setNotificationIcon(notificationCount: String)
+
+    // set image on the view
+    fun setQuestionImage(picOptionUri: Uri)
+
+    // delete the question uri
+    fun deleteQuestionImageUri()
 
 }
