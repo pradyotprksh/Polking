@@ -175,7 +175,7 @@
     <string name="better_to_update">It\'s better to keep the application up-to-date</string>
     <string name="restart_polking">Re-open the application to retry the updates</string>
     <string name="a_new_update_is_available_click_here">A New Update Is Available. Click Here.</string>
-    <string name="faces_not_allowed">We don\'t allowed human faces in Polking for voting. Sorry.</string>
+    <string name="faces_not_allowed">We don\'t allow human faces in Polking for voting. Sorry.</string>
     <string name="loading">Loading…</string>
     <string name="see_question">See Question</string>
 </resources>
