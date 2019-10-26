@@ -2,7 +2,6 @@ package com.project.pradyotprakash.polking.home.adapter
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +10,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import coil.Coil
+import coil.api.load
+import coil.request.Request
+import coil.transform.BlurTransformation
+import coil.transform.GrayscaleTransformation
 import com.airbnb.lottie.LottieAnimationView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -77,30 +76,39 @@ class QuestionsAdapter(
             holder.question_loading.visibility = View.GONE
         } else {
             holder.question_image_Iv.visibility = View.VISIBLE
-            holder.question_loading.visibility = View.VISIBLE
-            Glide.with(context).load(allQues[pos].imageUrl)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        exception: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        holder.question_loading.visibility = View.GONE
-                        return false
-                    }
+            holder.question_image_Iv.load(allQues[pos].imageUrl,
+                Coil.loader(),
+                builder = {
+                    mAuth.currentUser.whatIfNotNull(
+                        whatIf = {
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        holder.question_loading.visibility = View.GONE
-                        return false
-                    }
-                }).into(holder.question_image_Iv)
+                        },
+                        whatIfNot = {
+                            this.transformations(
+                                GrayscaleTransformation(),
+                                BlurTransformation(context)
+                            )
+                        })
+                    this.listener(object : Request.Listener {
+                        override fun onError(data: Any, throwable: Throwable) {
+                            super.onError(data, throwable)
+                            holder.question_loading.visibility = View.GONE
+                        }
+
+                        override fun onStart(data: Any) {
+                            super.onStart(data)
+                            holder.question_loading.visibility = View.VISIBLE
+                        }
+
+                        override fun onSuccess(
+                            data: Any,
+                            source: coil.decode.DataSource
+                        ) {
+                            super.onSuccess(data, source)
+                            holder.question_loading.visibility = View.GONE
+                        }
+                    })
+                })
         }
 
         val popUp: LongPressPopup = LongPressPopupBuilder(context)
@@ -238,27 +246,20 @@ class QuestionsAdapter(
         question_image.whatIfNotNull {
             popupTag.whatIfNotNull {
                 context.whatIfNotNull {
-                    Glide.with(context).load(popupTag)
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                exception: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                return false
-                            }
+                    question_image!!.load(popupTag,
+                        Coil.loader(),
+                        builder = {
+                            mAuth.currentUser.whatIfNotNull(
+                                whatIf = {
 
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                return false
-                            }
-                        }).into(question_image!!)
+                                },
+                                whatIfNot = {
+                                    this.transformations(
+                                        GrayscaleTransformation(),
+                                        BlurTransformation(context)
+                                    )
+                                })
+                        })
                 }
             }
         }
@@ -337,31 +338,35 @@ class QuestionsAdapter(
                 snapshot.whatIfNotNull {
                     if (snapshot!!.exists()) {
                         try {
-                            Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
-                                .placeholder(R.drawable.ic_default_appcolor)
-                                .listener(object : RequestListener<Drawable> {
-                                    override fun onLoadFailed(
-                                        exception: GlideException?,
-                                        model: Any?,
-                                        target: Target<Drawable>?,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        return false
-                                    }
+                            holder.profile_iv.load(snapshot.data!!["imageUrl"].toString(),
+                                Coil.loader(),
+                                builder = {
+                                    mAuth.currentUser.whatIfNotNull(
+                                        whatIf = {
 
-                                    override fun onResourceReady(
-                                        resource: Drawable?,
-                                        model: Any?,
-                                        target: Target<Drawable>?,
-                                        dataSource: DataSource?,
-                                        isFirstResource: Boolean
-                                    ): Boolean {
-                                        return false
-                                    }
-                                }).into(holder.profile_iv)
-                            holder.profile_iv.borderColor =
-                                context.resources.getColor(R.color.colorPrimary)
-                            holder.profile_iv.borderWidth = 2
+                                        },
+                                        whatIfNot = {
+                                            this.transformations(
+                                                GrayscaleTransformation(),
+                                                BlurTransformation(context)
+                                            )
+                                        })
+                                    this.listener(object : Request.Listener {
+                                        override fun onError(data: Any, throwable: Throwable) {
+                                            holder.profile_iv.load(R.drawable.ic_default_appcolor)
+                                        }
+
+                                        override fun onSuccess(
+                                            data: Any,
+                                            source: coil.decode.DataSource
+                                        ) {
+                                            super.onSuccess(data, source)
+                                            holder.profile_iv.borderColor =
+                                                context.resources.getColor(R.color.colorPrimary)
+                                            holder.profile_iv.borderWidth = 2
+                                        }
+                                    })
+                                })
 
                             holder.username_tv.text = snapshot.data!!["name"].toString()
                         } catch (exception: Exception) {

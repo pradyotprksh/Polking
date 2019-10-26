@@ -25,6 +25,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -88,6 +91,9 @@ dependencies {
 
     // whatif
     implementation "com.github.skydoves:whatif:1.0.4"
+
+    // coil image loader
+    implementation("io.coil-kt:coil:0.8.0")
 }
 
 apply plugin: 'com.google.gms.google-services'

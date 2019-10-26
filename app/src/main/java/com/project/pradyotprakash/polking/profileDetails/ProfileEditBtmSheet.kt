@@ -242,7 +242,7 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     private fun addDataToDatabase(view: View) {
         val userData = HashMap<String, Any>()
         if (imageUrl == null || imageUrl == "") {
-            userData["imageUrl"] = ""
+            userData["imageUrl"] = AppConstants.DEFAULT_IMAGE_URL
         } else {
             userData["imageUrl"] = imageUrl!!
         }
