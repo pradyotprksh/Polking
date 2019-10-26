@@ -128,30 +128,33 @@ class MainActivity : InternetActivity(), MainActivityView {
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s != null) {
-                    if (s.length > 5) {
-                        if (post_Tv.visibility == View.GONE) {
-                            post_Tv.startAnimation(Utility().inFromRightAnimation())
+                s.whatIfNotNull(
+                    whatIf = {
+                        if (s!!.length > 5) {
+                            if (post_Tv.visibility == View.GONE) {
+                                post_Tv.startAnimation(Utility().inFromRightAnimation())
+                            }
+                            post_Tv.visibility = View.VISIBLE
+                        } else {
+                            if (post_Tv.visibility != View.GONE) {
+                                post_Tv.startAnimation(Utility().outToRightAnimation())
+                                post_Tv.visibility = View.GONE
+                            }
                         }
-                        post_Tv.visibility = View.VISIBLE
-                    } else {
+                    },
+                    whatIfNot = {
                         if (post_Tv.visibility != View.GONE) {
                             post_Tv.startAnimation(Utility().outToRightAnimation())
                             post_Tv.visibility = View.GONE
                         }
                     }
-                } else {
-                    if (post_Tv.visibility != View.GONE) {
-                        post_Tv.startAnimation(Utility().outToRightAnimation())
-                        post_Tv.visibility = View.GONE
-                    }
-                }
+                )
             }
         })
     }
 
     override fun deleteQuestionImageUri() {
-        if (picOptionUri != null) {
+        picOptionUri.whatIfNotNull {
             picOptionUri = null
             camera_iv.setImageDrawable(resources.getDrawable(R.drawable.ic_camera))
         }
@@ -432,37 +435,40 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
-        if (imageUrl != null) {
-            imageProgressBar.visibility = View.VISIBLE
-            Glide.with(this).load(imageUrl)
-                .placeholder(R.drawable.ic_default_appcolor)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        exception: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        imageProgressBar.visibility = View.GONE
-                        return false
-                    }
+        imageUrl.whatIfNotNull(
+            whatIf = {
+                imageProgressBar.visibility = View.VISIBLE
+                Glide.with(this).load(imageUrl)
+                    .placeholder(R.drawable.ic_default_appcolor)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            exception: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            imageProgressBar.visibility = View.GONE
+                            return false
+                        }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        imageProgressBar.visibility = View.GONE
-                        return false
-                    }
-                }).into(user_iv)
-            user_iv.borderWidth = 2
-            user_iv.borderColor = resources.getColor(R.color.colorPrimary)
-        } else {
-            showMessage(getString(R.string.something_went_wrong), 1)
-        }
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            imageProgressBar.visibility = View.GONE
+                            return false
+                        }
+                    }).into(user_iv)
+                user_iv.borderWidth = 2
+                user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+            },
+            whatIfNot = {
+                showMessage(getString(R.string.something_went_wrong), 1)
+            }
+        )
     }
 
     @SuppressLint("SetTextI18n")

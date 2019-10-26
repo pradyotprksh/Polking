@@ -26,6 +26,7 @@ import com.google.firebase.storage.UploadTask
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
+import com.skydoves.whatif.whatIfNotNull
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -80,82 +81,92 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     override fun isLoggedIn() {
         mView.showLoading()
-        if (currentUser!=null) {
-            mView.startProfileAct()
-        } else {
-            mView.startLogin()
-        }
+        currentUser.whatIfNotNull(
+            whatIf = {
+                mView.startProfileAct()
+            },
+            whatIfNot = {
+                mView.startLogin()
+            }
+        )
     }
 
     override fun getProfileData() {
         mView.showLoading()
-        if (currentUser!=null) {
-            dataBase.collection("users").document(currentUser!!.uid)
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
+        currentUser.whatIfNotNull(
+            whatIf = {
+                dataBase.collection("users").document(currentUser!!.uid)
+                    .addSnapshotListener { snapshot, exception ->
+                        exception.whatIfNotNull {
+                            mView.showMessage(
+                                "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                            )
+                        }
 
-                    if (snapshot != null && snapshot.exists()) {
-                        mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
-                        mView.setUserName(snapshot.data!!["name"].toString())
-                        mView.setNotificationIcon(snapshot.data!!["notificationCount"].toString())
-                        mView.hideLoading()
-                    } else {
-                        mView.openAddProfileDetails()
-                        mView.hideLoading()
+                        snapshot.whatIfNotNull {
+                            if (snapshot!!.exists()) {
+                                mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
+                                mView.setUserName(snapshot.data!!["name"].toString())
+                                mView.setNotificationIcon(snapshot.data!!["notificationCount"].toString())
+                                mView.hideLoading()
+                            } else {
+                                mView.openAddProfileDetails()
+                                mView.hideLoading()
+                            }
+                        }
                     }
-                }
-        } else {
-            mView.hideLoading()
-            mView.hideOptions()
-        }
+            },
+            whatIfNot = {
+                mView.hideLoading()
+                mView.hideOptions()
+            }
+        )
     }
 
     override fun uploadQuestionWithImage(question: String, picOptionUri: Uri) {
         mView.showLoading()
-        if (currentUser != null) {
-            val randomString = (1..32).map { ('0'..'z').toList().toTypedArray().random() }
-                .joinToString("")
-            val storage = FirebaseStorage.getInstance().reference
-            val imagePath: StorageReference =
-                storage.child("user_question_images")
-                    .child("${mAuth.currentUser!!.uid}$randomString.jpg")
-            imagePath.putFile(picOptionUri)
-                .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let { exception ->
-                            mView.showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}",
-                                1
-                            )
-                            mView.hideLoading()
-                            throw exception
+        currentUser.whatIfNotNull(
+            whatIf = {
+                val randomString = (1..32).map { ('0'..'z').toList().toTypedArray().random() }
+                    .joinToString("")
+                val storage = FirebaseStorage.getInstance().reference
+                val imagePath: StorageReference =
+                    storage.child("user_question_images")
+                        .child("${mAuth.currentUser!!.uid}$randomString.jpg")
+                imagePath.putFile(picOptionUri)
+                    .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let { exception ->
+                                mView.showMessage(
+                                    "Something Went Wrong. ${exception.localizedMessage}",
+                                    1
+                                )
+                                mView.hideLoading()
+                                throw exception
+                            }
                         }
+                        return@Continuation imagePath.downloadUrl
+                    }).addOnCanceledListener {
+                        mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
+                        mView.hideLoading()
+                    }.addOnFailureListener { exception ->
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}"
+                            , 1
+                        )
+                        mView.hideLoading()
+                    }.addOnCompleteListener { task ->
+                        uploadQuestionImage(
+                            task,
+                            imagePath,
+                            question,
+                            "${mAuth.currentUser!!.uid}$randomString.jpg"
+                        )
+                    }.addOnSuccessListener {
+                        mView.showMessage(mContext.getString(R.string.save_properly), 3)
                     }
-                    return@Continuation imagePath.downloadUrl
-                }).addOnCanceledListener {
-                    mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
-                    mView.hideLoading()
-                }.addOnFailureListener { exception ->
-                    mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}"
-                        , 1
-                    )
-                    mView.hideLoading()
-                }.addOnCompleteListener { task ->
-                    uploadQuestionImage(
-                        task,
-                        imagePath,
-                        question,
-                        "${mAuth.currentUser!!.uid}$randomString.jpg"
-                    )
-                }.addOnSuccessListener {
-                    mView.showMessage(mContext.getString(R.string.save_properly), 3)
-                }
-        }
+            }
+        )
     }
 
     override fun checkIfHumanFace(picOptionUri: Uri) {
@@ -190,7 +201,8 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                         val mouthRight = face.getLandmark(FirebaseVisionFaceLandmark.MOUTH_RIGHT)
                         val noseBase = face.getLandmark(FirebaseVisionFaceLandmark.NOSE_BASE)
 
-                        if (leftEar != null || rightEar != null || leftCheek != null || leftEye != null
+                        if (leftEar != null || rightEar != null || leftCheek != null ||
+                            leftEye != null
                             || rightEye != null || rightCheek != null || mouthLeft != null ||
                             mouthBottom != null || mouthRight != null || noseBase != null
                         ) {
@@ -317,14 +329,17 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     override fun addAuthStateListener() {
         mAuth.addAuthStateListener { mAuth ->
-            if (mAuth.currentUser != null) {
-                currentUser = mAuth.currentUser
-                getUserData()
-                getQuestions()
-                setDynamicShortcuts()
-            } else {
-                mView.hideOptions()
-            }
+            mAuth.currentUser.whatIfNotNull(
+                whatIf = {
+                    currentUser = mAuth.currentUser
+                    getUserData()
+                    getQuestions()
+                    setDynamicShortcuts()
+                },
+                whatIfNot = {
+                    mView.hideOptions()
+                }
+            )
         }
     }
 
@@ -339,8 +354,9 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 .setIcon(Icon.createWithResource(mContext, R.drawable.ic_default_appcolor))
                 .setIntent(profileIntent)
                 .build()
-            if (shortcutManager != null)
-                shortcutManager.dynamicShortcuts = listOf(profileShortcut)
+            shortcutManager.whatIfNotNull {
+                shortcutManager!!.dynamicShortcuts = listOf(profileShortcut)
+            }
         }
     }
 
@@ -374,36 +390,38 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     override fun uploadQuestion(question: String) {
         mView.showLoading()
-        if (currentUser != null) {
-            val date = Date()
-            val questionData = HashMap<String, Any>()
-            questionData["question"] = question
-            questionData["askedBy"] = currentUser!!.uid
-            questionData["askedOn"] = dateTimeFormat.format(date)
-            questionData["askedOnDate"] = dateFormat.format(date)
-            questionData["askedOnTime"] = timeFormat.format(date)
-            questionData["yesVote"] = "0"
-            questionData["noVote"] = "0"
+        currentUser.whatIfNotNull(
+            whatIf = {
+                val date = Date()
+                val questionData = HashMap<String, Any>()
+                questionData["question"] = question
+                questionData["askedBy"] = currentUser!!.uid
+                questionData["askedOn"] = dateTimeFormat.format(date)
+                questionData["askedOnDate"] = dateFormat.format(date)
+                questionData["askedOnTime"] = timeFormat.format(date)
+                questionData["yesVote"] = "0"
+                questionData["noVote"] = "0"
 
-            dataBase.collection("question").add(questionData)
-                .addOnSuccessListener {
-                    mView.hideLoading()
-                    mView.showUploadedSuccess()
-                    mView.showMessage("Successfully Uploaded.", 3)
-                }.addOnFailureListener { exception ->
-                    mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}",
-                        1
-                    )
-                    mView.hideLoading()
-                }.addOnCanceledListener {
-                    mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                    mView.hideLoading()
-                }
-
-        } else {
-            mView.hideOptions()
-        }
+                dataBase.collection("question").add(questionData)
+                    .addOnSuccessListener {
+                        mView.hideLoading()
+                        mView.showUploadedSuccess()
+                        mView.showMessage("Successfully Uploaded.", 3)
+                    }.addOnFailureListener { exception ->
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        mView.hideLoading()
+                    }.addOnCanceledListener {
+                        mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                        mView.hideLoading()
+                    }
+            },
+            whatIfNot = {
+                mView.hideOptions()
+            }
+        )
     }
 
     override fun getQuestions() {
@@ -413,9 +431,9 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         dataBase.collection("question")
             .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
+                exception.whatIfNotNull {
                     mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
                     )
                 }
 
@@ -444,57 +462,64 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     override fun setVote(voteType: Int, docId: String) {
         mView.showLoading()
+        currentUser.whatIfNotNull(
+            whatIf = {
+                val voteData = HashMap<String, Any>()
+                voteData["voteType"] = voteType
+                voteData["questionId"] = docId
 
-        if (currentUser != null) {
-            val voteData = HashMap<String, Any>()
-            voteData["voteType"] = voteType
-            voteData["questionId"] = docId
-
-            addVotesDataBase
-                .collection("users")
-                .document(currentUser!!.uid)
-                .collection("votes")
-                .document(docId)
-                .set(voteData).addOnSuccessListener {
-                    mView.hideLoading()
-                }.addOnFailureListener { exception ->
-                    mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}",
-                        1
-                    )
-                    mView.hideLoading()
-                }.addOnCanceledListener {
-                    mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                    mView.hideLoading()
-                }
-
-        } else {
-            mView.hideOptions()
-        }
+                addVotesDataBase
+                    .collection("users")
+                    .document(currentUser!!.uid)
+                    .collection("votes")
+                    .document(docId)
+                    .set(voteData).addOnSuccessListener {
+                        mView.hideLoading()
+                    }.addOnFailureListener { exception ->
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        mView.hideLoading()
+                    }.addOnCanceledListener {
+                        mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                        mView.hideLoading()
+                    }
+            },
+            whatIfNot = {
+                mView.hideOptions()
+            }
+        )
     }
 
     override fun showStats(docId: String) {
         callStatsFunction(docId)
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    if (task.exception != null) {
-                        val e = task.exception
-                        if (e != null) {
-                            if (e is FirebaseFunctionsException) {
-                                mView.hideLoading()
-                                mView.showMessage(
-                                    "Something Went Wrong." +
-                                            " ${e.localizedMessage}", 1
-                                )
-                            } else {
-                                openStats(docId)
-                            }
-                        } else {
+                    task.exception.whatIfNotNull(
+                        whatIf = {
+                            val e = task.exception
+                            e.whatIfNotNull(
+                                whatIf = {
+                                    if (e is FirebaseFunctionsException) {
+                                        mView.hideLoading()
+                                        mView.showMessage(
+                                            "Something Went Wrong." +
+                                                    " ${e.localizedMessage}", 1
+                                        )
+                                    } else {
+                                        openStats(docId)
+                                    }
+                                },
+                                whatIfNot = {
+                                    openStats(docId)
+                                }
+                            )
+                        },
+                        whatIfNot = {
                             openStats(docId)
                         }
-                    } else {
-                        openStats(docId)
-                    }
+                    )
                 } else {
                     openStats(docId)
                 }
