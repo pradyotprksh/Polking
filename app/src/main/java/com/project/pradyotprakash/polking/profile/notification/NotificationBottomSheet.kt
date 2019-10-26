@@ -17,6 +17,7 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.NotificationModel
 import com.project.pradyotprakash.polking.utility.RoundBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.notification_btm_sheet.view.*
 import java.util.*
@@ -68,49 +69,52 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
             LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
         view.notification_rv.adapter = notificationsAdapter
 
-        if (mAuth.currentUser != null) {
-            view.progressBar6.visibility = View.VISIBLE
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                view.progressBar6.visibility = View.VISIBLE
 
-            notificationFirestore.collection("users").document(mAuth.currentUser!!.uid)
-                .collection("notifications")
-                .orderBy("notificationOn", Query.Direction.DESCENDING)
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
+                notificationFirestore.collection("users").document(mAuth.currentUser!!.uid)
+                    .collection("notifications")
+                    .orderBy("notificationOn", Query.Direction.DESCENDING)
+                    .addSnapshotListener { snapshot, exception ->
+                        exception.whatIfNotNull {
+                            showMessage(
+                                "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                            )
+                            view.progressBar6.visibility = View.GONE
+                        }
+
+                        allNotification.clear()
+
+                        try {
+                            for (doc in snapshot!!.documentChanges) {
+                                if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
+                                    val docId = doc.document.id
+                                    val notificationList: NotificationModel =
+                                        doc.document.toObject(NotificationModel::class.java)
+                                            .withId(docId)
+                                    allNotification.add(notificationList)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            showMessage(e.localizedMessage, 1)
+                        }
+
+                        if (allNotification.size > 0) {
+                            allNotificationsList.addAll(allNotification)
+                            notificationsAdapter!!.notifyDataSetChanged()
+                        }
+
                         view.progressBar6.visibility = View.GONE
                     }
-
-                    allNotification.clear()
-
-                    try {
-                        for (doc in snapshot!!.documentChanges) {
-                            if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
-                                val docId = doc.document.id
-                                val notificationList: NotificationModel =
-                                    doc.document.toObject(NotificationModel::class.java)
-                                        .withId(docId)
-                                allNotification.add(notificationList)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        showMessage(e.localizedMessage, 1)
-                    }
-
-                    if (allNotification.size > 0) {
-                        allNotificationsList.addAll(allNotification)
-                        notificationsAdapter!!.notifyDataSetChanged()
-                    }
-
-                    view.progressBar6.visibility = View.GONE
-                }
-        } else {
-            view.progressBar6.visibility = View.GONE
-            showMessage(getString(R.string.user_not_found), 1)
-            dismiss()
-        }
+            },
+            whatIfNot = {
+                view.progressBar6.visibility = View.GONE
+                showMessage(getString(R.string.user_not_found), 1)
+                dismiss()
+            }
+        )
 
     }
 

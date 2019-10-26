@@ -17,12 +17,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+    <ProgressBar
+            android:id="@+id/progressBar7"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/user_iv"
+            app:layout_constraintEnd_toEndOf="@+id/user_iv"
+            app:layout_constraintStart_toStartOf="@+id/user_iv"
+            app:layout_constraintTop_toTopOf="@+id/user_iv" />
+
     <com.google.android.material.chip.Chip
             android:id="@+id/name_chio"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
+            android:text="@string/loading"
             android:ellipsize="end"
             android:fontFamily="@font/muli_bold"
             app:rippleColor="@color/colorAccent"
@@ -40,12 +51,30 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/muli"
-            android:text="TextView"
+            android:text="@string/loading"
             android:textColor="@color/black"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/see_question_chip"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/name_chio"
             app:layout_constraintTop_toBottomOf="@+id/user_iv" />
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/see_question_chip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/muli_bold"
+            android:text="@string/see_question"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            android:visibility="gone"
+            app:chipBackgroundColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/notification_message"
+            app:layout_constraintStart_toStartOf="@+id/notification_message"
+            app:rippleColor="@color/colorAccent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

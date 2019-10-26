@@ -30,23 +30,6 @@ data class FAQsQuestionModel(
     val answer: String = ""
 ) : GetId()
 
-// Votes
-data class UserVotesModel(
-    val voted: String = "",
-    val votedFor: String = "",
-    val votedOnDate: String = "",
-    val votedOnTime: String = ""
-) : GetId()
-
-// Question Votes List
-data class QuestionVotesModel(
-    val voted: String = "",
-    val votedFor: String = "",
-    val votedOnDate: String = "",
-    val votedOnTime: String = "",
-    val votedBy: String = ""
-) : GetId()
-
 // Friend List
 data class FriendsListModel(
     val userId: String = "",
@@ -61,7 +44,12 @@ data class NotificationModel(
     val notificationMessageBy: String = "",
     val notificationMessage: String = "",
     val notificationOn: String = "",
-    val notificationIsRead: String = ""
+    val notificationIsRead: String = "",
+    val notificationForQuestionVote: String = "",
+    val notificationQuestionId: String = "",
+    val voteType: String = "",
+    val notificationForReview: String = "",
+    val notificationReviewId: String = ""
 ) : GetId()
 
 // Votes

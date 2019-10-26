@@ -16,6 +16,7 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.review_us_btm_sheet.*
 import kotlinx.android.synthetic.main.review_us_btm_sheet.view.*
@@ -91,38 +92,42 @@ class ReviewUsBtmSheet @Inject constructor() : TransparentBottomSheet(), Profile
         }
 
         view.post_Tv.setOnClickListener {
-            if (mAuth.currentUser != null) {
-                showLoading()
-                val date = Date()
-                val reviewData = HashMap<String, Any>()
-                /*
-                0 1 2 3 4 are the stars value
-                 */
-                when {
-                    view.val_tv.text == getString(R.string.its_making_us_sad) -> reviewData["chooseOption"] =
-                        "0"
-                    view.val_tv.text == getString(R.string.its_sad) -> reviewData["chooseOption"] =
-                        "1"
-                    view.val_tv.text == getString(R.string.tell_us) -> reviewData["chooseOption"] =
-                        "2"
-                    view.val_tv.text == getString(R.string.thanks) -> reviewData["chooseOption"] =
-                        "3"
-                    view.val_tv.text == getString(R.string.very_much_thanks) -> reviewData["chooseOption"] =
-                        "4"
-                }
-                reviewData["givenOnDate"] = dateFormat.format(date)
-                reviewData["givenOnTime"] = timeFormat.format(date)
-                reviewData["givenBy"] = mAuth.currentUser!!.uid
-                reviewData["feedback"] = if (!addFeed_et3.text.toString().isEmpty()) {
-                    addFeed_et3.text.toString()
-                } else {
-                    "Nothing To Say"
-                }
+            mAuth.currentUser.whatIfNotNull(
+                whatIf = {
+                    showLoading()
+                    val date = Date()
+                    val reviewData = HashMap<String, Any>()
+                    /*
+                    0 1 2 3 4 are the stars value
+                     */
+                    when {
+                        view.val_tv.text == getString(R.string.its_making_us_sad) -> reviewData["chooseOption"] =
+                            "0"
+                        view.val_tv.text == getString(R.string.its_sad) -> reviewData["chooseOption"] =
+                            "1"
+                        view.val_tv.text == getString(R.string.tell_us) -> reviewData["chooseOption"] =
+                            "2"
+                        view.val_tv.text == getString(R.string.thanks) -> reviewData["chooseOption"] =
+                            "3"
+                        view.val_tv.text == getString(R.string.very_much_thanks) -> reviewData["chooseOption"] =
+                            "4"
+                    }
+                    reviewData["givenOnDate"] = dateFormat.format(date)
+                    reviewData["givenOnTime"] = timeFormat.format(date)
+                    reviewData["isFixed"] = "false"
+                    reviewData["givenBy"] = mAuth.currentUser!!.uid
+                    reviewData["feedback"] = if (!addFeed_et3.text.toString().isEmpty()) {
+                        addFeed_et3.text.toString()
+                    } else {
+                        "Nothing To Say"
+                    }
 
-                saveDataToDatabase(view, reviewData)
-            } else {
-                showMessage(getString(R.string.user_not_found), 1)
-            }
+                    saveDataToDatabase(view, reviewData)
+                },
+                whatIfNot = {
+                    showMessage(getString(R.string.user_not_found), 1)
+                }
+            )
         }
 
         view.review_playstore_tv.setOnClickListener {
