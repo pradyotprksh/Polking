@@ -4,12 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import com.skydoves.whatif.whatIfNotNull
 
 class ConnectivityReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, arg1: Intent) {
 
-        if (connectivityReceiverListener != null) {
+        connectivityReceiverListener.whatIfNotNull {
             connectivityReceiverListener!!.onNetworkConnectionChanged(
                 isConnectedOrConnecting(
                     context

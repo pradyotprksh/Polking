@@ -9,6 +9,7 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.BgModel
+import com.skydoves.whatif.whatIfNotNull
 import java.util.*
 import javax.inject.Inject
 
@@ -38,12 +39,15 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
 
     override fun getUserData() {
         mView.showLoading()
-        if (currentUser != null) {
-            setListnerForUserData()
-            getTheUserData()
-        } else {
-            mView.showMessage(mContext.getString(R.string.user_not_found), 1)
-        }
+        currentUser.whatIfNotNull(
+            whatIf = {
+                setListnerForUserData()
+                getTheUserData()
+            },
+            whatIfNot = {
+                mView.showMessage(mContext.getString(R.string.user_not_found), 1)
+            }
+        )
     }
 
     private fun getTheUserData() {
@@ -90,29 +94,37 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     private fun setListnerForUserData() {
         dataBase.collection("users").document(currentUser!!.uid)
             .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
+                exception.whatIfNotNull {
                     mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
                     )
                 }
 
-                if (snapshot != null && snapshot.exists()) {
-                    mView.setUserDetails(
-                        snapshot.data!!["questions"].toString(),
-                        snapshot.data!!["friends"].toString(),
-                        snapshot.data!!["best_friends"].toString()
-                    )
-                    mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
-                    mView.setUserName(snapshot.data!!["name"].toString())
-                    mView.setNotificationIcon(
-                        snapshot.data!!["notificationCount"].toString(),
-                        snapshot.data!!["notificationMsg"].toString()
-                    )
-                    mView.hideLoading()
-                } else {
-                    mView.openAddProfileDetails()
-                    mView.hideLoading()
-                }
+                snapshot.whatIfNotNull(
+                    whatIf = {
+                        if (snapshot!!.exists()) {
+                            mView.setUserDetails(
+                                snapshot.data!!["questions"].toString(),
+                                snapshot.data!!["friends"].toString(),
+                                snapshot.data!!["best_friends"].toString()
+                            )
+                            mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
+                            mView.setUserName(snapshot.data!!["name"].toString())
+                            mView.setNotificationIcon(
+                                snapshot.data!!["notificationCount"].toString(),
+                                snapshot.data!!["notificationMsg"].toString()
+                            )
+                            mView.hideLoading()
+                        } else {
+                            mView.openAddProfileDetails()
+                            mView.hideLoading()
+                        }
+                    },
+                    whatIfNot = {
+                        mView.openAddProfileDetails()
+                        mView.hideLoading()
+                    }
+                )
             }
     }
 
@@ -120,9 +132,9 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
         callNotificationFunction()
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    if (task.exception != null) {
+                    task.exception.whatIfNotNull {
                         val e = task.exception
-                        if (e != null) {
+                        e.whatIfNotNull {
                             if (e is FirebaseFunctionsException) {
                                 mView.hideLoading()
                                 mView.showMessage("Something Went Wrong. ${e.localizedMessage}", 1)
@@ -147,28 +159,34 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     }
 
     override fun getBackgroundImages() {
-        if (currentUser != null) {
-            mView.showLoading()
-            dataBase.collection("background_images").addSnapshotListener { documentSnapshot, e ->
+        currentUser.whatIfNotNull(
+            whatIf = {
+                mView.showLoading()
+                dataBase.collection("background_images")
+                    .addSnapshotListener { documentSnapshot, exception ->
 
-                if (e != null) {
-                    mView.showMessage("Something went wrong. ${e.localizedMessage}", 1)
-                    return@addSnapshotListener
-                }
+                        exception.whatIfNotNull {
+                            mView.showMessage(
+                                "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                            )
+                        }
 
-                this.allBgList.clear()
+                        this.allBgList.clear()
 
-                for (doc in documentSnapshot!!) {
-                    val docId = doc.id
-                    val bgList: BgModel = doc.toObject<BgModel>(BgModel::class.java).withId(docId)
-                    this.allBgList.add(bgList)
-                }
-                mView.setBgList(allBgList)
-                mView.hideLoading()
+                        for (doc in documentSnapshot!!) {
+                            val docId = doc.id
+                            val bgList: BgModel =
+                                doc.toObject<BgModel>(BgModel::class.java).withId(docId)
+                            this.allBgList.add(bgList)
+                        }
+                        mView.setBgList(allBgList)
+                        mView.hideLoading()
+                    }
+            },
+            whatIfNot = {
+                mView.showMessage(mContext.getString(R.string.user_not_found), 1)
             }
-        } else {
-            mView.showMessage(mContext.getString(R.string.user_not_found), 1)
-        }
+        )
     }
 
     override fun start() {
@@ -207,7 +225,7 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
     override fun setVote(voteType: Int, docId: String) {
         mView.showLoading()
 
-        if (currentUser != null) {
+        currentUser.whatIfNotNull {
             val voteData = HashMap<String, Any>()
             voteData["voteType"] = voteType
             voteData["questionId"] = docId
@@ -229,7 +247,6 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
                     mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
                     mView.hideLoading()
                 }
-
         }
     }
 
@@ -237,21 +254,30 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
         callStatsFunction(docId)
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    if (task.exception != null) {
-                        val e = task.exception
-                        if (e != null) {
-                            if (e is FirebaseFunctionsException) {
-                                mView.hideLoading()
-                                mView.showMessage("Something Went Wrong. ${e.localizedMessage}", 1)
-                            } else {
-                                openStats(docId)
-                            }
-                        } else {
+                    task.exception.whatIfNotNull(
+                        whatIf = {
+                            val e = task.exception
+                            e.whatIfNotNull(
+                                whatIf = {
+                                    if (e is FirebaseFunctionsException) {
+                                        mView.hideLoading()
+                                        mView.showMessage(
+                                            "Something Went Wrong. ${e.localizedMessage}",
+                                            1
+                                        )
+                                    } else {
+                                        openStats(docId)
+                                    }
+                                },
+                                whatIfNot = {
+                                    openStats(docId)
+                                }
+                            )
+                        },
+                        whatIfNot = {
                             openStats(docId)
                         }
-                    } else {
-                        openStats(docId)
-                    }
+                    )
                 } else {
                     openStats(docId)
                 }

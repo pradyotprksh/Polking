@@ -3,7 +3,6 @@ package com.project.pradyotprakash.polking.profileDetails
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,11 +15,9 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -33,6 +30,7 @@ import com.google.firebase.storage.UploadTask
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.utility.*
+import com.skydoves.whatif.whatIfNotNull
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
@@ -68,15 +66,22 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
             }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         AndroidInjection.inject(this.activity)
         val view = inflater.inflate(R.layout.profile_edit_btm_sheet, container, false)
 
         dialog!!.setOnShowListener { dialog ->
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
-            val bottomSheetInternal = bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
-            if (bottomSheetInternal != null) {
-                BottomSheetBehavior.from<View>(bottomSheetInternal).state = BottomSheetBehavior.STATE_EXPANDED
+            val bottomSheetInternal = bottomSheetDialog.findViewById<FrameLayout>(
+                R.id
+                    .design_bottom_sheet
+            )
+            bottomSheetInternal.whatIfNotNull {
+                BottomSheetBehavior.from<View>(bottomSheetInternal).state =
+                    BottomSheetBehavior.STATE_EXPANDED
             }
         }
 
@@ -146,55 +151,69 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun saveDataToDatabase(view: View) {
-        if (mAuth.currentUser != null) {
-            if (imageUrl == null) {
-                if (allDataIsThere(view)) {
-                    addInitalDataToDatabase(view)
-                }
-            } else {
-                addDataToDatabase(view)
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                imageUrl.whatIfNotNull(
+                    whatIf = {
+                        addDataToDatabase(view)
+                    },
+                    whatIfNot = {
+                        if (allDataIsThere(view)) {
+                            addInitalDataToDatabase(view)
+                        }
+                    }
+                )
+            },
+            whatIfNot = {
+                showMessage(getString(R.string.user_not_found), 1)
             }
-        } else {
-            showMessage(getString(R.string.user_not_found), 1)
-        }
+        )
     }
 
     private fun addInitalDataToDatabase(view: View) {
         view.mainProgressBar.visibility = View.VISIBLE
 
-        if (userMainImageURI != null) {
-            val storage = FirebaseStorage.getInstance().reference
-            val imagePath: StorageReference =
-                storage.child("user_profile_image").child("${mAuth.currentUser!!.uid}.jpg")
-            imagePath.putFile(userMainImageURI!!)
-                .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let { exception ->
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}",
-                                1
-                            )
-                            view.mainProgressBar.visibility = View.GONE
-                            throw exception
+        userMainImageURI.whatIfNotNull(
+            whatIf = {
+                val storage = FirebaseStorage.getInstance().reference
+                val imagePath: StorageReference =
+                    storage
+                        .child("user_profile_image")
+                        .child("${mAuth.currentUser!!.uid}.jpg")
+                imagePath.putFile(userMainImageURI!!)
+                    .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let { exception ->
+                                showMessage(
+                                    "Something Went Wrong. ${exception.localizedMessage}",
+                                    1
+                                )
+                                view.mainProgressBar.visibility = View.GONE
+                                throw exception
+                            }
                         }
+                        return@Continuation imagePath.downloadUrl
+                    }).addOnCanceledListener {
+                        showMessage(getString(R.string.not_uploaded), 4)
+                        view.mainProgressBar.visibility = View.GONE
+                    }.addOnFailureListener { exception ->
+                        showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        view.mainProgressBar.visibility = View.GONE
+                    }.addOnCompleteListener { task ->
+
+                        uploadTheImageUrlWithData(view, task, imagePath)
+
+                    }.addOnSuccessListener {
+                        showMessage(getString(R.string.save_properly), 3)
                     }
-                    return@Continuation imagePath.downloadUrl
-                }).addOnCanceledListener {
-                    showMessage(getString(R.string.not_uploaded), 4)
-                    view.mainProgressBar.visibility = View.GONE
-                }.addOnFailureListener { exception ->
-                    showMessage("Something Went Wrong. ${exception.localizedMessage}", 1)
-                    view.mainProgressBar.visibility = View.GONE
-                }.addOnCompleteListener { task ->
-
-                    uploadTheImageUrlWithData(view, task, imagePath)
-
-                }.addOnSuccessListener {
-                    showMessage(getString(R.string.save_properly), 3)
-                }
-        } else {
-            addDataToDatabase(view)
-        }
+            },
+            whatIfNot = {
+                addDataToDatabase(view)
+            }
+        )
     }
 
     private fun uploadTheImageUrlWithData(
@@ -209,14 +228,14 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
 
                     imageUrl = uri.toString()
 
-                    if (imageUrl != null) {
-
-                        addDataToDatabase(view)
-
-                    } else {
-                        showMessage(getString(R.string.not_uploaded), 1)
-                        view.mainProgressBar.visibility = View.GONE
-                    }
+                    imageUrl.whatIfNotNull(
+                        whatIf = {
+                            addDataToDatabase(view)
+                        }, whatIfNot = {
+                            showMessage(getString(R.string.not_uploaded), 1)
+                            view.mainProgressBar.visibility = View.GONE
+                        }
+                    )
 
                 }.addOnFailureListener { exception ->
                     showMessage(
@@ -241,11 +260,16 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
 
     private fun addDataToDatabase(view: View) {
         val userData = HashMap<String, Any>()
-        if (imageUrl == null || imageUrl == "") {
-            userData["imageUrl"] = AppConstants.DEFAULT_IMAGE_URL
-        } else {
-            userData["imageUrl"] = imageUrl!!
-        }
+        imageUrl.whatIfNotNull(
+            whatIf = {
+                userData["imageUrl"] = imageUrl!!
+            },
+            whatIfNot = {
+                if (imageUrl == "") {
+                    userData["imageUrl"] = AppConstants.DEFAULT_IMAGE_URL
+                }
+            }
+        )
         userData["name"] = view.addQuestion_et.text.toString()
         userData["age"] =
             Utility().getAge(view.age_et.text.toString())
@@ -313,40 +337,33 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     private fun getUserData(view: View) {
         view.mainProgressBar.visibility = View.VISIBLE
         view.imagePrgBsr.visibility = View.VISIBLE
-        firestore.collection("users").document(mAuth.currentUser!!.uid).get().addOnSuccessListener { result ->
+        firestore.collection("users").document(mAuth.currentUser!!.uid)
+            .get().addOnSuccessListener { result ->
 
             if (result.exists()) {
 
                 imageUrl = result.getString("imageUrl")
 
-                Glide.with(this)
-                    .load(result.getString("imageUrl"))
-                    .placeholder(R.drawable.ic_default_appcolor)
-                    .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        exception: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        view.imagePrgBsr.visibility = View.GONE
-                        return false
-                    }
+                user_iv.load(result.getString("imageUrl"),
+                    Coil.loader(),
+                    builder = {
+                        this.listener(object : Request.Listener {
+                            override fun onError(data: Any, throwable: Throwable) {
+                                view.imagePrgBsr.visibility = View.GONE
+                                view.user_iv.load(R.drawable.ic_default_appcolor)
+                            }
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        view.imagePrgBsr.visibility = View.GONE
-                        return false
-                    }
-                }).into(view.user_iv)
-
-                view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
-                view.user_iv.borderWidth = 4
+                            override fun onSuccess(
+                                data: Any,
+                                source: coil.decode.DataSource
+                            ) {
+                                super.onSuccess(data, source)
+                                view.imagePrgBsr.visibility = View.GONE
+                                view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                                view.user_iv.borderWidth = 4
+                            }
+                        })
+                    })
 
                 view.addQuestion_et.setText(result.getString("name"))
                 view.age_et.setText(result.getString("birthDay"))
@@ -435,15 +452,21 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun openCamera() {
-        if (activity != null) {
-            CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setAspectRatio(1, 1).start(activity!!)
+        activity.whatIfNotNull {
+            CropImage.activity().setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1).start(activity!!)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             AppConstants.PERMISSIONS_REQUEST_READ_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
                     if (ContextCompat.checkSelfPermission(
                             context!!,
                             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -456,7 +479,10 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                 } else {
                     checkReadPermission()
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        if (!shouldShowRequestPermissionRationale(
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            )
+                        ) {
                             count1++
                             if (count1 > 1) {
                                 showMessageOKCancel(
@@ -464,7 +490,10 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                                 ) { _, _ ->
                                     val intent = Intent()
                                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                    val uri = Uri.fromParts("package", context!!.packageName, null)
+                                    val uri = Uri.fromParts(
+                                        "package",
+                                        context!!.packageName, null
+                                    )
                                     intent.data = uri
                                     startActivity(intent)
                                 }
@@ -476,7 +505,9 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
             }
 
             AppConstants.PERMISSIONS_REQUEST_WRITE_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
                     if (ContextCompat.checkSelfPermission(
                             context!!,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -489,7 +520,10 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                 } else {
                     checkWritePermission()
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        if (!shouldShowRequestPermissionRationale(
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            )
+                        ) {
                             count++
                             if (count > 1) {
                                 showMessageOKCancel(
@@ -497,7 +531,10 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                                 ) { _, _ ->
                                     val intent = Intent()
                                     intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                    val uri = Uri.fromParts("package", context!!.packageName, null)
+                                    val uri = Uri.fromParts(
+                                        "package",
+                                        context!!.packageName, null
+                                    )
                                     intent.data = uri
                                     startActivity(intent)
                                 }
@@ -517,7 +554,11 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity!!,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+            ) {
                 ActivityCompat.requestPermissions(
                     activity!!,
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
@@ -541,7 +582,11 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity!!,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
                 ActivityCompat.requestPermissions(
                     activity!!,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -561,7 +606,7 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun showMessageOKCancel(message: String, okListener: (Any, Any) -> Unit) {
-        if (context != null) {
+        context.whatIfNotNull {
             AlertDialog.Builder(context!!)
                 .setMessage(message).setPositiveButton(getString(R.string.ok_string), okListener)
                 .setNegativeButton(getString(R.string.cancel_string), null).create().show()

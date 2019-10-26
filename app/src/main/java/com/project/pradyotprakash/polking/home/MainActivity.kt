@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,11 +20,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
@@ -107,6 +104,8 @@ class MainActivity : InternetActivity(), MainActivityView {
         textChangeListners()
 
         adapters()
+
+        getQuestions()
     }
 
     private fun getQuestions() {
@@ -156,7 +155,8 @@ class MainActivity : InternetActivity(), MainActivityView {
     override fun deleteQuestionImageUri() {
         picOptionUri.whatIfNotNull {
             picOptionUri = null
-            camera_iv.setImageDrawable(resources.getDrawable(R.drawable.ic_camera))
+            camera_iv.load(R.drawable.ic_camera)
+            add_iv.load(R.drawable.ic_plus_side)
         }
     }
 
@@ -226,6 +226,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     override fun setQuestionImage(picOptionUri: Uri) {
+        add_iv.load(R.drawable.ic_add)
         camera_iv.setImageURI(picOptionUri)
         camera_iv.borderColor = resources.getColor(R.color.white)
         camera_iv.borderWidth = 2
@@ -374,11 +375,11 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun onResume() {
         super.onResume()
+        deleteQuestionImageUri()
         checkNewAppVersionState()
         logd(getString(R.string.resume))
         presenter.addAuthStateListener()
         presenter.getProfileData()
-        getQuestions()
     }
 
     private fun checkNewAppVersionState() {
@@ -438,32 +439,25 @@ class MainActivity : InternetActivity(), MainActivityView {
         imageUrl.whatIfNotNull(
             whatIf = {
                 imageProgressBar.visibility = View.VISIBLE
-                Glide.with(this).load(imageUrl)
-                    .placeholder(R.drawable.ic_default_appcolor)
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                            exception: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            imageProgressBar.visibility = View.GONE
-                            return false
-                        }
+                user_iv.load(imageUrl,
+                    Coil.loader(),
+                    builder = {
+                        this.listener(object : Request.Listener {
+                            override fun onError(data: Any, throwable: Throwable) {
+                                imageProgressBar.visibility = View.GONE
+                            }
 
-                        override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            imageProgressBar.visibility = View.GONE
-                            return false
-                        }
-                    }).into(user_iv)
-                user_iv.borderWidth = 2
-                user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                            override fun onSuccess(
+                                data: Any,
+                                source: coil.decode.DataSource
+                            ) {
+                                super.onSuccess(data, source)
+                                imageProgressBar.visibility = View.GONE
+                                user_iv.borderWidth = 2
+                                user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                            }
+                        })
+                    })
             },
             whatIfNot = {
                 showMessage(getString(R.string.something_went_wrong), 1)

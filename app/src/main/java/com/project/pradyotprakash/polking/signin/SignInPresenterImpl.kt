@@ -10,6 +10,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.utility.AppConstants
+import com.skydoves.whatif.whatIfNotNull
 import javax.inject.Inject
 
 class SignInPresenterImpl @Inject constructor() : SignInPresenter {
@@ -63,7 +64,7 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
     }
 
     override fun updateUi(account: GoogleSignInAccount) {
-        if (mAuth.currentUser != null) {
+        mAuth.currentUser.whatIfNotNull {
             getfirestore.collection("users")
                 .document(mAuth.currentUser!!.uid).get().addOnSuccessListener { result ->
                     if (result.exists()) {

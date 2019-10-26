@@ -48,7 +48,11 @@ class ProfileEditPresenterImpl @Inject constructor() : ProfileEditPresenter {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    mContext,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+            ) {
                 ActivityCompat.requestPermissions(
                     mContext,
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
@@ -72,7 +76,11 @@ class ProfileEditPresenterImpl @Inject constructor() : ProfileEditPresenter {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    mContext,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
                 ActivityCompat.requestPermissions(
                     mContext,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),

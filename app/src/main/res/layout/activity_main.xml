@@ -98,7 +98,7 @@
                             app:layout_constraintTop_toTopOf="@+id/addQuestion_et" />
 
                     <ImageView
-                            android:id="@+id/imageView8"
+                            android:id="@+id/add_iv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
@@ -106,7 +106,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/camera_iv"
                             app:layout_constraintStart_toEndOf="@+id/camera_iv"
                             app:layout_constraintTop_toTopOf="@+id/camera_iv"
-                            app:srcCompat="@drawable/ic_add"
+                            app:srcCompat="@drawable/ic_plus_side"
                             tools:ignore="VectorDrawableCompat" />
 
                     <EditText
@@ -133,7 +133,7 @@
                             android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="@+id/user_iv"
                             app:layout_constraintEnd_toStartOf="@+id/post_Tv"
-                            app:layout_constraintStart_toEndOf="@+id/imageView8"
+                            app:layout_constraintStart_toEndOf="@+id/add_iv"
                             app:layout_constraintTop_toTopOf="@+id/user_iv" />
 
                     <com.google.android.material.chip.Chip

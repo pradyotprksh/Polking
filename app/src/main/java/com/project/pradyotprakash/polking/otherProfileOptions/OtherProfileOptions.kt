@@ -1,7 +1,6 @@
 package com.project.pradyotprakash.polking.otherProfileOptions
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -11,11 +10,11 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
+import coil.transform.BlurTransformation
+import coil.transform.GrayscaleTransformation
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +27,7 @@ import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profile.friendsAdapter.FriendsAdapter
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.*
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.other_profile_options_btm_sheet.view.*
 import javax.inject.Inject
@@ -73,7 +73,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
             val bottomSheetInternal =
                 bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
-            if (bottomSheetInternal != null) {
+            bottomSheetInternal.whatIfNotNull {
                 BottomSheetBehavior.from<View>(bottomSheetInternal).state =
                     BottomSheetBehavior.STATE_EXPANDED
             }
@@ -129,7 +129,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         }
 
         view.makeBfChip.setOnCloseIconClickListener {
-            if (mAuth.currentUser != null) {
+            mAuth.currentUser.whatIfNotNull {
                 if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
                     debestfriend(view)
                 } else {
@@ -139,7 +139,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         }
 
         view.makeBfChip.setOnClickListener {
-            if (mAuth.currentUser != null) {
+            mAuth.currentUser.whatIfNotNull {
                 if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
                     addBestFriend(view)
                 } else {
@@ -149,7 +149,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         }
 
         view.connectTv.setOnClickListener {
-            if (mAuth.currentUser != null) {
+            mAuth.currentUser.whatIfNotNull {
                 view.progressBar5.visibility = View.VISIBLE
                 if (view.connectTv.text == getString(R.string.unfollow_as_a_friend)) {
                     if (!view.makeBfChip.isCloseIconVisible) {
@@ -334,7 +334,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun setBackgroundImageMeasurement(view: View) {
-        if (context != null) {
+        context.whatIfNotNull {
             val windMang: WindowManager =
                 context!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
             val display: Display = windMang.defaultDisplay
@@ -397,105 +397,118 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getUserData(view: View) {
-        if (context == null) {
-            dismiss()
-            return
-        }
-        view.progressBar5.visibility = View.VISIBLE
-        if (askedBy.isEmpty()) {
-            view.progressBar5.visibility = View.GONE
-            dismiss()
-        } else {
-            // get user friend list
-            getUserFriendList(view)
+        context.whatIfNotNull(
+            whatIf = {
+                view.progressBar5.visibility = View.VISIBLE
+                if (askedBy.isEmpty()) {
+                    view.progressBar5.visibility = View.GONE
+                    dismiss()
+                } else {
+                    // get user friend list
+                    getUserFriendList(view)
 
-            // get best friend list
-            getUserBestFriendList(view)
+                    // get best friend list
+                    getUserBestFriendList(view)
 
-            // get selected user questions
-            getUserQuestionsList()
+                    // get selected user questions
+                    getUserQuestionsList()
 
-            // get user data
-            if (isAdded) {
-                getUserBackground(view)
-                getUserDetails(view)
+                    // get user data
+                    if (isAdded) {
+                        getUserBackground(view)
+                        getUserDetails(view)
+                    }
+                }
+            },
+            whatIfNot = {
+                dismiss()
             }
-        }
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private fun getUserDetails(view: View) {
         firestore.collection("users").document(askedBy)
             .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
+                exception.whatIfNotNull {
                     showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
                     )
                 }
 
                 if (isAdded && !isDetached) {
-                    if (snapshot != null && snapshot.exists()) {
-                        if (snapshot.data!!["questions"].toString().isNotEmpty()) {
-                            view.questionVal_tv.text =
-                                snapshot.data!!["questions"].toString()
-                            if (snapshot.data!!["questions"].toString() == "0") {
-                                view.friends_rv.visibility = View.GONE
-                            } else {
-                                getUserQuestionsList()
-                            }
-                        }
-                        if (snapshot.data!!["friends"].toString().isNotEmpty()) {
-                            view.friendsVal_tv.text = snapshot.data!!["friends"].toString()
-                            if (snapshot.data!!["friends"].toString() == "0") {
-                                view.friends_rv.visibility = View.GONE
-                            } else {
-                                getUserFriendList(view)
-                            }
-                        }
-                        if (snapshot.data!!["best_friends"].toString().isNotEmpty()) {
-                            view.bestFrndVal_tv.text =
-                                snapshot.data!!["best_friends"].toString()
-                            if (snapshot.data!!["best_friends"].toString() == "0") {
-                                view.bestFriends_rv.visibility = View.GONE
-                            } else {
-                                getUserBestFriendList(view)
-                            }
-                        }
-                        view.userNameTv.text = snapshot.data!!["name"].toString()
-
-                        Glide.with(this).load(snapshot.data!!["imageUrl"].toString())
-                            .placeholder(R.drawable.ic_default_appcolor)
-                            .listener(object :
-                                RequestListener<Drawable> {
-                                override fun onLoadFailed(
-                                    exception: GlideException?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    isFirstResource: Boolean
-                                ): Boolean {
-                                    view.progressBar5.visibility = View.GONE
-                                    return false
+                    snapshot.whatIfNotNull(
+                        whatIf = {
+                            if (snapshot!!.exists()) {
+                                if (snapshot.data!!["questions"].toString().isNotEmpty()) {
+                                    view.questionVal_tv.text =
+                                        snapshot.data!!["questions"].toString()
+                                    if (snapshot.data!!["questions"].toString() == "0") {
+                                        view.friends_rv.visibility = View.GONE
+                                    } else {
+                                        getUserQuestionsList()
+                                    }
                                 }
-
-                                override fun onResourceReady(
-                                    resource: Drawable?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    dataSource: DataSource?,
-                                    isFirstResource: Boolean
-                                ): Boolean {
-                                    view.progressBar5.visibility = View.GONE
-                                    return false
+                                if (snapshot.data!!["friends"].toString().isNotEmpty()) {
+                                    view.friendsVal_tv.text = snapshot.data!!["friends"].toString()
+                                    if (snapshot.data!!["friends"].toString() == "0") {
+                                        view.friends_rv.visibility = View.GONE
+                                    } else {
+                                        getUserFriendList(view)
+                                    }
                                 }
-                            }).into(view.user_iv)
-                        view.user_iv.borderWidth = 2
-                        view.user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                                if (snapshot.data!!["best_friends"].toString().isNotEmpty()) {
+                                    view.bestFrndVal_tv.text =
+                                        snapshot.data!!["best_friends"].toString()
+                                    if (snapshot.data!!["best_friends"].toString() == "0") {
+                                        view.bestFriends_rv.visibility = View.GONE
+                                    } else {
+                                        getUserBestFriendList(view)
+                                    }
+                                }
+                                view.userNameTv.text = snapshot.data!!["name"].toString()
 
-                        view.progressBar5.visibility = View.GONE
-                    } else {
-                        hideLoading()
-                        view.progressBar5.visibility = View.GONE
-                    }
+                                view.user_iv.load(snapshot.data!!["imageUrl"].toString(),
+                                    Coil.loader(),
+                                    builder = {
+                                        mAuth.currentUser.whatIfNotNull(
+                                            whatIf = {
+
+                                            },
+                                            whatIfNot = {
+                                                this.transformations(
+                                                    GrayscaleTransformation(),
+                                                    BlurTransformation(context!!)
+                                                )
+                                            })
+                                        this.listener(object : Request.Listener {
+                                            override fun onError(data: Any, throwable: Throwable) {
+                                                super.onError(data, throwable)
+                                                view.user_iv.load(R.drawable.ic_default_appcolor)
+                                            }
+
+                                            override fun onSuccess(
+                                                data: Any,
+                                                source: coil.decode.DataSource
+                                            ) {
+                                                super.onSuccess(data, source)
+                                                view.user_iv.borderWidth = 2
+                                                view.user_iv.borderColor =
+                                                    resources.getColor(R.color.colorPrimary)
+                                            }
+                                        })
+                                    })
+                                view.progressBar5.visibility = View.GONE
+                            } else {
+                                hideLoading()
+                                view.progressBar5.visibility = View.GONE
+                            }
+                        },
+                        whatIfNot = {
+                            hideLoading()
+                            view.progressBar5.visibility = View.GONE
+                        }
+                    )
                 }
             }
     }
@@ -510,35 +523,35 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                         .addOnSuccessListener { resultBg ->
                             showLoading()
                             if (result.exists()) {
-                                Glide.with(this).load(resultBg.getString("imageUrl")!!)
-                                    .placeholder(R.drawable.pbg_two)
-                                    .listener(object :
-                                        RequestListener<Drawable> {
-                                        override fun onLoadFailed(
-                                            exception: GlideException?,
-                                            model: Any?,
-                                            target: Target<Drawable>?,
-                                            isFirstResource: Boolean
-                                        ): Boolean {
-                                            view.progressBar5.visibility = View.GONE
-                                            showMessage(
-                                                "Something Went Wrong. ${exception?.localizedMessage}",
-                                                1
-                                            )
-                                            return false
-                                        }
+                                view.background_image.load(resultBg.getString("imageUrl")!!,
+                                    Coil.loader(),
+                                    builder = {
+                                        mAuth.currentUser.whatIfNotNull(
+                                            whatIf = {
 
-                                        override fun onResourceReady(
-                                            resource: Drawable?,
-                                            model: Any?,
-                                            target: Target<Drawable>?,
-                                            dataSource: DataSource?,
-                                            isFirstResource: Boolean
-                                        ): Boolean {
-                                            view.progressBar5.visibility = View.GONE
-                                            return false
-                                        }
-                                    }).into(view.background_image)
+                                            },
+                                            whatIfNot = {
+                                                this.transformations(
+                                                    GrayscaleTransformation(),
+                                                    BlurTransformation(context!!)
+                                                )
+                                            })
+                                        placeholder(R.drawable.pbg_two)
+                                        this.listener(object : Request.Listener {
+                                            override fun onError(data: Any, throwable: Throwable) {
+                                                super.onError(data, throwable)
+                                                view.progressBar5.visibility = View.GONE
+                                            }
+
+                                            override fun onSuccess(
+                                                data: Any,
+                                                source: coil.decode.DataSource
+                                            ) {
+                                                super.onSuccess(data, source)
+                                                view.progressBar5.visibility = View.GONE
+                                            }
+                                        })
+                                    })
                                 hideLoading()
                             } else {
                                 showMessage(context!!.getString(R.string.not_found_bg), 1)
@@ -570,12 +583,12 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun getUserBestFriendList(view: View) {
-        if (mAuth.currentUser != null) {
+        mAuth.currentUser.whatIfNotNull {
             getbestfriendfirestore.collection("users").document(askedBy)
                 .collection("bestfriends").addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
+                    exception.whatIfNotNull {
                         showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
                         )
                     }
 
@@ -623,9 +636,9 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         firestore.collection("question")
             .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
-                if (exception != null) {
+                exception.whatIfNotNull {
                     showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
                     )
                 }
 
@@ -661,12 +674,12 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private fun getUserFriendList(view: View) {
-        if (mAuth.currentUser != null) {
+        mAuth.currentUser.whatIfNotNull {
             getfriendfirestore.collection("users").document(askedBy)
                 .collection("friends").addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
+                    exception.whatIfNotNull {
                         showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
                         )
                     }
 

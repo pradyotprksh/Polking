@@ -11,13 +11,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
-import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
+import com.project.pradyotprakash.polking.utility.RoundBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.update_btm_sheet.view.*
 import javax.inject.Inject
 
-class UpdateBtmSheet @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
+class UpdateBtmSheet @Inject constructor() : RoundBottomSheet(), ProfileEditView {
 
     companion object {
         fun newInstance(): UpdateBtmSheet =
@@ -38,7 +39,7 @@ class UpdateBtmSheet @Inject constructor() : TransparentBottomSheet(), ProfileEd
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
             val bottomSheetInternal =
                 bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
-            if (bottomSheetInternal != null) {
+            bottomSheetInternal.whatIfNotNull {
                 BottomSheetBehavior.from<View>(bottomSheetInternal).state =
                     BottomSheetBehavior.STATE_EXPANDED
             }

@@ -3,7 +3,6 @@ package com.project.pradyotprakash.polking.profile
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -14,11 +13,9 @@ import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.core.view.MotionEventCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
@@ -35,6 +32,7 @@ import com.project.pradyotprakash.polking.utility.BgModel
 import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.Utility
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -99,7 +97,7 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     }
 
     private fun setBehaviorListner() {
-        if (notificationBottomSheet.view != null) {
+        notificationBottomSheet.view.whatIfNotNull {
             val bottomSheetBehavior = BottomSheetBehavior.from(notificationBottomSheet.view)
 
             bottomSheetBehavior.setBottomSheetCallback(object :
@@ -118,8 +116,10 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     }
 
     private fun getIntentData() {
-        if (intent != null) {
-            if (intent.getStringExtra("openBestFriend") != null && intent.getStringExtra("openBestFriend") != "") {
+        intent.whatIfNotNull {
+            if (intent.getStringExtra("openBestFriend") != null
+                && intent.getStringExtra("openBestFriend") != ""
+            ) {
                 if (intent.getStringExtra("openBestFriend") == "yes") {
                     openFriendSheet(2)
                 }
@@ -223,7 +223,9 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     private fun setAdapters() {
         allBgAdapter = BackgroundAdapter(allBgList, this, this)
         rv_bgOption.setHasFixedSize(true)
-        rv_bgOption.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rv_bgOption.layoutManager = LinearLayoutManager(
+            this, LinearLayoutManager.HORIZONTAL, false
+        )
         rv_bgOption.adapter = allBgAdapter
     }
 
@@ -303,39 +305,36 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
-        if (imageUrl != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                if (!this.isDestroyed) {
-                    Glide.with(this)
-                        .load(imageUrl)
-                        .placeholder(R.drawable.ic_default_appcolor)
-                        .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                            exception: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            return false
-                        }
+        imageUrl.whatIfNotNull(
+            whatIf = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    if (!this.isDestroyed) {
+                        profile_iv.load(imageUrl,
+                            Coil.loader(),
+                            builder = {
+                                this.listener(object : Request.Listener {
+                                    override fun onError(data: Any, throwable: Throwable) {
+                                        profile_iv.load(R.drawable.ic_default_appcolor)
+                                    }
 
-                        override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            return false
-                        }
-                    }).into(profile_iv)
-                    profile_iv.borderWidth = 2
-                    profile_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                                    override fun onSuccess(
+                                        data: Any,
+                                        source: coil.decode.DataSource
+                                    ) {
+                                        super.onSuccess(data, source)
+                                        profile_iv.borderWidth = 2
+                                        profile_iv.borderColor =
+                                            resources.getColor(R.color.colorPrimary)
+                                    }
+                                })
+                            })
+                    }
                 }
+            },
+            whatIfNot = {
+                showMessage(getString(R.string.something_went_wrong), 1)
             }
-        } else {
-            showMessage(getString(R.string.something_went_wrong), 1)
-        }
+        )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -355,7 +354,9 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     @SuppressLint("SetTextI18n")
     override fun setUserName(name: String?) {
         if (!name.isNullOrEmpty()) {
-            welcome_tv.text = "${Utility().getDayMessage()}, $name. Welcome to ${getString(R.string.app_name)}."
+            welcome_tv.text = "${Utility().getDayMessage()}, $name. Welcome to ${getString(
+                R.string.app_name
+            )}."
         }
     }
 
@@ -446,29 +447,11 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun setBgImage(imageUrl: String, docId: String) {
         if (!this.isDestroyed) {
-            Glide.with(this)
-                .load(imageUrl)
-                .placeholder(R.drawable.pbg_two)
-                .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    exception: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-            }).into(user_iv)
+            user_iv.load(imageUrl,
+                Coil.loader(),
+                builder = {
+                    placeholder(R.drawable.pbg_two)
+                })
             bgDocId = docId
         }
     }

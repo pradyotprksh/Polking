@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import com.project.pradyotprakash.polking.R
+import com.skydoves.whatif.whatIfNotNull
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -81,8 +82,8 @@ class VerifyOTPPresenterImpl @Inject constructor() : VerifyOTPPresenter {
 
     override fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential?) {
         mView.showLoading()
-        if (credential != null) {
-            mAuth.signInWithCredential(credential).addOnCompleteListener(mContext) { task ->
+        credential.whatIfNotNull {
+            mAuth.signInWithCredential(credential!!).addOnCompleteListener(mContext) { task ->
                 if (task.isSuccessful) {
                     mView.hideLoading()
                     mView.stopAct()
