@@ -58,13 +58,13 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     internal fun MainActivityPresenterImpl(activity: Activity) {
         mContext = activity
         mAuth = FirebaseAuth.getInstance()
+        firebaseFunctions = FirebaseFunctions.getInstance()
         currentUser = mAuth.currentUser
         dataBase = FirebaseFirestore.getInstance()
         getQuestionDataBase = FirebaseFirestore.getInstance()
         uploadQuestionDataBase = FirebaseFirestore.getInstance()
         addVotesDataBase = FirebaseFirestore.getInstance()
         getbestfriendfirestore = FirebaseFirestore.getInstance()
-        firebaseFunctions = FirebaseFunctions.getInstance()
     }
 
     override fun start() {

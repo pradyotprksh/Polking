@@ -183,6 +183,8 @@ class MainActivity : InternetActivity(), MainActivityView {
 
         user_iv.setOnClickListener {
             presenter.isLoggedIn()
+//            openActivity(CommentsAcrivity::class.java)
+//            overridePendingTransition(R.anim.slide_in_up, R.anim.nothing)
         }
 
         post_Tv.setOnClickListener {

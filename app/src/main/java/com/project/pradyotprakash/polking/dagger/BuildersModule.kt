@@ -1,5 +1,7 @@
 package com.project.pradyotprakash.polking.dagger
 
+import com.project.pradyotprakash.polking.comment.CommentsAcrivity
+import com.project.pradyotprakash.polking.comment.CommentsActivityModule
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.home.MainActivityModule
 import com.project.pradyotprakash.polking.profile.ProfileActivity
@@ -41,4 +43,8 @@ abstract class BuildersModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = [FAQsActivityModule::class])
     abstract fun faqsActivity(): FAQsActivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = [CommentsActivityModule::class])
+    abstract fun commentsActivity(): CommentsAcrivity
 }
