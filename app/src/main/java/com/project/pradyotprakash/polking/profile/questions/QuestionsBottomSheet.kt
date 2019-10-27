@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.project.pradyotprakash.polking.R
@@ -82,16 +81,12 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
                         try {
                             for (doc in snapshot!!.documentChanges) {
                                 showLoading()
-                                if (doc.type == DocumentChange.Type.ADDED) {
-
-                                    val docId = doc.document.id
-                                    val quesList: QuestionModel =
-                                        doc.document.toObject<QuestionModel>(QuestionModel::class.java)
-                                            .withId(docId)
-                                    if (quesList.askedBy == mAuth.currentUser!!.uid) {
-                                        this.allQuestionList.add(quesList)
-                                    }
-
+                                val docId = doc.document.id
+                                val quesList: QuestionModel =
+                                    doc.document.toObject<QuestionModel>(QuestionModel::class.java)
+                                        .withId(docId)
+                                if (quesList.askedBy == mAuth.currentUser!!.uid) {
+                                    this.allQuestionList.add(quesList)
                                 }
                             }
                         } catch (e: Exception) {

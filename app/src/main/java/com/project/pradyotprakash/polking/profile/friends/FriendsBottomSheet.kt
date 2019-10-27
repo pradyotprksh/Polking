@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
@@ -90,13 +89,11 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
 
                         try {
                             for (doc in snapshot!!.documentChanges) {
-                                if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
-                                    val docId = doc.document.id
-                                    val friendList: FriendsListModel =
-                                        doc.document.toObject(FriendsListModel::class.java)
-                                            .withId(docId)
-                                    allFriends.add(friendList)
-                                }
+                                val docId = doc.document.id
+                                val friendList: FriendsListModel =
+                                    doc.document.toObject(FriendsListModel::class.java)
+                                        .withId(docId)
+                                allFriends.add(friendList)
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
