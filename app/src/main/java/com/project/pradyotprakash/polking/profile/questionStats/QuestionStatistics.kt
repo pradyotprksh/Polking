@@ -1,6 +1,5 @@
 package com.project.pradyotprakash.polking.profile.questionStats
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -10,16 +9,23 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
+import coil.transform.BlurTransformation
+import coil.transform.GrayscaleTransformation
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.checkbox.checkBoxPrompt
+import com.afollestad.materialdialogs.checkbox.isCheckPromptChecked
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
+import com.google.firebase.storage.FirebaseStorage
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
@@ -39,11 +45,13 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private lateinit var askedBy: String
     private var voteType: String = "-1"
     private lateinit var questionId: String
+    private lateinit var imageName: String
     private lateinit var mAuth: FirebaseAuth
     private lateinit var getQuestionFirestore: FirebaseFirestore
     private lateinit var getQuestionUserFirestore: FirebaseFirestore
     private lateinit var getUserVoteFirestore: FirebaseFirestore
     private lateinit var getSimilarVoteFirestore: FirebaseFirestore
+    private lateinit var firebaseFunctions: FirebaseFunctions
     private val allVoteList = ArrayList<VotesModel>()
     private val voteList = ArrayList<VotesModel>()
     private var votesAdapter: VotesAdapter? = null
@@ -72,7 +80,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
             val bottomSheetDialog: BottomSheetDialog = dialog as BottomSheetDialog
             val bottomSheetInternal =
                 bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet)
-            if (bottomSheetInternal != null) {
+            bottomSheetInternal.whatIfNotNull {
                 BottomSheetBehavior.from<View>(bottomSheetInternal).state =
                     BottomSheetBehavior.STATE_EXPANDED
             }
@@ -112,212 +120,269 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun getVotes(view: View) {
-        if (context != null && questionId != "" && mAuth.currentUser != null) {
-            if (mAuth.currentUser!!.uid != askedBy) {
-                val voteText: String
-                if (voteType != "-1") {
-                    voteText = if (voteType == "1") {
-                        "yesVotes"
-                    } else {
-                        "noVotes"
-                    }
-
-                    getSimilarVoteFirestore.collection(questionId)
-                        .document(mAuth.currentUser!!.uid)
-                        .collection(voteText)
-                        .addSnapshotListener { snapshot, exception ->
-                            if (exception != null) {
-                                showMessage(
-                                    "Something Went Wrong. ${exception.localizedMessage}", 1
-                                )
+        context.whatIfNotNull(
+            whatIf = {
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (questionId != "") {
+                            if (mAuth.currentUser!!.uid != askedBy) {
+                                getSimilarVotes(view)
+                            } else {
+                                getYesVoteIfSameUser(view)
+                                getNoVoteIfSameUser(view)
                             }
-
-                            voteList.clear()
-
-                            try {
-                                for (doc in snapshot!!) {
-                                    val docId = doc.id
-                                    val voteList: VotesModel =
-                                        doc.toObject<VotesModel>(VotesModel::class.java)
-                                            .withId(docId)
-                                    if (mAuth.currentUser!!.uid != voteList.votedBy) {
-                                        this.voteList.add(voteList)
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                showMessage(e.localizedMessage, 1)
-                            }
-
-                            if (context != null) {
-                                if (voteList.size > 0) {
-                                    view.votesUserTv.visibility = View.VISIBLE
-                                    view.votesUserTv.text =
-                                        getString(R.string.people_who_think_ike_you)
-                                    this.allVoteList.clear()
-                                    this.allVoteList.addAll(voteList)
-                                    votesAdapter?.notifyDataSetChanged()
-                                } else {
-                                    view.votesUserTv.visibility = View.GONE
-                                }
-                            }
-
+                        } else {
+                            stopAct()
                         }
-                } else {
-                    getYesVoteIfSameUser(view)
-
-                    getNoVoteIfSameUser(view)
-                }
-            } else {
-                getYesVoteIfSameUser(view)
-
-                getNoVoteIfSameUser(view)
+                    },
+                    whatIfNot = {
+                        stopAct()
+                    }
+                )
+            },
+            whatIfNot = {
+                stopAct()
             }
+        )
+    }
+
+    private fun getSimilarVotes(view: View) {
+        val voteText: String
+        if (voteType != "-1") {
+            voteText = if (voteType == "1") {
+                "yesVotes"
+            } else {
+                "noVotes"
+            }
+            getSimilarVotesList(view, voteText)
         } else {
-            stopAct()
+            getYesVoteIfSameUser(view)
+            getNoVoteIfSameUser(view)
         }
+    }
+
+    private fun getSimilarVotesList(view: View, voteText: String) {
+        getSimilarVoteFirestore.collection(questionId)
+            .document(mAuth.currentUser!!.uid)
+            .collection(voteText)
+            .addSnapshotListener { snapshot, exception ->
+                exception.whatIfNotNull {
+                    showMessage(
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                    )
+                }
+
+                voteList.clear()
+
+                try {
+                    for (doc in snapshot!!) {
+                        val docId = doc.id
+                        val voteList: VotesModel =
+                            doc.toObject<VotesModel>(VotesModel::class.java)
+                                .withId(docId)
+                        if (mAuth.currentUser!!.uid != voteList.votedBy) {
+                            this.voteList.add(voteList)
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    showMessage(e.localizedMessage, 1)
+                }
+
+                context.whatIfNotNull {
+                    if (voteList.size > 0) {
+                        view.votesUserTv.visibility = View.VISIBLE
+                        view.votesUserTv.text =
+                            getString(R.string.people_who_think_ike_you)
+                        this.allVoteList.clear()
+                        this.allVoteList.addAll(voteList)
+                        votesAdapter?.notifyDataSetChanged()
+                    } else {
+                        view.votesUserTv.visibility = View.GONE
+                    }
+                }
+
+            }
     }
 
     private fun getNoVoteIfSameUser(view: View) {
-        if (context != null) {
+        context.whatIfNotNull {
             this.allNoVoteList.clear()
             noVotesAdapter?.notifyDataSetChanged()
-            getSimilarVoteFirestore.collection(questionId)
-                .document(mAuth.currentUser!!.uid)
-                .collection("noVotes")
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    noVoteList.clear()
-
-                    try {
-                        for (doc in snapshot!!) {
-                            val docId = doc.id
-                            val voteList: VotesModel =
-                                doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
-                            if (mAuth.currentUser!!.uid != voteList.votedBy) {
-                                this.noVoteList.add(voteList)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        showMessage(e.localizedMessage, 1)
-                    }
-
-                    if (context != null) {
-                        if (noVoteList.size > 0) {
-                            view.votesUserTv2.visibility = View.VISIBLE
-                            view.votesUserTv2.text = getString(R.string.voted_no_for_your_question)
-                            this.allNoVoteList.clear()
-                            this.allNoVoteList.addAll(noVoteList)
-                            noVotesAdapter?.notifyDataSetChanged()
-                        } else {
-                            view.votesUserTv2.visibility = View.GONE
-                        }
-                    }
-
-                }
+            getNoVotesList(view)
         }
     }
 
+    private fun getNoVotesList(view: View) {
+        getSimilarVoteFirestore.collection(questionId)
+            .document(mAuth.currentUser!!.uid)
+            .collection("noVotes")
+            .addSnapshotListener { snapshot, exception ->
+                exception.whatIfNotNull {
+                    showMessage(
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                    )
+                }
+
+                noVoteList.clear()
+
+                try {
+                    for (doc in snapshot!!) {
+                        val docId = doc.id
+                        val voteList: VotesModel =
+                            doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
+                        if (mAuth.currentUser!!.uid != voteList.votedBy) {
+                            this.noVoteList.add(voteList)
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    showMessage(e.localizedMessage, 1)
+                }
+
+                context.whatIfNotNull {
+                    if (noVoteList.size > 0) {
+                        view.votesUserTv2.visibility = View.VISIBLE
+                        view.votesUserTv2.text = getString(R.string.voted_no_for_your_question)
+                        this.allNoVoteList.clear()
+                        this.allNoVoteList.addAll(noVoteList)
+                        noVotesAdapter?.notifyDataSetChanged()
+                    } else {
+                        view.votesUserTv2.visibility = View.GONE
+                    }
+                }
+
+            }
+    }
+
     private fun getYesVoteIfSameUser(view: View) {
-        if (context != null) {
+        context.whatIfNotNull {
             this.allVoteList.clear()
             votesAdapter?.notifyDataSetChanged()
-            getSimilarVoteFirestore.collection(questionId)
-                .document(mAuth.currentUser!!.uid)
-                .collection("yesVotes")
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    voteList.clear()
-
-                    try {
-                        for (doc in snapshot!!) {
-                            val docId = doc.id
-                            val voteList: VotesModel =
-                                doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
-                            if (mAuth.currentUser!!.uid != voteList.votedBy) {
-                                this.voteList.add(voteList)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        showMessage(e.localizedMessage, 1)
-                    }
-
-                    if (context != null) {
-                        if (voteList.size > 0) {
-                            view.votesUserTv.visibility = View.VISIBLE
-                            view.votesUserTv.text = getString(R.string.voted_yes_for_your_question)
-                            this.allVoteList.clear()
-                            this.allVoteList.addAll(voteList)
-                            votesAdapter?.notifyDataSetChanged()
-                        } else {
-                            view.votesUserTv.visibility = View.GONE
-                        }
-                    }
-
-                }
+            getYesVotesList(view)
         }
+    }
+
+    private fun getYesVotesList(view: View) {
+        getSimilarVoteFirestore.collection(questionId)
+            .document(mAuth.currentUser!!.uid)
+            .collection("yesVotes")
+            .addSnapshotListener { snapshot, exception ->
+                exception.whatIfNotNull {
+                    showMessage(
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                    )
+                }
+
+                voteList.clear()
+
+                try {
+                    for (doc in snapshot!!) {
+                        val docId = doc.id
+                        val voteList: VotesModel =
+                            doc.toObject<VotesModel>(VotesModel::class.java).withId(docId)
+                        if (mAuth.currentUser!!.uid != voteList.votedBy) {
+                            this.voteList.add(voteList)
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    showMessage(e.localizedMessage, 1)
+                }
+
+                context.whatIfNotNull {
+                    if (voteList.size > 0) {
+                        view.votesUserTv.visibility = View.VISIBLE
+                        view.votesUserTv.text = getString(R.string.voted_yes_for_your_question)
+                        this.allVoteList.clear()
+                        this.allVoteList.addAll(voteList)
+                        votesAdapter?.notifyDataSetChanged()
+                    } else {
+                        view.votesUserTv.visibility = View.GONE
+                    }
+                }
+
+            }
     }
 
     private fun getUserVote(view: View) {
         if (mAuth.currentUser!!.uid != askedBy) {
-            if (context != null && questionId != "" && mAuth.currentUser != null) {
-                getUserVoteFirestore
-                    .collection("users")
-                    .document(mAuth.currentUser!!.uid)
-                    .collection("votes")
-                    .document(questionId)
-                    .get()
-                    .addOnCanceledListener {
-                        showMessage(
-                            "Something Went Wrong. The request was cancelled.", 1
-                        )
-                        relaodData(view)
-                    }
-                    .addOnFailureListener { exception ->
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                        relaodData(view)
-                    }
-                    .addOnSuccessListener { result ->
-                        if (result.exists()) {
-
-                            if (context != null) {
-                                voteType = result.get("voteType").toString()
-                                if (voteType == "1") {
-                                    view.userVote.text = getString(R.string.voted_yes)
-                                    view.userVote.setChipBackgroundColorResource(R.color.agree_color)
-                                } else {
-                                    view.userVote.text = getString(R.string.voted_no)
-                                    view.userVote.setChipBackgroundColorResource(R.color.disagree_color)
-                                }
+            context.whatIfNotNull(
+                whatIf = {
+                    mAuth.currentUser.whatIfNotNull(
+                        whatIf = {
+                            if (questionId != "") {
+                                getUserVotes(view)
+                            } else {
+                                stopAct()
                             }
-
-                            getVotes(view)
-                        } else {
+                        },
+                        whatIfNot = {
                             stopAct()
                         }
-                    }
-            } else {
-                stopAct()
-            }
+                    )
+                },
+                whatIfNot = {
+                    stopAct()
+                }
+            )
+            dontShowDeleteOption(view)
         } else {
-            view.userVote.text = getString(R.string.your_quesitons)
-            view.userVote.setChipBackgroundColorResource(R.color.colorPrimary)
+            showDeleteOption(view)
             getVotes(view)
         }
+    }
+
+    private fun dontShowDeleteOption(view: View) {
+        view.userVote.isEnabled = false
+        view.userVote.isClickable = false
+    }
+
+    private fun showDeleteOption(view: View) {
+        view.userVote.text = getString(R.string.delete)
+        view.userVote.setChipBackgroundColorResource(R.color.disagree_color)
+        view.userVote.isEnabled = true
+        view.userVote.isClickable = true
+    }
+
+    private fun getUserVotes(view: View) {
+        getUserVoteFirestore
+            .collection("users")
+            .document(mAuth.currentUser!!.uid)
+            .collection("votes")
+            .document(questionId)
+            .get()
+            .addOnCanceledListener {
+                showMessage(
+                    "Something Went Wrong. The request was cancelled.", 1
+                )
+                relaodData(view)
+            }
+            .addOnFailureListener { exception ->
+                showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}", 1
+                )
+                relaodData(view)
+            }
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+
+                    context.whatIfNotNull {
+                        voteType = result.get("voteType").toString()
+                        if (voteType == "1") {
+                            view.userVote.text = getString(R.string.voted_yes)
+                            view.userVote.setChipBackgroundColorResource(R.color.agree_color)
+                        } else {
+                            view.userVote.text = getString(R.string.voted_no)
+                            view.userVote.setChipBackgroundColorResource(R.color.disagree_color)
+                        }
+                    }
+
+                    getVotes(view)
+                } else {
+                    stopAct()
+                }
+            }
     }
 
     private fun relaodData(view: View) {
@@ -325,86 +390,102 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun getQuestionData(view: View) {
-        if (context != null && questionId != "") {
-            getQuestionFirestore.collection("question").document(questionId)
-                .addSnapshotListener { snapshot, exception ->
-
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    if (snapshot != null && snapshot.exists()) {
-                        try {
-                            askedBy = snapshot.data!!["askedBy"].toString()
-                            val askedOn = snapshot.data!!["askedOn"].toString()
-                            val noVote = snapshot.data!!["noVote"].toString()
-                            val question = snapshot.data!!["question"].toString()
-                            val yesVote = snapshot.data!!["yesVote"].toString()
-                            val imageName = snapshot.data!!["imageName"].toString()
-                            val imageUrl = snapshot.data!!["imageUrl"]
-                            val totalVote = (yesVote.toInt() + noVote.toInt())
-                            view.question_tv.text = question
-                            view.totalVoteTv.text = (yesVote.toInt() + noVote.toInt()).toString()
-                            view.yesTv.text = "$yesVote out of $totalVote people said YES"
-                            view.noTv.text = "$noVote out of $totalVote people said NO"
-
-                            view.yesSlider.startText = ""
-                            view.yesSlider.endText = ""
-                            view.yesSlider.position =
-                                (yesVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
-                            view.yesSlider.bubbleText = "YES"
-
-                            view.noSlider.startText = ""
-                            view.noSlider.endText = ""
-                            view.noSlider.position =
-                                (noVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
-                            view.noSlider.bubbleText = "NO"
-
-                            view.yesSlider.positionListener = {
-                                view.yesSlider.bubbleText = "YES"
-                            }
-
-                            view.yesSlider.endTrackingListener = {
-                                view.yesSlider.position =
-                                    (yesVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
-                            }
-
-                            view.noSlider.positionListener = {
-                                view.noSlider.bubbleText = "NO"
-                            }
-
-                            view.noSlider.endTrackingListener = {
-                                view.noSlider.position =
-                                    (noVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
-                            }
-
-                            imageUrl.whatIfNotNull(
-                                whatIf = {
-                                    setQuestionImage(view, imageUrl.toString())
-                                    setPopUpImageRegister(view, imageUrl.toString())
-                                },
-                                whatIfNot = {
-                                    view.question_image_Iv.visibility = View.GONE
-                                    view.question_loading.visibility = View.GONE
-                                }
-                            )
-
-                            getUserData(askedBy, view)
-
-                            getUserVote(view)
-                        } catch (exception: Exception) {
-                            showMessage(
-                                "Something Went Wrong. ${exception.localizedMessage}", 1
-                            )
-                        }
-
-                    }
-
+        context.whatIfNotNull(
+            whatIf = {
+                if (questionId != "") {
+                    getQuestionDataFirestore(view)
+                } else {
+                    stopAct()
                 }
-        } else {
-            stopAct()
+            },
+            whatIfNot = {
+                stopAct()
+            }
+        )
+    }
+
+    private fun getQuestionDataFirestore(view: View) {
+        getQuestionFirestore.collection("question").document(questionId)
+            .addSnapshotListener { snapshot, exception ->
+
+                exception.whatIfNotNull {
+                    showMessage(
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                    )
+                }
+
+                snapshot.whatIfNotNull {
+                    if (snapshot!!.exists()) {
+                        setQuestionData(view, snapshot)
+                    }
+                }
+
+            }
+    }
+
+    private fun setQuestionData(view: View, snapshot: DocumentSnapshot) {
+        try {
+            askedBy = snapshot.data!!["askedBy"].toString()
+            val askedOn = snapshot.data!!["askedOn"].toString()
+            val noVote = snapshot.data!!["noVote"].toString()
+            val question = snapshot.data!!["question"].toString()
+            val yesVote = snapshot.data!!["yesVote"].toString()
+            imageName = snapshot.data!!["imageName"].toString()
+            val imageUrl = snapshot.data!!["imageUrl"]
+            val totalVote = (yesVote.toInt() + noVote.toInt())
+            view.question_tv.text = question
+            view.totalVoteTv.text = (yesVote.toInt() + noVote.toInt()).toString()
+            view.yesTv.text = "$yesVote out of $totalVote people said YES"
+            view.noTv.text = "$noVote out of $totalVote people said NO"
+
+            view.yesSlider.startText = ""
+            view.yesSlider.endText = ""
+            view.yesSlider.position =
+                (yesVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
+            view.yesSlider.bubbleText = "YES"
+
+            view.noSlider.startText = ""
+            view.noSlider.endText = ""
+            view.noSlider.position =
+                (noVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
+            view.noSlider.bubbleText = "NO"
+
+            view.yesSlider.positionListener = {
+                view.yesSlider.bubbleText = "YES"
+            }
+
+            view.yesSlider.endTrackingListener = {
+                view.yesSlider.position =
+                    (yesVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
+            }
+
+            view.noSlider.positionListener = {
+                view.noSlider.bubbleText = "NO"
+            }
+
+            view.noSlider.endTrackingListener = {
+                view.noSlider.position =
+                    (noVote.toFloat() / (yesVote.toFloat() + noVote.toFloat()))
+            }
+
+            imageUrl.whatIfNotNull(
+                whatIf = {
+                    setQuestionImage(view, imageUrl.toString())
+                    setPopUpImageRegister(view, imageUrl.toString())
+                },
+                whatIfNot = {
+                    view.question_image_Iv.visibility = View.GONE
+                    view.question_loading.visibility = View.GONE
+                }
+            )
+
+            getUserData(askedBy, view)
+
+            getUserVote(view)
+        } catch (exception: Exception) {
+            showMessage(
+                "Something Went Wrong. ${exception.localizedMessage}", 1
+            )
         }
     }
 
@@ -427,30 +508,39 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private fun setQuestionImage(view: View, imageUrl: String) {
         context.whatIfNotNull {
             view.question_image_Iv.visibility = View.VISIBLE
-            view.question_loading.visibility = View.VISIBLE
-            Glide.with(context!!).load(imageUrl)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        exception: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        view.question_loading.visibility = View.GONE
-                        return false
-                    }
+            view.question_image_Iv.load(imageUrl,
+                Coil.loader(),
+                builder = {
+                    mAuth.currentUser.whatIfNotNull(
+                        whatIf = {
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        view.question_loading.visibility = View.GONE
-                        return false
-                    }
-                }).into(view.question_image_Iv)
+                        },
+                        whatIfNot = {
+                            this.transformations(
+                                GrayscaleTransformation(),
+                                BlurTransformation(context!!)
+                            )
+                        })
+                    this.listener(object : Request.Listener {
+                        override fun onError(data: Any, throwable: Throwable) {
+                            super.onError(data, throwable)
+                            view.question_loading.visibility = View.GONE
+                        }
+
+                        override fun onStart(data: Any) {
+                            super.onStart(data)
+                            view.question_loading.visibility = View.VISIBLE
+                        }
+
+                        override fun onSuccess(
+                            data: Any,
+                            source: coil.decode.DataSource
+                        ) {
+                            super.onSuccess(data, source)
+                            view.question_loading.visibility = View.GONE
+                        }
+                    })
+                })
         }
     }
 
@@ -466,27 +556,20 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
         question_image.whatIfNotNull {
             popupTag.whatIfNotNull {
                 context.whatIfNotNull {
-                    Glide.with(context!!).load(popupTag)
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                exception: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                return false
-                            }
+                    question_image!!.load(popupTag,
+                        Coil.loader(),
+                        builder = {
+                            mAuth.currentUser.whatIfNotNull(
+                                whatIf = {
 
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                return false
-                            }
-                        }).into(question_image!!)
+                                },
+                                whatIfNot = {
+                                    this.transformations(
+                                        GrayscaleTransformation(),
+                                        BlurTransformation(context!!)
+                                    )
+                                })
+                        })
                 }
             }
         }
@@ -500,54 +583,60 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
         getQuestionUserFirestore.collection("users").document(askedBy)
             .addSnapshotListener { snapshot, exception ->
 
-                if (exception != null) {
+                exception.whatIfNotNull {
                     showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
                     )
                 }
 
-                if (snapshot != null && snapshot.exists()) {
-
-                    try {
-                        setUserData(snapshot, view)
-                    } catch (exception: Exception) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
+                snapshot.whatIfNotNull {
+                    if (snapshot!!.exists()) {
+                        try {
+                            setUserData(snapshot, view)
+                        } catch (exception: Exception) {
+                            showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}", 1
+                            )
+                        }
                     }
-
                 }
 
             }
     }
 
     private fun setUserData(snapshot: DocumentSnapshot, view: View) {
-        Glide.with(context!!).load(snapshot.data!!["imageUrl"].toString())
-            .placeholder(R.drawable.ic_default_appcolor)
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    exception: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
+        context.whatIfNotNull {
+            view.user_iv.load(snapshot.data!!["imageUrl"].toString(),
+                Coil.loader(),
+                builder = {
+                    mAuth.currentUser.whatIfNotNull(
+                        whatIf = {
 
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-            }).into(view.user_iv)
-        view.user_iv.borderColor =
-            context!!.resources.getColor(R.color.colorPrimary)
-        view.user_iv.borderWidth = 2
+                        },
+                        whatIfNot = {
+                            this.transformations(
+                                GrayscaleTransformation(),
+                                BlurTransformation(context!!)
+                            )
+                        })
+                    this.listener(object : Request.Listener {
+                        override fun onError(data: Any, throwable: Throwable) {
+                            view.user_iv.load(R.drawable.ic_default_appcolor)
+                        }
 
+                        override fun onSuccess(
+                            data: Any,
+                            source: coil.decode.DataSource
+                        ) {
+                            super.onSuccess(data, source)
+                            view.user_iv.borderColor =
+                                context!!.resources.getColor(R.color.colorPrimary)
+                            view.user_iv.borderWidth = 2
+                        }
+                    })
+                })
+
+        }
         view.username_tv.text = snapshot.data!!["name"].toString()
     }
 
@@ -562,6 +651,121 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
             getVotes(view)
             view.reloadData.visibility = View.GONE
         }
+
+        view.userVote.setOnClickListener {
+            if (view.userVote.isEnabled && view.userVote.isClickable) {
+                showDeleteDialog(view)
+            } else {
+                return@setOnClickListener
+            }
+        }
+    }
+
+    private fun showDeleteDialog(view: View) {
+        context.whatIfNotNull {
+            MaterialDialog(context!!)
+                .title(text = getString(R.string.delete_question))
+                .message(text = getString(R.string.delete_confirmation))
+                .show {
+                    noAutoDismiss()
+                    checkBoxPrompt(text = getString(R.string.checked_this)) {}
+                    icon(R.drawable.ic_delete_forever)
+                    negativeButton(text = getString(R.string.delete_final)) { dialog ->
+                        val isChecked = dialog.isCheckPromptChecked()
+                        if (isChecked) {
+                            callDeleteQuestionFunction(questionId, imageName, view)
+                            dismiss()
+                        } else {
+                            checkBoxPrompt(text = getString(R.string.cehck_before_deleting)) {}
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun callDeleteQuestionFunction(
+        questionId: String,
+        imageName: String,
+        view: View
+    ) {
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                view.progressBar8.visibility = View.VISIBLE
+                callDeleteFunctions(questionId, imageName, mAuth.currentUser!!.uid)
+                    .addOnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            task.exception.whatIfNotNull(
+                                whatIf = {
+                                    val e = task.exception
+                                    e.whatIfNotNull(
+                                        whatIf = {
+                                            if (e is FirebaseFunctionsException) {
+                                                view.progressBar8.visibility = View.GONE
+                                                showMessage(
+                                                    "Something Went Wrong." +
+                                                            " ${e.localizedMessage}", 1
+                                                )
+                                            } else {
+                                                deleteQuestion(imageName, view)
+                                            }
+                                        },
+                                        whatIfNot = {
+                                            deleteQuestion(imageName, view)
+                                        }
+                                    )
+                                },
+                                whatIfNot = {
+                                    deleteQuestion(imageName, view)
+                                }
+                            )
+                        } else {
+                            deleteQuestion(imageName, view)
+                        }
+                    }
+            },
+            whatIfNot = {
+                showMessage(getString(R.string.something_went_wring_oops), 1)
+            }
+        )
+    }
+
+    private fun deleteQuestion(imageName: String, view: View) {
+        if (imageName != "" && imageName != "null") {
+            val storage = FirebaseStorage.getInstance().reference
+            val desertRef = storage.child("user_question_images/$imageName")
+            desertRef.delete().addOnSuccessListener {
+                view.progressBar8.visibility = View.GONE
+                showMessage(getString(R.string.deleted_successfully), 3)
+                dismiss()
+            }.addOnFailureListener { exception ->
+                view.progressBar8.visibility = View.GONE
+                exception.whatIfNotNull {
+                    showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                }
+            }
+        } else {
+            view.progressBar8.visibility = View.GONE
+            showMessage(getString(R.string.deleted_successfully), 3)
+            dismiss()
+        }
+    }
+
+    private fun callDeleteFunctions(questionId: String, imageName: String, uid: String)
+            : Task<String> {
+        val data = HashMap<String, Any>()
+        data["userId"] = uid
+        data["questionId"] = questionId
+
+        return firebaseFunctions
+            .getHttpsCallable("deleteQuestion")
+            .call(data)
+            .continueWith { task ->
+                val result = task.result?.data as String
+                result
+            }
     }
 
     private fun initVariables() {
@@ -570,6 +774,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
         getQuestionUserFirestore = FirebaseFirestore.getInstance()
         getUserVoteFirestore = FirebaseFirestore.getInstance()
         getSimilarVoteFirestore = FirebaseFirestore.getInstance()
+        firebaseFunctions = FirebaseFunctions.getInstance()
     }
 
     override fun showLoading() {

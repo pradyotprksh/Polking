@@ -525,6 +525,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         if (allQuestionList.size > 0) {
             recentQ_rv.visibility = View.VISIBLE
             allQues.addAll(allQuestionList)
+            questionsAdapter!!.setQuestions(allQuestionList)
             questionsAdapter!!.notifyDataSetChanged()
         } else {
             recentQ_rv.visibility = View.GONE

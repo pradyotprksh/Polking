@@ -178,4 +178,13 @@
     <string name="faces_not_allowed">We don\'t allow human faces in Polking for voting. Sorry.</string>
     <string name="loading">Loading…</string>
     <string name="see_question">See Question</string>
+    <string name="delete">DELETE</string>
+    <string name="delete_confirmation">Are you sure you want to delete this question? If Yes, then this will will be permanently deleted and can\'t be undone.</string>
+    <string name="delete_question">Delete?</string>
+    <string name="nope_delete">Nope</string>
+    <string name="delete_final">Delete</string>
+    <string name="checked_this">Checked this before clicking on delete.</string>
+    <string name="sure_to_delete_check">You are sure to delete this question.</string>
+    <string name="cehck_before_deleting">You need to check this before deleting.</string>
+    <string name="deleted_successfully">Question Deleted Successfully</string>
 </resources>

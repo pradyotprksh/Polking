@@ -18,6 +18,7 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.QuestionModel
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.question_btm_sheet.view.*
 import java.util.*
@@ -63,51 +64,54 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
             dismiss()
         }
 
-        if (mAuth.currentUser != null) {
-            showLoading()
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                showLoading()
 
-            firestore.collection("question")
-                .orderBy("askedOn", Query.Direction.DESCENDING)
-                .addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    allQuestionList.clear()
-
-                    try {
-                        for (doc in snapshot!!.documentChanges) {
-                            showLoading()
-                            if (doc.type == DocumentChange.Type.ADDED) {
-
-                                val docId = doc.document.id
-                                val quesList: QuestionModel =
-                                    doc.document.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
-                                if (quesList.askedBy == mAuth.currentUser!!.uid) {
-                                    this.allQuestionList.add(quesList)
-                                }
-
-                            }
+                firestore.collection("question")
+                    .orderBy("askedOn", Query.Direction.DESCENDING)
+                    .addSnapshotListener { snapshot, exception ->
+                        exception.whatIfNotNull {
+                            showMessage(
+                                "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                            )
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        showMessage(e.localizedMessage, 1)
+
+                        allQuestionList.clear()
+
+                        try {
+                            for (doc in snapshot!!.documentChanges) {
+                                showLoading()
+                                if (doc.type == DocumentChange.Type.ADDED) {
+
+                                    val docId = doc.document.id
+                                    val quesList: QuestionModel =
+                                        doc.document.toObject<QuestionModel>(QuestionModel::class.java)
+                                            .withId(docId)
+                                    if (quesList.askedBy == mAuth.currentUser!!.uid) {
+                                        this.allQuestionList.add(quesList)
+                                    }
+
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            showMessage(e.localizedMessage, 1)
+                        }
+
+                        if (allQuestionList.size > 0) {
+                            allQues.addAll(allQuestionList)
+                            questionsAdapter!!.notifyDataSetChanged()
+                        }
+
+                        hideLoading()
+
                     }
-
-                    if (allQuestionList.size > 0) {
-                        allQues.addAll(allQuestionList)
-                        questionsAdapter!!.notifyDataSetChanged()
-                    }
-
-                    hideLoading()
-
-                }
-
-        } else {
-            showMessage(getString(R.string.user_not_found), 1)
-        }
+            },
+            whatIfNot = {
+                showMessage(getString(R.string.user_not_found), 1)
+            }
+        )
     }
 
     override fun showLoading() {

@@ -17,6 +17,7 @@ import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.FriendsListModel
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.logd
+import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.friends_btm_sheet.view.*
 import java.util.*
@@ -68,49 +69,51 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
             dismiss()
         }
 
-        if (mAuth.currentUser != null) {
-            showLoading()
-            val from: String = if (type == 1) {
-                "friends"
-            } else {
-                "bestfriends"
-            }
-
-            firestore.collection("users").document(mAuth.currentUser!!.uid)
-                .collection(from).addSnapshotListener { snapshot, exception ->
-                    if (exception != null) {
-                        showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
-                        )
-                    }
-
-                    allFriends.clear()
-
-                    try {
-                        for (doc in snapshot!!.documentChanges) {
-                            if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
-                                val docId = doc.document.id
-                                val friendList: FriendsListModel =
-                                    doc.document.toObject(FriendsListModel::class.java)
-                                        .withId(docId)
-                                allFriends.add(friendList)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        showMessage(e.localizedMessage, 1)
-                    }
-
-                    if (allFriends.size > 0) {
-                        allFriendsList.clear()
-                        allFriendsList.addAll(allFriends)
-                        friendsAdapter!!.notifyDataSetChanged()
-                    }
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                showLoading()
+                val from: String = if (type == 1) {
+                    "friends"
+                } else {
+                    "bestfriends"
                 }
 
-        } else {
-            showMessage(getString(R.string.user_not_found), 1)
-        }
+                firestore.collection("users").document(mAuth.currentUser!!.uid)
+                    .collection(from).addSnapshotListener { snapshot, exception ->
+                        exception.whatIfNotNull {
+                            showMessage(
+                                "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                            )
+                        }
+
+                        allFriends.clear()
+
+                        try {
+                            for (doc in snapshot!!.documentChanges) {
+                                if (doc.type == DocumentChange.Type.ADDED || doc.type == DocumentChange.Type.REMOVED) {
+                                    val docId = doc.document.id
+                                    val friendList: FriendsListModel =
+                                        doc.document.toObject(FriendsListModel::class.java)
+                                            .withId(docId)
+                                    allFriends.add(friendList)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            showMessage(e.localizedMessage, 1)
+                        }
+
+                        if (allFriends.size > 0) {
+                            allFriendsList.clear()
+                            allFriendsList.addAll(allFriends)
+                            friendsAdapter!!.notifyDataSetChanged()
+                        }
+                    }
+            },
+            whatIfNot = {
+                showMessage(getString(R.string.user_not_found), 1)
+            }
+        )
     }
 
     override fun showLoading() {

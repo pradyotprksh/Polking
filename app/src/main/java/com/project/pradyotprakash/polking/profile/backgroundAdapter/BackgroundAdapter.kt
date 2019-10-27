@@ -2,7 +2,6 @@ package com.project.pradyotprakash.polking.profile.backgroundAdapter
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +9,9 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.BgModel
@@ -37,27 +34,23 @@ class BackgroundAdapter(
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-        Glide.with(context).load(bgList[p1].imageUrl).listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                exception: GlideException?,
-                model: Any?,
-                target: Target<Drawable>?,
-                isFirstResource: Boolean
-            ): Boolean {
-                return false
-            }
+        p0.bgImage.load(bgList[p1].imageUrl,
+            Coil.loader(),
+            builder = {
+                this.listener(object : Request.Listener {
+                    override fun onError(data: Any, throwable: Throwable) {
+                        p0.progressBar.visibility = View.GONE
+                    }
 
-            override fun onResourceReady(
-                resource: Drawable?,
-                model: Any?,
-                target: Target<Drawable>?,
-                dataSource: DataSource?,
-                isFirstResource: Boolean
-            ): Boolean {
-                p0.progressBar.visibility = View.GONE
-                return false
-            }
-        }).into(p0.bgImage)
+                    override fun onSuccess(
+                        data: Any,
+                        source: coil.decode.DataSource
+                    ) {
+                        super.onSuccess(data, source)
+                        p0.progressBar.visibility = View.GONE
+                    }
+                })
+            })
 
         p0.itemView.setOnClickListener {
             if (activity is ProfileActivity) {

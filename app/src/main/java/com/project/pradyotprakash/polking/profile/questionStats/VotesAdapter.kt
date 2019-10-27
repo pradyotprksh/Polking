@@ -2,17 +2,14 @@ package com.project.pradyotprakash.polking.profile.questionStats
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.Coil
+import coil.api.load
+import coil.request.Request
 import com.google.android.material.chip.Chip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,6 +17,7 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.VotesModel
+import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 
 class VotesAdapter(
@@ -46,45 +44,40 @@ class VotesAdapter(
         userFirestore.collection("users").document(allVotesModel[p1].votedBy)
             .addSnapshotListener { snapshot, exception ->
 
-                if (exception != null) {
+                exception.whatIfNotNull {
                     if (activity is MainActivity) {
                         activity.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}", 1
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
                         )
                     }
                 }
 
-                if (snapshot != null && snapshot.exists()) {
+                snapshot.whatIfNotNull {
+                    if (snapshot!!.exists()) {
+                        p0.nameTv.text = snapshot.data!!["name"].toString()
 
-                    p0.nameTv.text = snapshot.data!!["name"].toString()
+                        p0.bgImage.load(snapshot.data!!["imageUrl"].toString(),
+                            Coil.loader(),
+                            builder = {
+                                this.listener(object : Request.Listener {
+                                    override fun onError(data: Any, throwable: Throwable) {
+                                        p0.progressBar.visibility = View.GONE
+                                        p0.bgImage.load(R.drawable.ic_default_appcolor)
+                                    }
 
-                    Glide.with(context).load(snapshot.data!!["imageUrl"].toString())
-                        .placeholder(R.drawable.ic_default_appcolor)
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                exception: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                p0.progressBar.visibility = View.GONE
-                                return false
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                p0.progressBar.visibility = View.GONE
-                                return false
-                            }
-                        }).into(p0.bgImage)
-                    p0.bgImage.borderColor = context.resources.getColor(R.color.colorPrimary)
-                    p0.bgImage.borderWidth = 2
-
+                                    override fun onSuccess(
+                                        data: Any,
+                                        source: coil.decode.DataSource
+                                    ) {
+                                        super.onSuccess(data, source)
+                                        p0.progressBar.visibility = View.GONE
+                                        p0.bgImage.borderColor =
+                                            context.resources.getColor(R.color.colorPrimary)
+                                        p0.bgImage.borderWidth = 2
+                                    }
+                                })
+                            })
+                    }
                 }
 
             }
@@ -100,18 +93,25 @@ class VotesAdapter(
 
     private fun openProfileOptions(p0: ViewHolder, p1: Int) {
         when (context) {
-            is MainActivity -> if (mAuth.currentUser != null) {
-                if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
-                    context.openProfileDetails(allVotesModel[p1].votedBy)
-                } else {
-                    context.startProfileAct()
-                }
-            } else {
-                context.startLogin()
+            is MainActivity -> {
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
+                            context.openProfileDetails(allVotesModel[p1].votedBy)
+                        } else {
+                            context.startProfileAct()
+                        }
+                    },
+                    whatIfNot = {
+                        context.startLogin()
+                    }
+                )
             }
-            is ProfileActivity -> if (mAuth.currentUser != null) {
-                if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
-                    context.openProfileDetails(allVotesModel[p1].votedBy)
+            is ProfileActivity -> {
+                mAuth.whatIfNotNull {
+                    if (mAuth.currentUser!!.uid != allVotesModel[p1].votedBy) {
+                        context.openProfileDetails(allVotesModel[p1].votedBy)
+                    }
                 }
             }
         }

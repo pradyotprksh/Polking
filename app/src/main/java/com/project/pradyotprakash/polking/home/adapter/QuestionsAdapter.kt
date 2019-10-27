@@ -26,9 +26,10 @@ import com.project.pradyotprakash.polking.utility.QuestionModel
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 import rm.com.longpresspopup.*
+import java.util.*
 
 class QuestionsAdapter(
-    private val allQues: List<QuestionModel>,
+    private val allQues: ArrayList<QuestionModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<QuestionsAdapter.ViewAdapter>(), PopupInflaterListener, PopupStateListener,
@@ -379,6 +380,12 @@ class QuestionsAdapter(
                     }
                 }
             }
+    }
+
+    fun setQuestions(allQuestionList: ArrayList<QuestionModel>) {
+        this.allQues.clear()
+        this.allQues.addAll(allQuestionList)
+        notifyDataSetChanged()
     }
 
     inner class ViewAdapter(context: View) : RecyclerView.ViewHolder(context) {
