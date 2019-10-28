@@ -42,7 +42,6 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 import javax.inject.Inject
 
 class MainActivity : InternetActivity(), MainActivityView {
@@ -55,6 +54,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     lateinit var updateBtmSheet: UpdateBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
+    private var imageLabel: ArrayList<String> = ArrayList()
     private var picOptionUri: Uri? = null
     private var count = 0
     private var count1 = 0
@@ -106,6 +106,13 @@ class MainActivity : InternetActivity(), MainActivityView {
         adapters()
 
         getQuestions()
+
+        getDataForUser()
+    }
+
+    private fun getDataForUser() {
+        presenter.addAuthStateListener()
+        presenter.getProfileData()
     }
 
     private fun getQuestions() {
@@ -191,7 +198,10 @@ class MainActivity : InternetActivity(), MainActivityView {
             picOptionUri.whatIfNotNull(
                 whatIf = {
                     presenter
-                        .uploadQuestionWithImage(addQuestion_et.text.toString(), picOptionUri!!)
+                        .uploadQuestionWithImage(
+                            addQuestion_et.text.toString(), picOptionUri!!,
+                            imageLabel
+                        )
                 },
                 whatIfNot = { presenter.uploadQuestion(addQuestion_et.text.toString()) }
             )
@@ -229,6 +239,7 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun setQuestionImage(picOptionUri: Uri) {
         add_iv.load(R.drawable.ic_add)
+        this.picOptionUri = picOptionUri
         camera_iv.setImageURI(picOptionUri)
         camera_iv.borderColor = resources.getColor(R.color.white)
         camera_iv.borderWidth = 2
@@ -363,8 +374,20 @@ class MainActivity : InternetActivity(), MainActivityView {
         }
     }
 
+    override fun setQuestionImage(picOptionUri: Uri, imageLabel: ArrayList<String>) {
+        add_iv.load(R.drawable.ic_add)
+        camera_iv.setImageURI(picOptionUri)
+        this.picOptionUri = picOptionUri
+        camera_iv.borderColor = resources.getColor(R.color.white)
+        camera_iv.borderWidth = 2
+        isOptionForQuestion = false
+        this.imageLabel.clear()
+        this.imageLabel = imageLabel
+    }
+
     private fun openCamera() {
         isOptionForQuestion = true
+        deleteQuestionImageUri()
         CropImage.activity().setGuidelines(CropImageView.Guidelines.ON)
             .setAspectRatio(1, 1).start(this)
     }
@@ -377,11 +400,8 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun onResume() {
         super.onResume()
-        deleteQuestionImageUri()
         checkNewAppVersionState()
         logd(getString(R.string.resume))
-        presenter.addAuthStateListener()
-        presenter.getProfileData()
     }
 
     private fun checkNewAppVersionState() {

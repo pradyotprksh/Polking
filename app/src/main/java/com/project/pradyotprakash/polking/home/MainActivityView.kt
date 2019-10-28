@@ -52,4 +52,7 @@ interface MainActivityView: BaseView {
     // delete the question uri
     fun deleteQuestionImageUri()
 
+    // set image label
+    fun setQuestionImage(picOptionUri: Uri, imageLabel: ArrayList<String>)
+
 }

@@ -51,18 +51,16 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
     }
 
     private fun initView(view: View) {
-        mAuth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
-        allQues.clear()
-        questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
-        view.questions_rv.setHasFixedSize(true)
-        view.questions_rv.layoutManager = LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
-        view.questions_rv.adapter = questionsAdapter
+        initiVariables()
 
-        view.back_tv.setOnClickListener {
-            dismiss()
-        }
+        adapterInit(view)
 
+        onClickListners(view)
+
+        getQuestions(view)
+    }
+
+    private fun getQuestions(view: View) {
         mAuth.currentUser.whatIfNotNull(
             whatIf = {
                 showLoading()
@@ -107,6 +105,26 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
                 showMessage(getString(R.string.user_not_found), 1)
             }
         )
+    }
+
+    private fun onClickListners(view: View) {
+        view.back_tv.setOnClickListener {
+            dismiss()
+        }
+    }
+
+    private fun adapterInit(view: View) {
+        allQues.clear()
+        questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
+        view.questions_rv.setHasFixedSize(true)
+        view.questions_rv.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        view.questions_rv.adapter = questionsAdapter
+    }
+
+    private fun initiVariables() {
+        mAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
     }
 
     override fun showLoading() {

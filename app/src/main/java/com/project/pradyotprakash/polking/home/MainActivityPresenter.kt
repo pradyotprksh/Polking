@@ -2,6 +2,7 @@ package com.project.pradyotprakash.polking.home
 
 import android.net.Uri
 import com.project.pradyotprakash.polking.BasePresenter
+import java.util.*
 
 interface MainActivityPresenter: BasePresenter {
 
@@ -34,5 +35,8 @@ interface MainActivityPresenter: BasePresenter {
 
     // check if human face
     fun checkIfHumanFace(picOptionUri: Uri)
+
+    // upload question with labels
+    fun uploadQuestionWithImage(question: String, picOptionUri: Uri, imageLabel: ArrayList<String>)
 
 }

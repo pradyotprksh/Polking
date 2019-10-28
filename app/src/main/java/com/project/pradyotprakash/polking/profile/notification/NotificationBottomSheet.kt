@@ -55,20 +55,17 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
     }
 
     private fun initView(view: View) {
-        mAuth = FirebaseAuth.getInstance()
-        notificationFirestore = FirebaseFirestore.getInstance()
+        initVariables()
 
-        view.back_tv.setOnClickListener {
-            stopAct()
-        }
+        onClickListner(view)
 
-        allNotificationsList.clear()
-        notificationsAdapter = NotificationsAdapter(allNotificationsList, context!!, activity!!)
-        view.notification_rv.setHasFixedSize(true)
-        view.notification_rv.layoutManager =
-            LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-        view.notification_rv.adapter = notificationsAdapter
+        initAdapter(view)
 
+        getNotifications(view)
+
+    }
+
+    private fun getNotifications(view: View) {
         mAuth.currentUser.whatIfNotNull(
             whatIf = {
                 view.progressBar6.visibility = View.VISIBLE
@@ -115,7 +112,26 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
                 dismiss()
             }
         )
+    }
 
+    private fun onClickListner(view: View) {
+        view.back_tv.setOnClickListener {
+            stopAct()
+        }
+    }
+
+    private fun initAdapter(view: View) {
+        allNotificationsList.clear()
+        notificationsAdapter = NotificationsAdapter(allNotificationsList, context!!, activity!!)
+        view.notification_rv.setHasFixedSize(true)
+        view.notification_rv.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
+        view.notification_rv.adapter = notificationsAdapter
+    }
+
+    private fun initVariables() {
+        mAuth = FirebaseAuth.getInstance()
+        notificationFirestore = FirebaseFirestore.getInstance()
     }
 
     override fun showLoading() {

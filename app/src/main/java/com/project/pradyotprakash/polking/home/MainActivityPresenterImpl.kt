@@ -31,6 +31,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
@@ -41,11 +42,10 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     private lateinit var mAuth: FirebaseAuth
     private var currentUser: FirebaseUser? = null
     private lateinit var dataBase: FirebaseFirestore
-    private lateinit var getQuestionDataBase: FirebaseFirestore
-    private lateinit var uploadQuestionDataBase: FirebaseFirestore
     private lateinit var addVotesDataBase: FirebaseFirestore
     private lateinit var getbestfriendfirestore: FirebaseFirestore
     private lateinit var firebaseFunctions: FirebaseFunctions
+    private lateinit var labelsFirestore: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -61,8 +61,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         firebaseFunctions = FirebaseFunctions.getInstance()
         currentUser = mAuth.currentUser
         dataBase = FirebaseFirestore.getInstance()
-        getQuestionDataBase = FirebaseFirestore.getInstance()
-        uploadQuestionDataBase = FirebaseFirestore.getInstance()
+        labelsFirestore = FirebaseFirestore.getInstance()
         addVotesDataBase = FirebaseFirestore.getInstance()
         getbestfriendfirestore = FirebaseFirestore.getInstance()
     }
@@ -121,6 +120,150 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 mView.hideOptions()
             }
         )
+    }
+
+    override fun uploadQuestionWithImage(
+        question: String,
+        picOptionUri: Uri,
+        imageLabel: java.util.ArrayList<String>
+    ) {
+        mView.showLoading()
+        currentUser.whatIfNotNull(
+            whatIf = {
+                val randomString = (1..32).map { ('0'..'z').toList().toTypedArray().random() }
+                    .joinToString("")
+                val storage = FirebaseStorage.getInstance().reference
+                val imagePath: StorageReference =
+                    storage.child("user_question_images")
+                        .child("${mAuth.currentUser!!.uid}$randomString.jpg")
+                imagePath.putFile(picOptionUri)
+                    .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let { exception ->
+                                mView.showMessage(
+                                    "Something Went Wrong. ${exception.localizedMessage}",
+                                    1
+                                )
+                                mView.hideLoading()
+                                throw exception
+                            }
+                        }
+                        return@Continuation imagePath.downloadUrl
+                    }).addOnCanceledListener {
+                        mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
+                        mView.hideLoading()
+                    }.addOnFailureListener { exception ->
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}"
+                            , 1
+                        )
+                        mView.hideLoading()
+                    }.addOnCompleteListener { task ->
+                        uploadQuestionImage(
+                            task,
+                            imagePath,
+                            question,
+                            "${mAuth.currentUser!!.uid}$randomString.jpg",
+                            imageLabel
+                        )
+                    }.addOnSuccessListener {
+                        mView.showMessage(mContext.getString(R.string.save_properly), 3)
+                    }
+            }
+        )
+    }
+
+    private fun uploadQuestionImage(
+        task: Task<Uri>,
+        imagePath: StorageReference,
+        question: String,
+        imageName: String,
+        imageLabel: java.util.ArrayList<String>
+    ) {
+        if (task.isComplete) {
+            if (task.isSuccessful) {
+
+                imagePath.downloadUrl.addOnSuccessListener { uri ->
+
+                    val imageUrl = uri.toString()
+
+                    addDataToDatabase(imageUrl, question, imageName, imageLabel)
+
+                }.addOnFailureListener { exception ->
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}",
+                        1
+                    )
+                    mView.hideLoading()
+                }.addOnCanceledListener {
+                    mView.showMessage(mContext.getString(R.string.not_uploaded), 1)
+                    mView.hideLoading()
+                }
+
+            } else if (task.isCanceled) {
+                mView.showMessage(mContext.getString(R.string.not_uploaded), 1)
+                mView.hideLoading()
+            }
+        } else {
+            mView.showMessage(mContext.getString(R.string.something_went_wrong), 1)
+            mView.hideLoading()
+        }
+    }
+
+    private fun addDataToDatabase(
+        imageUrl: String,
+        question: String,
+        imageName: String,
+        imageLabel: java.util.ArrayList<String>
+    ) {
+        val date = Date()
+        val questionData = HashMap<String, Any>()
+        questionData["question"] = question
+        questionData["imageUrl"] = imageUrl
+        questionData["imageName"] = imageName
+        questionData["askedBy"] = currentUser!!.uid
+        questionData["askedOn"] = dateTimeFormat.format(date)
+        questionData["askedOnDate"] = dateFormat.format(date)
+        questionData["askedOnTime"] = timeFormat.format(date)
+        questionData["yesVote"] = "0"
+        questionData["noVote"] = "0"
+
+        dataBase.collection("question").add(questionData)
+            .addOnSuccessListener {
+                mView.hideLoading()
+                mView.showUploadedSuccess()
+                mView.showMessage("Successfully Uploaded.", 3)
+                addLabels(imageLabel, it.id, imageUrl)
+            }.addOnFailureListener { exception ->
+                mView.showMessage(
+                    "Something Went Wrong. ${exception.localizedMessage}",
+                    1
+                )
+                mView.hideLoading()
+            }.addOnCanceledListener {
+                mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                mView.hideLoading()
+            }
+    }
+
+    private fun addLabels(
+        imageLabel: java.util.ArrayList<String>,
+        id: String,
+        imageUrl: String
+    ) {
+        currentUser.whatIfNotNull {
+            for (label in imageLabel) {
+                val labeldata = HashMap<String, Any>()
+                labeldata["questionId"] = id
+                labeldata["imageUrl"] = imageUrl
+                labeldata["labelName"] = label
+                labelsFirestore
+                    .collection("labels")
+                    .document(label)
+                    .collection(id)
+                    .add(labeldata)
+            }
+        }
     }
 
     override fun uploadQuestionWithImage(question: String, picOptionUri: Uri) {
@@ -233,25 +376,62 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     }
 
                     if (isFaceDetected) {
+                        mView.hideLoading()
                         mView.showMessage(
                             mContext.getString(R.string.faces_not_allowed),
                             2
                         )
                         mView.deleteQuestionImageUri()
                     } else {
-                        mView.setQuestionImage(picOptionUri)
+                        checkForLabel(picOptionUri)
                     }
-                    mView.hideLoading()
 
                 }
                 .addOnFailureListener { e ->
                     mView.hideLoading()
-                    mView.showMessage("Something Went Wrong ${e.localizedMessage}", 1)
+                    mView.showMessage(
+                        "Something Went Wrong ${e.localizedMessage}. " +
+                                "You can upload the image we will manually look for this.", 1
+                    )
                     mView.setQuestionImage(picOptionUri)
                 }
         } catch (e: IOException) {
             mView.hideLoading()
-            mView.showMessage("Something Went Wrong ${e.localizedMessage}", 1)
+            mView.showMessage(
+                "Something Went Wrong ${e.localizedMessage}. " +
+                        "You can upload the image we will manually look for this.", 1
+            )
+            mView.setQuestionImage(picOptionUri)
+            e.printStackTrace()
+        }
+    }
+
+    private fun checkForLabel(picOptionUri: Uri) {
+        val image: FirebaseVisionImage
+        try {
+            image = FirebaseVisionImage.fromFilePath(mContext, picOptionUri)
+            val labeler = FirebaseVision.getInstance().onDeviceImageLabeler
+            labeler.processImage(image)
+                .addOnSuccessListener { labels ->
+                    var imageLabel: ArrayList<String> = ArrayList()
+                    for (label in labels) {
+                        val text = label.text
+                        imageLabel.add(text)
+                    }
+                    if (imageLabel.size > 0) {
+                        mView.setQuestionImage(picOptionUri, imageLabel)
+                    } else {
+                        mView.setQuestionImage(picOptionUri)
+                    }
+                    mView.hideLoading()
+                }
+                .addOnFailureListener { e ->
+                    e.printStackTrace()
+                    mView.hideLoading()
+                    mView.setQuestionImage(picOptionUri)
+                }
+        } catch (e: IOException) {
+            mView.hideLoading()
             mView.setQuestionImage(picOptionUri)
             e.printStackTrace()
         }

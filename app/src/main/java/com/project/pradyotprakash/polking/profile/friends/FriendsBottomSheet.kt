@@ -55,19 +55,16 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     private fun initView(view: View) {
-        mAuth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
-        allFriendsList.clear()
-        friendsAdapter = FriendsAdapter(allFriendsList, context!!, activity!!)
-        view.friends_rv.setHasFixedSize(true)
-        view.friends_rv.layoutManager =
-            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
-        view.friends_rv.adapter = friendsAdapter
+        initvariables()
 
-        view.back_tv.setOnClickListener {
-            dismiss()
-        }
+        adapterForFriends(view)
 
+        onClickListner(view)
+
+        getLists(view)
+    }
+
+    private fun getLists(view: View) {
         mAuth.currentUser.whatIfNotNull(
             whatIf = {
                 showLoading()
@@ -111,6 +108,26 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
                 showMessage(getString(R.string.user_not_found), 1)
             }
         )
+    }
+
+    private fun onClickListner(view: View) {
+        view.back_tv.setOnClickListener {
+            dismiss()
+        }
+    }
+
+    private fun adapterForFriends(view: View) {
+        allFriendsList.clear()
+        friendsAdapter = FriendsAdapter(allFriendsList, context!!, activity!!)
+        view.friends_rv.setHasFixedSize(true)
+        view.friends_rv.layoutManager =
+            LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
+        view.friends_rv.adapter = friendsAdapter
+    }
+
+    private fun initvariables() {
+        mAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
     }
 
     override fun showLoading() {

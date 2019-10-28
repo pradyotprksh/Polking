@@ -52,7 +52,7 @@
                 android:theme="@style/Base.Theme.AppCompat" />
         <meta-data
                 android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-                android:value="face" />
+                android:value="face,label" />
         <receiver
                 android:name=".utility.ConnectivityReceiver"
                 android:enabled="true">
