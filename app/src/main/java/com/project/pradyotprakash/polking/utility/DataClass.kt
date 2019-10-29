@@ -56,3 +56,10 @@ data class NotificationModel(
 data class VotesModel(
     val votedBy: String = ""
 ) : GetId()
+
+// Label
+data class LabelModel(
+    val questionId: String = "",
+    val imageUrl: String = "",
+    val labelName: String = ""
+) : GetId()

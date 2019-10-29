@@ -37,6 +37,7 @@ import kotlin.collections.HashMap
 class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     private val allQuestionList = ArrayList<QuestionModel>()
+    private val allLabelList = ArrayList<String>()
     lateinit var mContext: Activity
     @Inject lateinit var mView: MainActivityView
     private lateinit var mAuth: FirebaseAuth
@@ -173,6 +174,23 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         )
     }
 
+    override fun getImageLabels() {
+        labelsFirestore
+            .collection("labels")
+            .get()
+            .addOnSuccessListener { documents ->
+                allQuestionList.clear()
+
+                for (document in documents) {
+                    allLabelList.add(document.id)
+                }
+
+                if (allLabelList.size > 0) {
+                    mView.loadLabels(allLabelList)
+                }
+            }
+    }
+
     private fun uploadQuestionImage(
         task: Task<Uri>,
         imagePath: StorageReference,
@@ -247,7 +265,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     }
 
     private fun addLabels(
-        imageLabel: java.util.ArrayList<String>,
+        imageLabel: ArrayList<String>,
         id: String,
         imageUrl: String
     ) {
@@ -259,9 +277,17 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 labeldata["labelName"] = label
                 labelsFirestore
                     .collection("labels")
-                    .document(label)
+                    .document(label.toLowerCase(Locale.ENGLISH))
                     .collection(id)
                     .add(labeldata)
+                    .addOnCompleteListener {
+                        val dummyLabeldata = HashMap<String, Any>()
+                        labeldata["labelName"] = label
+                        getbestfriendfirestore
+                            .collection("labels")
+                            .document(label.toLowerCase(Locale.ENGLISH))
+                            .set(dummyLabeldata)
+                    }
             }
         }
     }

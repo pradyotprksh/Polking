@@ -53,11 +53,9 @@
                             android:layout_marginStart="20dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginTop="45dp"
-                            android:layout_marginBottom="20dp"
                             android:contentDescription="@string/imagedescription"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_default_pic"
-                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:ignore="VectorDrawableCompat" />
@@ -155,17 +153,31 @@
                             app:layout_constraintTop_toTopOf="@+id/addQuestion_et"
                             app:rippleColor="@color/colorPrimary" />
 
+                    <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/labels_rv"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:clipToPadding="true"
+                            android:padding="10dp"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_iv" />
+
                     <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginStart="20dp"
                             android:layout_marginLeft="20dp"
+                            android:layout_marginTop="15dp"
                             android:layout_marginEnd="20dp"
                             android:layout_marginRight="20dp"
                             android:background="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/labels_rv" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

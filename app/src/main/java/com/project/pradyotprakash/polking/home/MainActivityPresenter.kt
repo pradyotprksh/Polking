@@ -39,4 +39,7 @@ interface MainActivityPresenter: BasePresenter {
     // upload question with labels
     fun uploadQuestionWithImage(question: String, picOptionUri: Uri, imageLabel: ArrayList<String>)
 
+    // get image labels
+    fun getImageLabels()
+
 }

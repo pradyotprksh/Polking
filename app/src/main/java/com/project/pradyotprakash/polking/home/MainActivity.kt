@@ -28,6 +28,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.Task
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.home.adapter.LabelsAdapter
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
@@ -53,8 +54,10 @@ class MainActivity : InternetActivity(), MainActivityView {
     lateinit var questionStatistics: QuestionStatistics
     lateinit var updateBtmSheet: UpdateBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
+    private var labelAdapter: LabelsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
     private var imageLabel: ArrayList<String> = ArrayList()
+    private var allLabelList: ArrayList<String> = ArrayList()
     private var picOptionUri: Uri? = null
     private var count = 0
     private var count1 = 0
@@ -110,6 +113,10 @@ class MainActivity : InternetActivity(), MainActivityView {
         getDataForUser()
     }
 
+    private fun getLabelsForImages() {
+        presenter.getImageLabels()
+    }
+
     private fun getDataForUser() {
         presenter.addAuthStateListener()
         presenter.getProfileData()
@@ -127,6 +134,14 @@ class MainActivity : InternetActivity(), MainActivityView {
             RecyclerView.VERTICAL, false
         )
         recentQ_rv.adapter = questionsAdapter
+
+        labelAdapter = LabelsAdapter(allLabelList, this, this)
+        labels_rv.setHasFixedSize(true)
+        labels_rv.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.HORIZONTAL, false
+        )
+        labels_rv.adapter = labelAdapter
     }
 
     private fun textChangeListners() {
@@ -374,6 +389,17 @@ class MainActivity : InternetActivity(), MainActivityView {
         }
     }
 
+    override fun loadLabels(allLabelList: ArrayList<String>) {
+        this.allLabelList.clear()
+        if (allLabelList.size > 0) {
+            this.allLabelList.addAll(allLabelList)
+            labels_rv.visibility = View.VISIBLE
+            labelAdapter!!.notifyDataSetChanged()
+        } else {
+            labels_rv.visibility = View.GONE
+        }
+    }
+
     override fun setQuestionImage(picOptionUri: Uri, imageLabel: ArrayList<String>) {
         add_iv.load(R.drawable.ic_add)
         camera_iv.setImageURI(picOptionUri)
@@ -401,6 +427,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     override fun onResume() {
         super.onResume()
         checkNewAppVersionState()
+        getLabelsForImages()
         logd(getString(R.string.resume))
     }
 
@@ -455,6 +482,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         addQuestion_et.setText("")
         deleteQuestionImageUri()
         Utility().hideSoftKeyboard(addQuestion_et)
+        getLabelsForImages()
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
