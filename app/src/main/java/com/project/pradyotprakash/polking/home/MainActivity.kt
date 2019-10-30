@@ -57,7 +57,6 @@ class MainActivity : InternetActivity(), MainActivityView {
     private var labelAdapter: LabelsAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
     private var imageLabel: ArrayList<String> = ArrayList()
-    private var allLabelList: ArrayList<String> = ArrayList()
     private var picOptionUri: Uri? = null
     private var count = 0
     private var count1 = 0
@@ -137,7 +136,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         )
         recentQ_rv.adapter = questionsAdapter
 
-        labelAdapter = LabelsAdapter(allLabelList, this, this)
+        labelAdapter = LabelsAdapter(this, this)
         labels_rv.setHasFixedSize(true)
         labels_rv.layoutManager = LinearLayoutManager(
             this,
@@ -392,11 +391,9 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     override fun loadLabels(allLabelList: ArrayList<String>) {
-        this.allLabelList.clear()
         if (allLabelList.size > 0) {
-            this.allLabelList.addAll(allLabelList)
             labels_rv.visibility = View.VISIBLE
-            labelAdapter!!.notifyDataSetChanged()
+            labelAdapter!!.allLabelList = allLabelList
         } else {
             labels_rv.visibility = View.GONE
         }

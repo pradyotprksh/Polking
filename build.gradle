@@ -5,7 +5,7 @@ buildscript {
     ext.dagger_version = '2.25.2'
     ext.databinding_version = '3.3.2'
     ext.firebase_version = '19.1.0'
-    ext.firestore_version = '21.2.0'
+    ext.firestore_version = '21.2.1'
     ext.play_service = '17.0.0'
     ext.coil_version = '0.8.0'
     ext.whatif_version = '1.0.4'
