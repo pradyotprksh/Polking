@@ -177,17 +177,21 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     override fun getImageLabels() {
         labelsFirestore
             .collection("labels")
-            .get()
-            .addOnSuccessListener { documents ->
-                allQuestionList.clear()
+            .addSnapshotListener { snapshot, _ ->
+                allLabelList.clear()
 
-                for (document in documents) {
-                    allLabelList.add(document.id)
+                try {
+                    for (doc in snapshot!!) {
+                        allLabelList.add(doc.id)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
                 if (allLabelList.size > 0) {
                     mView.loadLabels(allLabelList)
                 }
+
             }
     }
 

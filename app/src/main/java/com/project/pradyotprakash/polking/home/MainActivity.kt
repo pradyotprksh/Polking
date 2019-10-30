@@ -111,6 +111,8 @@ class MainActivity : InternetActivity(), MainActivityView {
         getQuestions()
 
         getDataForUser()
+
+        getLabelsForImages()
     }
 
     private fun getLabelsForImages() {
@@ -427,7 +429,6 @@ class MainActivity : InternetActivity(), MainActivityView {
     override fun onResume() {
         super.onResume()
         checkNewAppVersionState()
-        getLabelsForImages()
         logd(getString(R.string.resume))
     }
 
@@ -482,7 +483,6 @@ class MainActivity : InternetActivity(), MainActivityView {
         addQuestion_et.setText("")
         deleteQuestionImageUri()
         Utility().hideSoftKeyboard(addQuestion_et)
-        getLabelsForImages()
     }
 
     override fun setUserProfileImage(imageUrl: String?) {
