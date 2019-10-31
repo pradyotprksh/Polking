@@ -8,13 +8,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.utility.AutoUpdatableAdapter
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
 class LabelsAdapter(
-    private val allLabelList: ArrayList<String>,
     private val context: Context,
     private val activity: Activity
-) : RecyclerView.Adapter<LabelsAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<LabelsAdapter.ViewHolder>(), AutoUpdatableAdapter {
+
+    var allLabelList: ArrayList<String> by Delegates.observable(
+        initialValue = ArrayList()
+    ) { _, old, new ->
+        autoNotify(old = old, new = new) { o, n -> o == n }
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
