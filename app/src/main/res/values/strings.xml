@@ -187,5 +187,10 @@
     <string name="sure_to_delete_check">You are sure to delete this question.</string>
     <string name="cehck_before_deleting">You need to check this before deleting.</string>
     <string name="deleted_successfully">Question Deleted Successfully</string>
-    <string name="enter_comment">Enter Comment...</string>
+    <string name="enter_comment">Add A Public Comment</string>
+    <string name="see_comment">See Comments</string>
+    <string name="comments">Comments</string>
+    <string name="newest_first">Newest First</string>
+    <string name="likes">Likes</string>
+    <string name="dislikes">Dislikes</string>
 </resources>

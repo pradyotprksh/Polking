@@ -34,8 +34,8 @@ import com.project.pradyotprakash.polking.labelsBtmSheet.LabelsBtmSheet
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
-import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
+import com.project.pradyotprakash.polking.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.updateTheApp.UpdateBtmSheet
 import com.project.pradyotprakash.polking.utility.*
@@ -209,8 +209,6 @@ class MainActivity : InternetActivity(), MainActivityView {
 
         user_iv.setOnClickListener {
             presenter.isLoggedIn()
-//            openActivity(CommentsAcrivity::class.java)
-//            overridePendingTransition(R.anim.slide_in_up, R.anim.nothing)
         }
 
         post_Tv.setOnClickListener {

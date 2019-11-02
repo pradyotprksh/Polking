@@ -24,10 +24,10 @@ import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
 import com.project.pradyotprakash.polking.profile.friends.FriendsBottomSheet
 import com.project.pradyotprakash.polking.profile.notification.NotificationBottomSheet
-import com.project.pradyotprakash.polking.profile.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
+import com.project.pradyotprakash.polking.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.utility.BgModel
 import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.Utility

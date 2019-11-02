@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.profile.questionStats
+package com.project.pradyotprakash.polking.questionStats
 
 import android.os.Bundle
 import android.os.Handler
@@ -27,11 +27,13 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.google.firebase.storage.FirebaseStorage
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.VotesModel
 import com.project.pradyotprakash.polking.utility.logd
+import com.project.pradyotprakash.polking.utility.openActivity
 import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.question_stats_btm_sheet.view.*
@@ -392,11 +394,18 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private fun getQuestionData(view: View) {
         context.whatIfNotNull(
             whatIf = {
-                if (questionId != "") {
-                    getQuestionDataFirestore(view)
-                } else {
-                    stopAct()
-                }
+                questionId.whatIfNotNull(
+                    whatIf = {
+                        if (questionId != "") {
+                            getQuestionDataFirestore(view)
+                        } else {
+                            stopAct()
+                        }
+                    },
+                    whatIfNot = {
+                        stopAct()
+                    }
+                )
             },
             whatIfNot = {
                 stopAct()
@@ -657,6 +666,18 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                 showDeleteDialog(view)
             } else {
                 return@setOnClickListener
+            }
+        }
+
+        view.seeComnets_tv.setOnClickListener {
+            if (context is CommentsAcrivity) {
+                dismiss()
+            } else {
+                context.whatIfNotNull {
+                    val bundle = Bundle()
+                    bundle.putString("questionId", questionId)
+                    it.openActivity(CommentsAcrivity::class.java, "questionId", bundle)
+                }
             }
         }
     }

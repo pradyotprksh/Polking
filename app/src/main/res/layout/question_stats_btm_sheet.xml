@@ -147,6 +147,7 @@
             android:layout_height="500dp"
             android:background="@color/white"
             android:scrollbars="vertical"
+            android:paddingBottom="60dp"
             app:layout_constraintBottom_toTopOf="@+id/userVote"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -177,7 +178,6 @@
                     android:id="@+id/totalVoteTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginRight="20dp"
                     android:fontFamily="@font/muli_light"
@@ -185,7 +185,7 @@
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView9"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="@+id/textView9" />
 
             <TextView
                     android:id="@+id/yesTv"
@@ -348,9 +348,9 @@
             android:id="@+id/userVote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/muli_bold"
             android:clickable="false"
             android:enabled="false"
+            android:fontFamily="@font/muli_bold"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:theme="@style/Theme.MaterialComponents.Light"
@@ -370,5 +370,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.chip.Chip
+            android:id="@+id/seeComnets_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="@string/see_comment"
+            android:textColor="@color/white"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toTopOf="@+id/userVote"
+            app:layout_constraintEnd_toEndOf="@+id/view3"
+            app:layout_constraintStart_toStartOf="@+id/view3"
+            app:rippleColor="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

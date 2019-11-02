@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.profile.questionStats
+package com.project.pradyotprakash.polking.questionStats
 
 import android.app.Activity
 import android.content.Context

@@ -63,3 +63,17 @@ data class LabelModel(
     val imageUrl: String = "",
     val labelName: String = ""
 ) : GetId()
+
+// Label
+data class CommentModel(
+    val comment: String = "",
+    val commentedOn: String = "",
+    val commentedOnDate: String = "",
+    val commentedOnTime: String = "",
+    val givenBy: String = "",
+    val likes: String = "",
+    val dislikes: String = "",
+    val innerComment: String = "",
+    val parentComment: String = "",
+    val isEdited: String = ""
+) : GetId()
