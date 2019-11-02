@@ -30,6 +30,7 @@ import com.google.android.play.core.tasks.Task
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.adapter.LabelsAdapter
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
+import com.project.pradyotprakash.polking.labelsBtmSheet.LabelsBtmSheet
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
@@ -50,6 +51,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
+    lateinit var labelsBtmSheet: LabelsBtmSheet
     lateinit var otherProfileOptions: OtherProfileOptions
     lateinit var questionStatistics: QuestionStatistics
     lateinit var updateBtmSheet: UpdateBtmSheet
@@ -295,6 +297,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     private fun initVariables() {
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
+        labelsBtmSheet = LabelsBtmSheet.newInstance()
         questionStatistics = QuestionStatistics.newInstance()
         updateBtmSheet = UpdateBtmSheet.newInstance()
         profileEditBtmSheet.isCancelable = false
@@ -618,6 +621,14 @@ class MainActivity : InternetActivity(), MainActivityView {
                     }
                 }
             }
+        }
+    }
+
+    fun openLabelsBtmSheet(allLabelList: java.util.ArrayList<String>, position: Int) {
+        if (!labelsBtmSheet.isAdded) {
+            labelsBtmSheet.show(supportFragmentManager, "btmSheet")
+            labelsBtmSheet.addLabelsList(allLabelList, position)
+            labelsBtmSheet.addQuestions(allQues)
         }
     }
 

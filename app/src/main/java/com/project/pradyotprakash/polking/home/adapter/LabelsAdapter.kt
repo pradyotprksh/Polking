@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.home.MainActivity
 import java.util.*
 
 class LabelsAdapter(
@@ -28,6 +29,12 @@ class LabelsAdapter(
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         p0.label_tv.text = allLabelList[p1].toUpperCase(Locale.ENGLISH)
+
+        p0.label_tv.setOnClickListener {
+            if (context is MainActivity) {
+                context.openLabelsBtmSheet(allLabelList, p1)
+            }
+        }
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
@@ -35,4 +42,3 @@ class LabelsAdapter(
     }
 
 }
-

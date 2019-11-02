@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="android.R.style.Theme_Material_Light_NoActionBar_Fullscreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+    <com.google.android.material.chip.Chip
+            android:id="@+id/back_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/close"
+            android:textColor="@color/white"
+            android:theme="@style/Theme.MaterialComponents.Light"
+            app:chipBackgroundColor="@color/disagree_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/disagree_color" />
+
+    <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/back_tv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_tv"
+            app:layout_constraintTop_toTopOf="@+id/back_tv" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/top_round_white"
@@ -17,7 +47,9 @@
                 android:id="@+id/question_rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:clipToPadding="false"
+                android:paddingTop="40dp"
+                android:paddingBottom="40dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -28,13 +60,32 @@
             android:id="@+id/labelTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimary"
+            android:elevation="3dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/back_tv"
+            app:tabBackground="@color/colorPrimary"
+            app:tabGravity="center"
+            app:tabIndicator="@drawable/edittext_bg"
+            app:tabIndicatorColor="@color/white"
+            app:tabIndicatorGravity="center"
+            app:tabIndicatorHeight="30dp"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@color/black"
+            app:tabTextColor="@color/white" />
+
+    <ProgressBar
+            android:id="@+id/progressBar10"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/constraintLayout6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelTabLayout" />
 
     <View
             android:id="@+id/view8"
