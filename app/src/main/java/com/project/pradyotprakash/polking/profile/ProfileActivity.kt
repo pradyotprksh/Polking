@@ -18,6 +18,7 @@ import coil.api.load
 import coil.request.Request
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
@@ -28,10 +29,7 @@ import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditBtmSheet
 import com.project.pradyotprakash.polking.questionStats.QuestionStatistics
-import com.project.pradyotprakash.polking.utility.BgModel
-import com.project.pradyotprakash.polking.utility.InternetActivity
-import com.project.pradyotprakash.polking.utility.Utility
-import com.project.pradyotprakash.polking.utility.logd
+import com.project.pradyotprakash.polking.utility.*
 import com.skydoves.whatif.whatIfNotNull
 import com.theartofdev.edmodo.cropper.CropImage
 import dagger.android.AndroidInjection
@@ -492,5 +490,12 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
                 questionStatistics.setQuestionDocId(docId)
             }
         }
+    }
+
+    fun openCommentList(notificationQuestionId: String, notificationCommentId: String) {
+        val bundle = Bundle()
+        bundle.putString("questionId", notificationQuestionId)
+        bundle.putString("notificationCommentId", notificationCommentId)
+        openActivity(CommentsAcrivity::class.java, "questionId", bundle)
     }
 }

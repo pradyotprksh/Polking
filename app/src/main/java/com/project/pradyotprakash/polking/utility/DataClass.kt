@@ -49,7 +49,17 @@ data class NotificationModel(
     val notificationQuestionId: String = "",
     val voteType: String = "",
     val notificationForReview: String = "",
-    val notificationReviewId: String = ""
+    val notificationReviewId: String = "",
+    val notificationForComment: String = "",
+    val notificationCommentId: String = "",
+    val notificationInnerCommentId: String = "",
+    val commentValue: String = "",
+    val notificationForCommentVotes: String = "",
+    val notificationForInnerComment: String = "",
+    val parentCommentId: String = "",
+    val innerCommentValue: String = "",
+    val notificationForInnerCommentVotes: String = "",
+    val parentCommentVal: String = ""
 ) : GetId()
 
 // Votes

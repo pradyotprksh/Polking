@@ -34,6 +34,7 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     lateinit var questionStatistics: QuestionStatistics
     private var mainCommentAdapter: MainCommentsAdpater? = null
     private var questionId: String? = ""
+    private var notificationCommentId: String? = ""
     lateinit var otherProfileOptions: OtherProfileOptions
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +103,16 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
             mainCommentAdapter?.setQuestionId(questionId!!)
             mainCommentAdapter?.setComments(allCommentList)
             mainCommentAdapter?.notifyDataSetChanged()
+
+            Handler().postDelayed({
+                if (notificationCommentId != "") {
+                    for (comment in allCommentList) {
+                        if (comment.docId == notificationCommentId) {
+                            comment_rv.scrollToPosition(allCommentList.indexOf(comment))
+                        }
+                    }
+                }
+            }, 600)
         }
     }
 
@@ -136,6 +147,12 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
                     this.questionId = intent!!
                         .getBundleExtra("questionId")!!
                         .getString("questionId")
+                }
+
+                it.getString("notificationCommentId").whatIfNotNull {
+                    this.notificationCommentId = intent!!
+                        .getBundleExtra("questionId")!!
+                        .getString("notificationCommentId")
                 }
             }
         }

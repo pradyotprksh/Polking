@@ -196,4 +196,5 @@
     <string name="newest_first">Newest First</string>
     <string name="likes">Likes</string>
     <string name="dislikes">Dislikes</string>
+    <string name="see_comment_list">See Comment List</string>
 </resources>

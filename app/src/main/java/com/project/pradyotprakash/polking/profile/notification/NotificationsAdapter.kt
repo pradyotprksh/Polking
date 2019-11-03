@@ -87,6 +87,18 @@ class NotificationsAdapter(
                                 p0.notification_message.text =
                                     allNotificationsList[p1].notificationMessage
                             }
+                            allNotificationsList[p1].notificationForComment == "true" -> {
+                                setCommentNotification(p0, p1, snapshot)
+                            }
+                            allNotificationsList[p1].notificationForInnerComment == "true" -> {
+                                setInnerCommentNotification(p0, p1, snapshot)
+                            }
+                            allNotificationsList[p1].notificationForCommentVotes == "true" -> {
+                                setVoteCommentNotification(p0, p1, snapshot)
+                            }
+                            allNotificationsList[p1].notificationForInnerCommentVotes == "true" -> {
+                                setInnerVoteCommentNotification(p0, p1, snapshot)
+                            }
                             else -> {
                                 p0.see_question_chip.visibility = View.GONE
                                 p0.notification_message.text =
@@ -108,10 +120,172 @@ class NotificationsAdapter(
 
         p0.see_question_chip.setOnClickListener {
             if (context is ProfileActivity) {
-                context.showStats(allNotificationsList[p1].notificationQuestionId)
+                if (p0.see_question_chip.text == context.getString(R.string.see_comment_list)) {
+                    context.openCommentList(
+                        allNotificationsList[p1].notificationQuestionId,
+                        allNotificationsList[p1].notificationCommentId
+                    )
+                } else if (p0.see_question_chip.text == context.getString(R.string.see_question)) {
+                    context.showStats(allNotificationsList[p1].notificationQuestionId)
+                }
             }
         }
 
+    }
+
+    private fun setInnerVoteCommentNotification(
+        p0: ViewHolder,
+        p1: Int,
+        snapshot: DocumentSnapshot
+    ) {
+        p0.see_question_chip.visibility = View.VISIBLE
+        p0.see_question_chip.text = context.getString(R.string.see_comment_list)
+        questionFirestore.collection("question")
+            .document(allNotificationsList[p1].notificationQuestionId)
+            .get()
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    if (allNotificationsList[p1].voteType == "1") {
+                        when {
+                            snapshot.data!!["gender"].toString() == "0" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and he agrees with your comment."
+                            snapshot.data!!["gender"].toString() == "1" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and she agrees with your comment."
+                            else -> p0.notification_message.text =
+                                allNotificationsList[p1].notificationMessage + " " +
+                                        allNotificationsList[p1].commentValue + " for the question" +
+                                        " \"" + result.data!!["question"].toString() +
+                                        "\" and agrees with your comment."
+                        }
+                    } else {
+                        when {
+                            snapshot.data!!["gender"].toString() == "0" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and he disagrees with your comment."
+                            snapshot.data!!["gender"].toString() == "1" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and she disagrees with your comment."
+                            else -> p0.notification_message.text =
+                                allNotificationsList[p1].notificationMessage + " " +
+                                        allNotificationsList[p1].commentValue + " for the question" +
+                                        " \"" + result.data!!["question"].toString() +
+                                        "\" and disagrees with your comment."
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun setVoteCommentNotification(
+        p0: ViewHolder,
+        p1: Int,
+        snapshot: DocumentSnapshot
+    ) {
+        p0.see_question_chip.visibility = View.VISIBLE
+        p0.see_question_chip.text = context.getString(R.string.see_comment_list)
+        questionFirestore.collection("question")
+            .document(allNotificationsList[p1].notificationQuestionId)
+            .get()
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    if (allNotificationsList[p1].voteType == "1") {
+                        when {
+                            snapshot.data!!["gender"].toString() == "0" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and he agrees with your comment."
+                            snapshot.data!!["gender"].toString() == "1" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and she agrees with your comment."
+                            else -> p0.notification_message.text =
+                                allNotificationsList[p1].notificationMessage + " " +
+                                        allNotificationsList[p1].commentValue + " for the question" +
+                                        " \"" + result.data!!["question"].toString() +
+                                        "\" and agrees with your comment."
+                        }
+                    } else {
+                        when {
+                            snapshot.data!!["gender"].toString() == "0" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and he disagrees with your comment."
+                            snapshot.data!!["gender"].toString() == "1" ->
+                                p0.notification_message.text =
+                                    allNotificationsList[p1].notificationMessage + " " +
+                                            allNotificationsList[p1].commentValue + " for the question" +
+                                            " \"" + result.data!!["question"].toString() +
+                                            "\" and she disagrees with your comment."
+                            else -> p0.notification_message.text =
+                                allNotificationsList[p1].notificationMessage + " " +
+                                        allNotificationsList[p1].commentValue + " for the question" +
+                                        " \"" + result.data!!["question"].toString() +
+                                        "\" and disagrees with your comment."
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun setInnerCommentNotification(
+        p0: ViewHolder,
+        p1: Int,
+        snapshot: DocumentSnapshot
+    ) {
+        p0.see_question_chip.visibility = View.VISIBLE
+        p0.see_question_chip.text = context.getString(R.string.see_comment_list)
+        questionFirestore.collection("question")
+            .document(allNotificationsList[p1].notificationQuestionId)
+            .get()
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    p0.notification_message.text =
+                        allNotificationsList[p1].notificationMessage + " " +
+                                allNotificationsList[p1].parentCommentVal +
+                                " \"" + result.data!!["question"].toString() +
+                                "\" which is " + allNotificationsList[p1].innerCommentValue
+                }
+            }
+    }
+
+    private fun setCommentNotification(
+        p0: ViewHolder,
+        p1: Int,
+        snapshot: DocumentSnapshot
+    ) {
+        p0.see_question_chip.visibility = View.VISIBLE
+        p0.see_question_chip.text = context.getString(R.string.see_comment_list)
+        questionFirestore.collection("question")
+            .document(allNotificationsList[p1].notificationQuestionId)
+            .get()
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    p0.notification_message.text =
+                        allNotificationsList[p1].notificationMessage +
+                                " \"" + result.data!!["question"].toString() +
+                                "\" which is " + allNotificationsList[p1].commentValue
+                }
+            }
     }
 
     @SuppressLint("SetTextI18n")
@@ -121,6 +295,7 @@ class NotificationsAdapter(
         snapshot: DocumentSnapshot
     ) {
         p0.see_question_chip.visibility = View.VISIBLE
+        p0.see_question_chip.text = context.getString(R.string.see_question)
         questionFirestore.collection("question")
             .document(allNotificationsList[p1].notificationQuestionId)
             .get()
