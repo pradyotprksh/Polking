@@ -28,6 +28,7 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
     private lateinit var addCommentFirestore: FirebaseFirestore
     private lateinit var dataBase: FirebaseFirestore
     private lateinit var getCommentFirestore: FirebaseFirestore
+    private lateinit var addVoteForComment: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -43,6 +44,7 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
         firebaseFunctions = FirebaseFunctions.getInstance()
         addCommentFirestore = FirebaseFirestore.getInstance()
         getCommentFirestore = FirebaseFirestore.getInstance()
+        addVoteForComment = FirebaseFirestore.getInstance()
         dataBase = FirebaseFirestore.getInstance()
     }
 
@@ -251,6 +253,80 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
                 mView.hideLoading()
             }
         )
+    }
+
+    override fun setVoteForComment(voteType: Int, commnetId: String, questionId: String?) {
+        mAuth.currentUser.whatIfNotNull {
+            questionId.whatIfNotNull {
+                mView.showLoading()
+                val voteData = HashMap<String, Any>()
+                voteData["questionId"] = questionId!!
+                voteData["voteType"] = voteType
+                voteData["commentId"] = commnetId
+
+                addCommentFirestore
+                    .collection("users")
+                    .document(mAuth.currentUser!!.uid)
+                    .collection("commentVotes")
+                    .document(questionId)
+                    .collection(commnetId)
+                    .document(commnetId)
+                    .set(voteData)
+                    .addOnSuccessListener {
+                        mView.hideLoading()
+                    }.addOnFailureListener { exception ->
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        mView.hideLoading()
+                    }.addOnCanceledListener {
+                        mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                        mView.hideLoading()
+                    }
+            }
+        }
+    }
+
+    override fun setVoteForComment(
+        voteType: Int,
+        commnetId: String,
+        innerCommentId: String,
+        questionId: String?
+    ) {
+        mAuth.currentUser.whatIfNotNull {
+            questionId.whatIfNotNull {
+                mView.showLoading()
+                val voteData = HashMap<String, Any>()
+                voteData["questionId"] = questionId!!
+                voteData["voteType"] = voteType
+                voteData["commentId"] = commnetId
+                voteData["parentCommentId"] = commnetId
+
+                addCommentFirestore
+                    .collection("users")
+                    .document(mAuth.currentUser!!.uid)
+                    .collection("commentVotes")
+                    .document(questionId)
+                    .collection(commnetId)
+                    .document("innerCommentVotes")
+                    .collection(innerCommentId)
+                    .document(innerCommentId)
+                    .set(voteData)
+                    .addOnSuccessListener {
+                        mView.hideLoading()
+                    }.addOnFailureListener { exception ->
+                        mView.showMessage(
+                            "Something Went Wrong. ${exception.localizedMessage}",
+                            1
+                        )
+                        mView.hideLoading()
+                    }.addOnCanceledListener {
+                        mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
+                        mView.hideLoading()
+                    }
+            }
+        }
     }
 
     override fun isLoggedIn() {

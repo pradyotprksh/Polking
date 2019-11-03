@@ -2,6 +2,7 @@ package com.project.pradyotprakash.polking.comment.adapter
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ class InnerCommentAdapter(
     private lateinit var questionId: String
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
@@ -50,6 +52,8 @@ class InnerCommentAdapter(
     }
 
     private fun getUserData(holder: ViewHolder, pos: Int) {
+        getVotes(holder, pos)
+
         userFirestore.collection("users").document(allCommentList[pos].givenBy)
             .addSnapshotListener { snapshot, exception ->
 
@@ -146,6 +150,84 @@ class InnerCommentAdapter(
             }
         }
 
+    }
+
+    private fun getVotes(holder: ViewHolder, pos: Int) {
+        holder.like_tv.isClickable = false
+        holder.like_tv.isEnabled = false
+        holder.dislike_tv.isClickable = false
+        holder.dislike_tv.isEnabled = false
+        getVotesFirestore
+            .collection("users")
+            .document(mAuth.currentUser!!.uid)
+            .collection("commentVotes")
+            .document(questionId)
+            .collection(allCommentList[pos].parentComment)
+            .document("innerCommentVotes")
+            .collection(allCommentList[pos].docId)
+            .document(allCommentList[pos].docId)
+            .get()
+            .addOnCanceledListener {
+                if (activity is CommentsAcrivity) {
+                    activity.showMessage(
+                        "Something Went Wrong. The request was cancelled.", 1
+                    )
+                }
+            }
+            .addOnFailureListener { exception ->
+                if (activity is CommentsAcrivity) {
+                    activity.showMessage(
+                        "Something Went Wrong. ${exception.localizedMessage}", 1
+                    )
+                }
+            }
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    val voteType = result.get("voteType")
+                    if (voteType == 1L) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            holder.like_tv.compoundDrawables[0].setTint(
+                                context
+                                    .resources.getColor(R.color.light_green)
+                            )
+                            holder.dislike_tv.compoundDrawables[0].setTint(
+                                context
+                                    .resources.getColor(R.color.gray)
+                            )
+                        }
+                    } else {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            holder.like_tv.compoundDrawables[0].setTint(
+                                context
+                                    .resources.getColor(R.color.gray)
+                            )
+                            holder.dislike_tv.compoundDrawables[0].setTint(
+                                context
+                                    .resources.getColor(R.color.disagree_color)
+                            )
+                        }
+                    }
+                    holder.like_tv.isClickable = false
+                    holder.like_tv.isEnabled = false
+                    holder.dislike_tv.isClickable = false
+                    holder.dislike_tv.isEnabled = false
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        holder.like_tv.compoundDrawables[0].setTint(
+                            context
+                                .resources.getColor(R.color.gray)
+                        )
+                        holder.dislike_tv.compoundDrawables[0].setTint(
+                            context
+                                .resources.getColor(R.color.gray)
+                        )
+                    }
+                    holder.like_tv.isClickable = true
+                    holder.like_tv.isEnabled = true
+                    holder.dislike_tv.isClickable = true
+                    holder.dislike_tv.isEnabled = true
+                }
+            }
     }
 
     fun setQuestionId(questionId: String) {

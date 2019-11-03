@@ -10,6 +10,7 @@
     <color name="gray">#D3D3D3</color>
     <color name="light_blue">#32616FFF</color>
     <color name="dark_green">#669900</color>
+    <color name="light_green">#7CFC00</color>
     <color name="dark_red">#CC0000</color>
     <color name="agree_color">#009B00</color>
     <color name="disagree_color">#9B0000</color>
