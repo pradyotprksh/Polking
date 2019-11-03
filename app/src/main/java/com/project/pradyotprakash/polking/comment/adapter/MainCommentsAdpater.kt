@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -18,9 +19,14 @@ import coil.api.load
 import coil.request.Request
 import coil.transform.BlurTransformation
 import coil.transform.GrayscaleTransformation
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
+import com.google.firebase.ml.naturallanguage.smartreply.FirebaseTextMessage
+import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestionResult
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.utility.CommentModel
@@ -41,6 +47,7 @@ class MainCommentsAdpater(
     private var getInnerComments: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val allInnerCommentList: ArrayList<CommentModel> = ArrayList()
     private var innerCommentAdapter: InnerCommentAdapter? = null
+    private val commonReply = ArrayList<String>()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
@@ -61,7 +68,10 @@ class MainCommentsAdpater(
 
         if (allCommentList[pos].innerComment == "0" || allCommentList[pos].innerComment == "") {
             holder.view_replies_tv.visibility = View.GONE
+            Utility().expandCollapse(holder.innerCl)
+            holder.innerComment_rv.visibility = View.GONE
         } else {
+            holder.innerComment_rv.visibility = View.VISIBLE
             holder.view_replies_tv.visibility = View.VISIBLE
             if (allCommentList[pos].innerComment == "1") {
                 holder.view_replies_tv.text = "View ${allCommentList[pos].innerComment} Reply"
@@ -177,6 +187,86 @@ class MainCommentsAdpater(
                 )
             }
         }
+
+        holder.like_tv.setOnClickListener {
+            if (context is CommentsAcrivity) {
+                context.addReviewForComment(1, allCommentList[pos].docId)
+            }
+        }
+
+        holder.dislike_tv.setOnClickListener {
+            if (context is CommentsAcrivity) {
+                context.addReviewForComment(0, allCommentList[pos].docId)
+            }
+        }
+
+        commonReply.clear()
+        commonReply.add("Yes")
+        commonReply.add("No")
+        commonReply.add(context.getString(R.string.smiley))
+        commonReply.add(context.getString(R.string.thumbs_up))
+        commonReply.add(context.getString(R.string.thumbs_down))
+        val conversation = ArrayList<FirebaseTextMessage>()
+        conversation.add(
+            FirebaseTextMessage.createForRemoteUser(
+                allCommentList[pos].comment, System.currentTimeMillis(), allCommentList[pos].docId
+            )
+        )
+        val smartReply = FirebaseNaturalLanguage.getInstance().smartReply
+        holder.smartReply_group.removeAllViews()
+        smartReply.suggestReplies(conversation)
+            .addOnSuccessListener { result ->
+                if (result.status == SmartReplySuggestionResult.STATUS_NOT_SUPPORTED_LANGUAGE) {
+                    for (common in commonReply) {
+                        val chip = Chip(holder.smartReply_group.context)
+                        chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+                        chip.setChipStrokeColorResource(R.color.white)
+                        chip.chipStrokeWidth = 1f
+                        chip.isClickable = true
+                        chip.isCheckable = true
+                        chip.text = common
+                        holder.smartReply_group.addView(chip)
+                    }
+                } else if (result.status == SmartReplySuggestionResult.STATUS_SUCCESS) {
+                    for (suggestion in result.suggestions) {
+                        val replyText = suggestion.text
+                        val chip = Chip(holder.smartReply_group.context)
+                        chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+                        chip.setChipStrokeColorResource(R.color.white)
+                        chip.chipStrokeWidth = 1f
+                        chip.isClickable = true
+                        chip.isCheckable = true
+                        chip.text = replyText
+                        holder.smartReply_group.addView(chip)
+                    }
+                }
+            }
+            .addOnFailureListener {
+                for (common in commonReply) {
+                    val chip = Chip(context)
+                    chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+                    chip.setChipStrokeColorResource(R.color.white)
+                    chip.chipStrokeWidth = 1f
+                    chip.isClickable = true
+                    chip.isCheckable = true
+                    chip.text = common
+                    holder.smartReply_group.addView(chip)
+                }
+            }
+
+        holder.smartReply_group.setOnCheckedChangeListener { chipGroup, i ->
+            val chip = chipGroup.findViewById<Chip>(i)
+            chip.whatIfNotNull {
+                if (it.text != "")
+                    if (context is CommentsAcrivity) {
+                        context.addCommentInner(
+                            it.text.toString(),
+                            allCommentList[pos].docId
+                        )
+                    }
+            }
+        }
+
     }
 
     private fun getUserData(holder: ViewHolder, pos: Int) {
@@ -246,6 +336,11 @@ class MainCommentsAdpater(
         this.questionId = questionId
     }
 
+    fun setComments(allCommentList: java.util.ArrayList<CommentModel>) {
+        this.allCommentList.clear()
+        this.allCommentList.addAll(allCommentList)
+    }
+
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val userData_tv: TextView = mView.findViewById(R.id.userData_tv)
         val commentTv: TextView = mView.findViewById(R.id.commentTv)
@@ -257,6 +352,8 @@ class MainCommentsAdpater(
         val innerComment_rv: RecyclerView = mView.findViewById(R.id.innerComment_rv)
         val commentVal_rt: EditText = mView.findViewById(R.id.commentVal_rt)
         val innerCl: ConstraintLayout = mView.findViewById(R.id.innerCl)
+        val smartReply_group: ChipGroup = mView.findViewById(R.id.smartReply_group)
+        val horizontalSv: HorizontalScrollView = mView.findViewById(R.id.horizontalSv)
     }
 
 }

@@ -46,7 +46,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
 
     private lateinit var askedBy: String
     private var voteType: String = "-1"
-    private lateinit var questionId: String
+    private var questionId: String = ""
     private lateinit var imageName: String
     private lateinit var mAuth: FirebaseAuth
     private lateinit var getQuestionFirestore: FirebaseFirestore

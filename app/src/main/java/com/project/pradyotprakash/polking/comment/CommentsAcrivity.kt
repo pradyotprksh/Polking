@@ -72,8 +72,6 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
 
         initVariables()
 
-        adaptersInit()
-
         setOnClickListner()
 
         getComments()
@@ -100,9 +98,9 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     override fun loadAllComments(allCommentList: ArrayList<CommentModel>) {
         commentCount_tv.text = "${allCommentList.size}"
         if (allCommentList.size > 0) {
-            this.allCommentList.clear()
-            this.allCommentList.addAll(allCommentList)
+            adaptersInit()
             mainCommentAdapter?.setQuestionId(questionId!!)
+            mainCommentAdapter?.setComments(allCommentList)
             mainCommentAdapter?.notifyDataSetChanged()
         }
     }
@@ -308,6 +306,14 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
             otherProfileOptions.show(supportFragmentManager, "btmSheet")
             otherProfileOptions.setUserId(givenBy)
         }
+    }
+
+    fun addReviewForComment(voteType: Int, commnetId: String) {
+
+    }
+
+    fun addReviewForInnerComment(voteType: Int, innerCommnetId: String, parentComment: String) {
+
     }
 
 }

@@ -100,6 +100,9 @@
     <string name="search_here">Search Here</string>
     <string name="about_us_txt">Hello Polking\'s Member. We, the creators of Polking, welcome you to our Polking Family. We hope you are having a great day. And this application is helping you in your daily life. This is not a high end application with ML/AI integration. Just a normal application with normal usage. You ask normal question, People will give normal answer (Yes 👍/ No 👎). No other way. So no lectures. No knowledge. Just a Head and Tail situation. In between we also play a part of seeing the questions asked. So that it doesn\'t make a Chaos between the family ☹️. So as a family member you also need to see this. Enjoy your life because it\'s short with this short application. 🥰😍😘.  And yeah. One more thing. Please add your review on the Play Store, if you have time.  And one more 😅, please share this application to others also. And make our family big. Because more the better. 🥺😉.
     </string>
+    <string name="smiley">😍</string>
+    <string name="thumbs_up">👍</string>
+    <string name="thumbs_down">👎</string>
     <string name="reviewbottomsheet">ReviewBottomSheet onCreateView</string>
     <string name="faqbottomsheet">Ask FAQs Btm Sheet onCreateView</string>
     <string name="questionbottomsheet">Question Details Btm Sheet onCreateView</string>

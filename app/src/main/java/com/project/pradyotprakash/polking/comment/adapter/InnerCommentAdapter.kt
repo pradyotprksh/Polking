@@ -128,6 +128,24 @@ class InnerCommentAdapter(
             }
         }
 
+        holder.like_tv.setOnClickListener {
+            if (context is CommentsAcrivity) {
+                context.addReviewForInnerComment(
+                    1,
+                    allCommentList[pos].docId, allCommentList[pos].parentComment
+                )
+            }
+        }
+
+        holder.dislike_tv.setOnClickListener {
+            if (context is CommentsAcrivity) {
+                context.addReviewForInnerComment(
+                    0,
+                    allCommentList[pos].docId, allCommentList[pos].parentComment
+                )
+            }
+        }
+
     }
 
     fun setQuestionId(questionId: String) {
