@@ -152,9 +152,6 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
                     questionData["commentedOn"] = dateTimeFormat.format(date)
                     questionData["commentedOnDate"] = dateFormat.format(date)
                     questionData["commentedOnTime"] = timeFormat.format(date)
-                    questionData["likes"] = "0"
-                    questionData["dislikes"] = "0"
-                    questionData["innerComment"] = "0"
                     questionData["isEdited"] = "false"
                     questionData["parentComment"] = commentId
 

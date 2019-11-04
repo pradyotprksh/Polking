@@ -178,8 +178,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
     }
 
     private fun setAdapters(view: View) {
-        allQues.clear()
-        questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
+        questionsAdapter = QuestionsAdapter(context!!, activity!!)
         view.questions_rv.setHasFixedSize(true)
         view.questions_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
@@ -667,7 +666,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                 if (allQuestionList.size > 0) {
                     allQues.clear()
                     allQues.addAll(allQuestionList)
-                    questionsAdapter!!.notifyDataSetChanged()
+                    questionsAdapter!!.updateListItems(allQues)
                 }
             }
     }

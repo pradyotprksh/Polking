@@ -13,6 +13,7 @@ import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
@@ -32,16 +33,17 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.utility.CommentModel
 import com.project.pradyotprakash.polking.utility.Utility
+import com.project.pradyotprakash.polking.utility.diffUtilCallbacks.MainCommentCallback
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 
 class MainCommentsAdpater(
-    private val allCommentList: ArrayList<CommentModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<MainCommentsAdpater.ViewHolder>() {
 
+    private val allCommentList: ArrayList<CommentModel> = ArrayList()
     private lateinit var questionId: String
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -50,6 +52,15 @@ class MainCommentsAdpater(
     private val allInnerCommentList: ArrayList<CommentModel> = ArrayList()
     private var innerCommentAdapter: InnerCommentAdapter? = null
     private val commonReply = ArrayList<String>()
+
+    fun updateListItems(comments: java.util.ArrayList<CommentModel>) {
+        val diffCallback = MainCommentCallback(this.allCommentList, comments)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.allCommentList.clear()
+        this.allCommentList.addAll(comments)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
@@ -70,111 +81,17 @@ class MainCommentsAdpater(
 
         getVotes(holder, pos)
 
-        if (allCommentList[pos].innerComment == "0" || allCommentList[pos].innerComment == "") {
-            holder.view_replies_tv.visibility = View.GONE
-            Utility().expandCollapse(holder.innerCl)
-            holder.innerComment_rv.visibility = View.GONE
-        } else {
-            holder.innerComment_rv.visibility = View.VISIBLE
-            holder.view_replies_tv.visibility = View.VISIBLE
-            if (allCommentList[pos].innerComment == "1") {
-                holder.view_replies_tv.text = "View ${allCommentList[pos].innerComment} Reply"
-            } else {
-                holder.view_replies_tv.text = "View ${allCommentList[pos].innerComment} Replies"
-            }
-        }
+        setNumReplies(holder, pos)
 
-        innerCommentAdapter = InnerCommentAdapter(allInnerCommentList, context, activity)
-        holder.innerComment_rv.setHasFixedSize(true)
-        holder.innerComment_rv.layoutManager = LinearLayoutManager(
-            context,
-            RecyclerView.VERTICAL, false
-        )
-        holder.innerComment_rv.adapter = innerCommentAdapter
+        setListnerorInnerCommnet(holder, pos)
 
-        holder.view_replies_tv.setOnClickListener {
-            Utility().expandCollapse(holder.innerCl)
-            mAuth.currentUser.whatIfNotNull(
-                whatIf = {
-                    if (context is CommentsAcrivity) {
-                        context.showLoading()
-                    }
-                    questionId.whatIfNotNull {
-                        getInnerComments
-                            .collection("question")
-                            .document(questionId)
-                            .collection("comments")
-                            .document(allCommentList[pos].docId)
-                            .collection("innerComment")
-                            .orderBy("commentedOn", Query.Direction.DESCENDING)
-                            .addSnapshotListener { snapshot, exception ->
-                                exception.whatIfNotNull {
-                                    if (context is CommentsAcrivity) {
-                                        context.showMessage(
-                                            "Something Went Wrong. ${exception!!.localizedMessage}",
-                                            1
-                                        )
-                                    }
-                                }
+        setOnClickListner(holder, pos)
 
-                                allInnerCommentList.clear()
+        addSmartReply(holder, pos)
 
-                                try {
-                                    for (doc in snapshot!!) {
-                                        val docId = doc.id
-                                        val commentList: CommentModel =
-                                            doc.toObject<CommentModel>(CommentModel::class.java)
-                                                .withId(docId)
-                                        this.allInnerCommentList.add(commentList)
-                                    }
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                    if (context is CommentsAcrivity) {
-                                        context.showMessage(
-                                            "Something Went Wrong. ${e.localizedMessage}", 1
-                                        )
-                                    }
-                                }
+    }
 
-                                if (allInnerCommentList.size > 0) {
-                                    innerCommentAdapter?.setQuestionId(questionId)
-                                    innerCommentAdapter?.notifyDataSetChanged()
-                                }
-
-                                if (context is CommentsAcrivity) {
-                                    context.hideLoading()
-                                }
-
-                            }
-                    }
-                },
-                whatIfNot = {
-
-                }
-            )
-        }
-
-        holder.commentVal_rt.setOnEditorActionListener { v, actionId, event ->
-            return@setOnEditorActionListener when (actionId) {
-                EditorInfo.IME_ACTION_SEND -> {
-                    if (holder.commentVal_rt.text.toString().isNotEmpty()) {
-                        if (context is CommentsAcrivity) {
-                            context.addCommentInner(
-                                holder.commentVal_rt.text.toString(),
-                                allCommentList[pos].docId
-                            )
-                            Handler().postDelayed({
-                                holder.commentVal_rt.setText("")
-                                Utility().hideSoftKeyboard(holder.commentVal_rt)
-                            }, 500)
-                        }
-                    }
-                    true
-                }
-                else -> false
-            }
-        }
-
+    private fun setOnClickListner(holder: ViewHolder, pos: Int) {
         holder.user_iv.setOnClickListener {
             if (context is CommentsAcrivity) {
                 mAuth.currentUser.whatIfNotNull(
@@ -203,9 +120,114 @@ class MainCommentsAdpater(
                 context.addReviewForComment(0, allCommentList[pos].docId)
             }
         }
+    }
 
-        addSmartReply(holder, pos)
+    private fun setListnerorInnerCommnet(holder: ViewHolder, pos: Int) {
+        holder.commentVal_rt.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    if (holder.commentVal_rt.text.toString().isNotEmpty()) {
+                        if (context is CommentsAcrivity) {
+                            context.addCommentInner(
+                                holder.commentVal_rt.text.toString(),
+                                allCommentList[pos].docId
+                            )
+                            Handler().postDelayed({
+                                holder.commentVal_rt.setText("")
+                                Utility().hideSoftKeyboard(holder.commentVal_rt)
+                            }, 500)
+                        }
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+    }
 
+    private fun setInnerRvAdapter(holder: ViewHolder, pos: Int) {
+        innerCommentAdapter = InnerCommentAdapter(context, activity)
+        holder.innerComment_rv.setHasFixedSize(true)
+        holder.innerComment_rv.layoutManager = LinearLayoutManager(
+            context,
+            RecyclerView.HORIZONTAL, false
+        )
+        holder.innerComment_rv.adapter = innerCommentAdapter
+    }
+
+    private fun setNumReplies(holder: ViewHolder, pos: Int) {
+        if (allCommentList[pos].innerComment == "0" || allCommentList[pos].innerComment == "") {
+            holder.view_replies_tv.text = context.getString(R.string.no_replies_yet)
+        } else {
+            if (allCommentList[pos].innerComment == "1") {
+                holder.view_replies_tv.text = "${allCommentList[pos].innerComment} Reply"
+            } else {
+                holder.view_replies_tv.text = "${allCommentList[pos].innerComment} Replies"
+            }
+            setInnerRvAdapter(holder, pos)
+            getInnerCommentsFun(holder, pos)
+        }
+    }
+
+    private fun getInnerCommentsFun(holder: ViewHolder, pos: Int) {
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                if (context is CommentsAcrivity) {
+                    context.showLoading()
+                }
+                questionId.whatIfNotNull {
+                    getInnerComments
+                        .collection("question")
+                        .document(questionId)
+                        .collection("comments")
+                        .document(allCommentList[pos].docId)
+                        .collection("innerComment")
+                        .orderBy("commentedOn", Query.Direction.DESCENDING)
+                        .addSnapshotListener { snapshot, exception ->
+                            exception.whatIfNotNull {
+                                if (context is CommentsAcrivity) {
+                                    context.showMessage(
+                                        "Something Went Wrong. ${exception!!.localizedMessage}",
+                                        1
+                                    )
+                                }
+                            }
+
+                            this.allInnerCommentList.clear()
+
+                            try {
+                                for (doc in snapshot!!) {
+                                    val docId = doc.id
+                                    val commentList: CommentModel =
+                                        doc.toObject<CommentModel>(CommentModel::class.java)
+                                            .withId(docId)
+                                    this.allInnerCommentList.add(commentList)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                if (context is CommentsAcrivity) {
+                                    context.showMessage(
+                                        "Something Went Wrong. ${e.localizedMessage}", 1
+                                    )
+                                }
+                            }
+
+                            if (allInnerCommentList.size > 0) {
+                                innerCommentAdapter?.setQuestionId(questionId)
+                                innerCommentAdapter?.updateListItems(this.allInnerCommentList)
+                            }
+
+                            if (context is CommentsAcrivity) {
+                                context.hideLoading()
+                            }
+
+                        }
+                }
+            },
+            whatIfNot = {
+
+            }
+        )
     }
 
     private fun addSmartReply(holder: ViewHolder, pos: Int) {
@@ -226,41 +248,29 @@ class MainCommentsAdpater(
         smartReply.suggestReplies(conversation)
             .addOnSuccessListener { result ->
                 if (result.status == SmartReplySuggestionResult.STATUS_NOT_SUPPORTED_LANGUAGE) {
-                    for (common in commonReply) {
-                        val chip = Chip(holder.smartReply_group.context)
-                        chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
-                        chip.setChipStrokeColorResource(R.color.white)
-                        chip.chipStrokeWidth = 1f
-                        chip.isClickable = true
-                        chip.isCheckable = true
-                        chip.text = common
-                        holder.smartReply_group.addView(chip)
-                    }
+                    enterHardcodeReply(holder, pos)
                 } else if (result.status == SmartReplySuggestionResult.STATUS_SUCCESS) {
-                    for (suggestion in result.suggestions) {
-                        val replyText = suggestion.text
-                        val chip = Chip(holder.smartReply_group.context)
-                        chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
-                        chip.setChipStrokeColorResource(R.color.white)
-                        chip.chipStrokeWidth = 1f
-                        chip.isClickable = true
-                        chip.isCheckable = true
-                        chip.text = replyText
-                        holder.smartReply_group.addView(chip)
+                    if (result.suggestions.size > 0) {
+                        for (suggestion in result.suggestions) {
+                            val replyText = suggestion.text
+                            val chip = Chip(holder.smartReply_group.context)
+                            chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+                            chip.setChipStrokeColorResource(R.color.white)
+                            chip.chipStrokeWidth = 1f
+                            chip.isClickable = true
+                            chip.isCheckable = true
+                            chip.text = replyText
+                            holder.smartReply_group.addView(chip)
+                        }
+                    } else {
+                        enterHardcodeReply(holder, pos)
                     }
+                } else if (result.status == SmartReplySuggestionResult.STATUS_NO_REPLY) {
+                    enterHardcodeReply(holder, pos)
                 }
             }
             .addOnFailureListener {
-                for (common in commonReply) {
-                    val chip = Chip(context)
-                    chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
-                    chip.setChipStrokeColorResource(R.color.white)
-                    chip.chipStrokeWidth = 1f
-                    chip.isClickable = true
-                    chip.isCheckable = true
-                    chip.text = common
-                    holder.smartReply_group.addView(chip)
-                }
+                enterHardcodeReply(holder, pos)
             }
 
         holder.smartReply_group.setOnCheckedChangeListener { chipGroup, i ->
@@ -274,6 +284,19 @@ class MainCommentsAdpater(
                         )
                     }
             }
+        }
+    }
+
+    private fun enterHardcodeReply(holder: ViewHolder, pos: Int) {
+        for (common in commonReply) {
+            val chip = Chip(holder.smartReply_group.context)
+            chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+            chip.setChipStrokeColorResource(R.color.white)
+            chip.chipStrokeWidth = 1f
+            chip.isClickable = true
+            chip.isCheckable = true
+            chip.text = common
+            holder.smartReply_group.addView(chip)
         }
     }
 
@@ -418,11 +441,6 @@ class MainCommentsAdpater(
 
     fun setQuestionId(questionId: String) {
         this.questionId = questionId
-    }
-
-    fun setComments(allCommentList: java.util.ArrayList<CommentModel>) {
-        this.allCommentList.clear()
-        this.allCommentList.addAll(allCommentList)
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {

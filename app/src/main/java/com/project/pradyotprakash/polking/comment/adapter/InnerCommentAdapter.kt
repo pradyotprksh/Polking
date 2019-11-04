@@ -2,11 +2,11 @@ package com.project.pradyotprakash.polking.comment.adapter
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
@@ -18,25 +18,34 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.utility.CommentModel
+import com.project.pradyotprakash.polking.utility.diffUtilCallbacks.InnerCommentCallback
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 
 class InnerCommentAdapter(
-    private val allCommentList: ArrayList<CommentModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<InnerCommentAdapter.ViewHolder>() {
 
+    private val allCommentList: ArrayList<CommentModel> = ArrayList()
     private lateinit var questionId: String
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
             LayoutInflater.from(p0.context).inflate(R.layout.inner_comment_layout, p0, false)
         return ViewHolder(view)
+    }
+
+    fun updateListItems(comments: ArrayList<CommentModel>) {
+        val diffCallback = InnerCommentCallback(this.allCommentList, comments)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.allCommentList.clear()
+        this.allCommentList.addAll(comments)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun getItemCount(): Int {
@@ -47,13 +56,9 @@ class InnerCommentAdapter(
         getUserData(holder, pos)
 
         holder.commentTv.text = allCommentList[pos].comment
-        holder.like_tv.text = allCommentList[pos].likes
-        holder.dislike_tv.text = allCommentList[pos].dislikes
     }
 
     private fun getUserData(holder: ViewHolder, pos: Int) {
-        getVotes(holder, pos)
-
         userFirestore.collection("users").document(allCommentList[pos].givenBy)
             .addSnapshotListener { snapshot, exception ->
 
@@ -132,102 +137,6 @@ class InnerCommentAdapter(
             }
         }
 
-        holder.like_tv.setOnClickListener {
-            if (context is CommentsAcrivity) {
-                context.addReviewForInnerComment(
-                    1,
-                    allCommentList[pos].docId, allCommentList[pos].parentComment
-                )
-            }
-        }
-
-        holder.dislike_tv.setOnClickListener {
-            if (context is CommentsAcrivity) {
-                context.addReviewForInnerComment(
-                    0,
-                    allCommentList[pos].docId, allCommentList[pos].parentComment
-                )
-            }
-        }
-
-    }
-
-    private fun getVotes(holder: ViewHolder, pos: Int) {
-        holder.like_tv.isClickable = false
-        holder.like_tv.isEnabled = false
-        holder.dislike_tv.isClickable = false
-        holder.dislike_tv.isEnabled = false
-        getVotesFirestore
-            .collection("users")
-            .document(mAuth.currentUser!!.uid)
-            .collection("commentVotes")
-            .document(questionId)
-            .collection(allCommentList[pos].parentComment)
-            .document("innerCommentVotes")
-            .collection(allCommentList[pos].docId)
-            .document(allCommentList[pos].docId)
-            .get()
-            .addOnCanceledListener {
-                if (activity is CommentsAcrivity) {
-                    activity.showMessage(
-                        "Something Went Wrong. The request was cancelled.", 1
-                    )
-                }
-            }
-            .addOnFailureListener { exception ->
-                if (activity is CommentsAcrivity) {
-                    activity.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}", 1
-                    )
-                }
-            }
-            .addOnSuccessListener { result ->
-                if (result.exists()) {
-                    val voteType = result.get("voteType")
-                    if (voteType == 1L) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            holder.like_tv.compoundDrawables[0].setTint(
-                                context
-                                    .resources.getColor(R.color.light_green)
-                            )
-                            holder.dislike_tv.compoundDrawables[0].setTint(
-                                context
-                                    .resources.getColor(R.color.gray)
-                            )
-                        }
-                    } else {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            holder.like_tv.compoundDrawables[0].setTint(
-                                context
-                                    .resources.getColor(R.color.gray)
-                            )
-                            holder.dislike_tv.compoundDrawables[0].setTint(
-                                context
-                                    .resources.getColor(R.color.disagree_color)
-                            )
-                        }
-                    }
-                    holder.like_tv.isClickable = false
-                    holder.like_tv.isEnabled = false
-                    holder.dislike_tv.isClickable = false
-                    holder.dislike_tv.isEnabled = false
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        holder.like_tv.compoundDrawables[0].setTint(
-                            context
-                                .resources.getColor(R.color.gray)
-                        )
-                        holder.dislike_tv.compoundDrawables[0].setTint(
-                            context
-                                .resources.getColor(R.color.gray)
-                        )
-                    }
-                    holder.like_tv.isClickable = true
-                    holder.like_tv.isEnabled = true
-                    holder.dislike_tv.isClickable = true
-                    holder.dislike_tv.isEnabled = true
-                }
-            }
     }
 
     fun setQuestionId(questionId: String) {
@@ -237,8 +146,6 @@ class InnerCommentAdapter(
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val userData_tv: TextView = mView.findViewById(R.id.userData_tv)
         val commentTv: TextView = mView.findViewById(R.id.commentTv)
-        val like_tv: TextView = mView.findViewById(R.id.like_tv)
-        val dislike_tv: TextView = mView.findViewById(R.id.dislike_tv)
         val user_iv: CircleImageView = mView.findViewById(R.id.user_iv)
     }
 

@@ -131,7 +131,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     private fun adapters() {
-        questionsAdapter = QuestionsAdapter(allQues, this, this)
+        questionsAdapter = QuestionsAdapter(this, this)
         recentQ_rv.setHasFixedSize(true)
         recentQ_rv.layoutManager = LinearLayoutManager(
             this,
@@ -139,7 +139,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         )
         recentQ_rv.adapter = questionsAdapter
 
-        labelAdapter = LabelsAdapter(allLabelList, this, this)
+        labelAdapter = LabelsAdapter(this, this)
         labels_rv.setHasFixedSize(true)
         labels_rv.layoutManager = LinearLayoutManager(
             this,
@@ -397,7 +397,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         if (allLabelList.size > 0) {
             this.allLabelList.addAll(allLabelList)
             labels_rv.visibility = View.VISIBLE
-            labelAdapter!!.notifyDataSetChanged()
+            labelAdapter?.updateListItems(allLabelList)
         } else {
             labels_rv.visibility = View.GONE
         }
@@ -576,8 +576,7 @@ class MainActivity : InternetActivity(), MainActivityView {
         if (allQuestionList.size > 0) {
             recentQ_rv.visibility = View.VISIBLE
             allQues.addAll(allQuestionList)
-            questionsAdapter!!.setQuestions(allQuestionList)
-            questionsAdapter!!.notifyDataSetChanged()
+            questionsAdapter!!.updateListItems(allQuestionList)
         } else {
             recentQ_rv.visibility = View.GONE
         }

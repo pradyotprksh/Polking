@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
@@ -23,22 +24,32 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.QuestionModel
+import com.project.pradyotprakash.polking.utility.diffUtilCallbacks.QuestionsCallback
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 import rm.com.longpresspopup.*
 import java.util.*
 
 class QuestionsAdapter(
-    private val allQues: ArrayList<QuestionModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<QuestionsAdapter.ViewAdapter>(), PopupInflaterListener, PopupStateListener,
     PopupOnHoverListener {
 
+    private val mQuestionList: ArrayList<QuestionModel> = ArrayList()
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var question_image: ImageView? = null
+
+    fun updateListItems(questions: ArrayList<QuestionModel>) {
+        val diffCallback = QuestionsCallback(this.mQuestionList, questions)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.mQuestionList.clear()
+        this.mQuestionList.addAll(questions)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view = LayoutInflater.from(p0.context).inflate(R.layout.question_layout, p0, false)
@@ -46,7 +57,7 @@ class QuestionsAdapter(
     }
 
     override fun getItemCount(): Int {
-        return allQues.size
+        return mQuestionList.size
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -54,11 +65,11 @@ class QuestionsAdapter(
 
         getUserData(holder, pos)
 
-        holder.question_tv.text = allQues[pos].question
+        holder.question_tv.text = mQuestionList[pos].question
 
         mAuth.currentUser.whatIfNotNull(
             whatIf = {
-                if (mAuth.currentUser!!.uid == allQues[pos].askedBy) {
+                if (mAuth.currentUser!!.uid == mQuestionList[pos].askedBy) {
                     holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
                     holder.seeStsts_tv.text = context.getString(R.string.see_stats)
                     showStats(holder, pos)
@@ -72,12 +83,13 @@ class QuestionsAdapter(
             }
         )
 
-        if (allQues[pos].imageUrl == "") {
+        if (mQuestionList[pos].imageUrl == "") {
             holder.question_image_Iv.visibility = View.GONE
             holder.question_loading.visibility = View.GONE
         } else {
             holder.question_image_Iv.visibility = View.VISIBLE
-            holder.question_image_Iv.load(allQues[pos].imageUrl,
+            holder.question_image_Iv.load(
+                mQuestionList[pos].imageUrl,
                 Coil.loader(),
                 builder = {
                     mAuth.currentUser.whatIfNotNull(
@@ -116,7 +128,7 @@ class QuestionsAdapter(
             .setTarget(holder.question_image_Iv)
             .setPopupView(R.layout.question_image_popup, this)
             .setLongPressDuration(2000)
-            .setTag(allQues[pos].imageUrl)
+            .setTag(mQuestionList[pos].imageUrl)
             .setDismissOnLongPressStop(true)
             .setDismissOnTouchOutside(true)
             .setDismissOnBackPressed(true)
@@ -130,8 +142,8 @@ class QuestionsAdapter(
             if (context is MainActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                            context.openProfileDetails(allQues[pos].askedBy)
+                        if (mAuth.currentUser!!.uid != mQuestionList[pos].askedBy) {
+                            context.openProfileDetails(mQuestionList[pos].askedBy)
                         } else {
                             context.startProfileAct()
                         }
@@ -147,8 +159,8 @@ class QuestionsAdapter(
             if (context is MainActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                            context.openProfileDetails(allQues[pos].askedBy)
+                        if (mAuth.currentUser!!.uid != mQuestionList[pos].askedBy) {
+                            context.openProfileDetails(mQuestionList[pos].askedBy)
                         } else {
                             context.startProfileAct()
                         }
@@ -164,8 +176,8 @@ class QuestionsAdapter(
             if (context is MainActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
-                            context.setVotes(1, allQues[pos].docId)
+                        if (mAuth.currentUser!!.uid != mQuestionList[pos].askedBy) {
+                            context.setVotes(1, mQuestionList[pos].docId)
                             holder.seeStsts_tv.setChipBackgroundColorResource(R.color.agree_color)
                             showStats(holder, pos)
                         }
@@ -177,9 +189,9 @@ class QuestionsAdapter(
             } else if (context is ProfileActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        if (mAuth.currentUser!!.uid != mQuestionList[pos].askedBy) {
                             holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
-                            context.setVotes(1, allQues[pos].docId)
+                            context.setVotes(1, mQuestionList[pos].docId)
                             showStats(holder, pos)
                         }
                     }
@@ -191,9 +203,9 @@ class QuestionsAdapter(
             if (context is MainActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        if (mAuth.currentUser!!.uid != mQuestionList[pos].askedBy) {
                             holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
-                            context.setVotes(2, allQues[pos].docId)
+                            context.setVotes(2, mQuestionList[pos].docId)
                             showStats(holder, pos)
                         }
                     },
@@ -204,9 +216,9 @@ class QuestionsAdapter(
             } else if (context is ProfileActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        if (mAuth.currentUser!!.uid != allQues[pos].askedBy) {
+                        if (mAuth.currentUser!!.uid != mQuestionList[pos].askedBy) {
                             holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
-                            context.setVotes(1, allQues[pos].docId)
+                            context.setVotes(1, mQuestionList[pos].docId)
                             showStats(holder, pos)
                         }
                     }
@@ -218,7 +230,7 @@ class QuestionsAdapter(
             if (context is MainActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        context.showStats(allQues[pos].docId)
+                        context.showStats(mQuestionList[pos].docId)
                     },
                     whatIfNot = {
                         context.startLogin()
@@ -227,7 +239,7 @@ class QuestionsAdapter(
             } else if (context is ProfileActivity) {
                 mAuth.currentUser.whatIfNotNull(
                     whatIf = {
-                        context.showStats(allQues[pos].docId)
+                        context.showStats(mQuestionList[pos].docId)
                     }
                 )
             }
@@ -275,7 +287,7 @@ class QuestionsAdapter(
             .collection("users")
             .document(mAuth.currentUser!!.uid)
             .collection("votes")
-            .document(allQues[pos].docId)
+            .document(mQuestionList[pos].docId)
             .get()
             .addOnCanceledListener {
                 if (activity is MainActivity) {
@@ -321,7 +333,7 @@ class QuestionsAdapter(
     }
 
     private fun getUserData(holder: ViewAdapter, pos: Int) {
-        userFirestore.collection("users").document(allQues[pos].askedBy)
+        userFirestore.collection("users").document(mQuestionList[pos].askedBy)
             .addSnapshotListener { snapshot, exception ->
 
                 exception.whatIfNotNull {
@@ -380,12 +392,6 @@ class QuestionsAdapter(
                     }
                 }
             }
-    }
-
-    fun setQuestions(allQuestionList: ArrayList<QuestionModel>) {
-        this.allQues.clear()
-        this.allQues.addAll(allQuestionList)
-        notifyDataSetChanged()
     }
 
     inner class ViewAdapter(context: View) : RecyclerView.ViewHolder(context) {

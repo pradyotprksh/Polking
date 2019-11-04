@@ -197,4 +197,5 @@
     <string name="likes">Likes</string>
     <string name="dislikes">Dislikes</string>
     <string name="see_comment_list">See Comment List</string>
+    <string name="no_replies_yet">No Replies Yet</string>
 </resources>

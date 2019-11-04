@@ -93,8 +93,9 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
                         }
 
                         if (allQuestionList.size > 0) {
+                            allQues.clear()
                             allQues.addAll(allQuestionList)
-                            questionsAdapter!!.notifyDataSetChanged()
+                            questionsAdapter?.updateListItems(allQues)
                         }
 
                         hideLoading()
@@ -114,8 +115,7 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
     }
 
     private fun adapterInit(view: View) {
-        allQues.clear()
-        questionsAdapter = QuestionsAdapter(allQues, context!!, activity!!)
+        questionsAdapter = QuestionsAdapter(context!!, activity!!)
         view.questions_rv.setHasFixedSize(true)
         view.questions_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)

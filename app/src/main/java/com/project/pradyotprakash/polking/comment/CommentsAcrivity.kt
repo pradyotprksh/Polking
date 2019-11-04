@@ -30,7 +30,6 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
 
     @Inject
     lateinit var presenter: CommentsActivityPresenter
-    private val allCommentList: ArrayList<CommentModel> = ArrayList()
     lateinit var questionStatistics: QuestionStatistics
     private var mainCommentAdapter: MainCommentsAdpater? = null
     private var questionId: String? = ""
@@ -73,6 +72,8 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
 
         initVariables()
 
+        adaptersInit()
+
         setOnClickListner()
 
         getComments()
@@ -83,7 +84,7 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     }
 
     private fun adaptersInit() {
-        mainCommentAdapter = MainCommentsAdpater(allCommentList, this, this)
+        mainCommentAdapter = MainCommentsAdpater(this, this)
         comment_rv.setHasFixedSize(true)
         comment_rv.layoutManager = LinearLayoutManager(
             this,
@@ -99,10 +100,8 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     override fun loadAllComments(allCommentList: ArrayList<CommentModel>) {
         commentCount_tv.text = "${allCommentList.size}"
         if (allCommentList.size > 0) {
-            adaptersInit()
             mainCommentAdapter?.setQuestionId(questionId!!)
-            mainCommentAdapter?.setComments(allCommentList)
-            mainCommentAdapter?.notifyDataSetChanged()
+            mainCommentAdapter?.updateListItems(allCommentList)
 
             Handler().postDelayed({
                 if (notificationCommentId != "") {
