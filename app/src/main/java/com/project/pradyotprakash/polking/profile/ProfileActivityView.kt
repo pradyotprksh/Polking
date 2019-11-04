@@ -6,9 +6,6 @@ import java.util.*
 
 interface ProfileActivityView: BaseView {
 
-    // hide the background option if bg not available
-    fun hideBackGroundOption()
-
     // set bg array list
     fun setBgList(allBgList: ArrayList<BgModel>)
 

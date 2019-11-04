@@ -100,7 +100,7 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
                         if (allFriends.size > 0) {
                             allFriendsList.clear()
                             allFriendsList.addAll(allFriends)
-                            friendsAdapter!!.notifyDataSetChanged()
+                            friendsAdapter?.updateListItems(allFriendsList)
                         }
                     }
             },
@@ -118,7 +118,7 @@ class FriendsBottomSheet @Inject constructor() : TransparentBottomSheet(), Profi
 
     private fun adapterForFriends(view: View) {
         allFriendsList.clear()
-        friendsAdapter = FriendsAdapter(allFriendsList, context!!, activity!!)
+        friendsAdapter = FriendsAdapter(context!!, activity!!)
         view.friends_rv.setHasFixedSize(true)
         view.friends_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)

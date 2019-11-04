@@ -185,14 +185,14 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
         view.questions_rv.adapter = questionsAdapter
 
         allFriendsList.clear()
-        friendsAdapter = FriendsAdapter(allFriendsList, context!!, activity!!)
+        friendsAdapter = FriendsAdapter(context!!, activity!!)
         view.friends_rv.setHasFixedSize(true)
         view.friends_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         view.friends_rv.adapter = friendsAdapter
 
         allBestFriendsList.clear()
-        bestfriendsAdapter = FriendsAdapter(allBestFriendsList, context!!, activity!!)
+        bestfriendsAdapter = FriendsAdapter(context!!, activity!!)
         view.bestFriends_rv.setHasFixedSize(true)
         view.bestFriends_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
@@ -625,7 +625,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                     if (allBestFriends.size > 0) {
                         allBestFriendsList.clear()
                         allBestFriendsList.addAll(allBestFriends)
-                        bestfriendsAdapter!!.notifyDataSetChanged()
+                        bestfriendsAdapter?.updateListItems(allBestFriendsList)
                     }
                 }
         }
@@ -666,7 +666,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                 if (allQuestionList.size > 0) {
                     allQues.clear()
                     allQues.addAll(allQuestionList)
-                    questionsAdapter!!.updateListItems(allQues)
+                    questionsAdapter?.updateListItems(allQues)
                 }
             }
     }
@@ -714,7 +714,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                     if (allFriends.size > 0) {
                         allFriendsList.clear()
                         allFriendsList.addAll(allFriends)
-                        friendsAdapter!!.notifyDataSetChanged()
+                        friendsAdapter?.updateListItems(allFriendsList)
                     }
                 }
         }

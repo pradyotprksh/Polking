@@ -80,7 +80,7 @@ class LabelsBtmSheet @Inject constructor() : TransparentBottomSheet(), ProfileEd
     }
 
     private fun setAdapter(view: View) {
-        labelsQuestionAdapter = LabelsQuestionAdapter(allLablesData, context!!, activity!!)
+        labelsQuestionAdapter = LabelsQuestionAdapter(context!!, activity!!)
         view.question_rv.setHasFixedSize(true)
         view.question_rv.layoutManager = LinearLayoutManager(
             context,
@@ -180,7 +180,7 @@ class LabelsBtmSheet @Inject constructor() : TransparentBottomSheet(), ProfileEd
         view: View
     ) {
         if (allLablesData.size > 0) {
-            labelsQuestionAdapter!!.notifyDataSetChanged()
+            labelsQuestionAdapter?.updateListItems(allLablesData)
         }
     }
 

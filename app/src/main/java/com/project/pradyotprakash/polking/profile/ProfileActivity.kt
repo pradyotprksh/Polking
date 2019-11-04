@@ -6,12 +6,10 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
-import androidx.core.view.MotionEventCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.Coil
 import coil.api.load
@@ -292,16 +290,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-
-        return if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_UP) {
-//            openNotificationBtmSheet()
-            true
-        } else {
-            super.onTouchEvent(event)
-        }
-    }
-
     override fun setUserProfileImage(imageUrl: String?) {
         imageUrl.whatIfNotNull(
             whatIf = {
@@ -368,11 +356,8 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     override fun setBgList(allBgList: ArrayList<BgModel>) {
         this.allBgList.clear()
         if (allBgList.size > 0) {
-            bgOption_cl.visibility = View.VISIBLE
             this.allBgList.addAll(allBgList)
             allBgAdapter?.notifyDataSetChanged()
-        } else {
-            bgOption_cl.visibility = View.GONE
         }
     }
 
@@ -381,10 +366,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         logd(getString(R.string.resume))
         presenter.getUserData()
         presenter.getBackgroundImages()
-    }
-
-    override fun hideBackGroundOption() {
-        bgOption_cl.visibility = View.GONE
     }
 
     override fun showLoading() {

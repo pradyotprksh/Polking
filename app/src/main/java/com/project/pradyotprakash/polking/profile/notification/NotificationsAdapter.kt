@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
@@ -20,11 +21,11 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.NotificationModel
+import com.project.pradyotprakash.polking.utility.diffUtilCallbacks.NotificationCallback
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 
 class NotificationsAdapter(
-    private val allNotificationsList: ArrayList<NotificationModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<NotificationsAdapter.ViewHolder>() {
@@ -32,6 +33,16 @@ class NotificationsAdapter(
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var questionFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val allNotificationsList: ArrayList<NotificationModel> = ArrayList()
+
+    fun updateListItems(list: ArrayList<NotificationModel>) {
+        val diffCallback = NotificationCallback(this.allNotificationsList, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.allNotificationsList.clear()
+        this.allNotificationsList.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =

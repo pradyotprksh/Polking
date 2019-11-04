@@ -12,11 +12,12 @@ open class InternetActivity : AppCompatActivity(),
     ConnectivityReceiver.ConnectivityReceiverListener {
 
     lateinit var messageBtmSheet: ShowMessage
+    var connectivityReceiver: ConnectivityReceiver = ConnectivityReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerReceiver(
-            ConnectivityReceiver(),
+            connectivityReceiver,
             IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         )
     }
@@ -35,6 +36,14 @@ open class InternetActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         ConnectivityReceiver.connectivityReceiverListener = this
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            unregisterReceiver(connectivityReceiver)
+        } catch (e: Exception) {
+        }
     }
 
     override fun onNetworkConnectionChanged(isConnected: Boolean) {

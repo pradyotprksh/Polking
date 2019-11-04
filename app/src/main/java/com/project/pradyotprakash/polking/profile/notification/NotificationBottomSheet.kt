@@ -100,7 +100,7 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
 
                         if (allNotification.size > 0) {
                             allNotificationsList.addAll(allNotification)
-                            notificationsAdapter!!.notifyDataSetChanged()
+                            notificationsAdapter?.updateListItems(allNotificationsList)
                         }
 
                         view.progressBar6.visibility = View.GONE
@@ -122,7 +122,7 @@ class NotificationBottomSheet @Inject constructor() : RoundBottomSheet(), Profil
 
     private fun initAdapter(view: View) {
         allNotificationsList.clear()
-        notificationsAdapter = NotificationsAdapter(allNotificationsList, context!!, activity!!)
+        notificationsAdapter = NotificationsAdapter(context!!, activity!!)
         view.notification_rv.setHasFixedSize(true)
         view.notification_rv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)

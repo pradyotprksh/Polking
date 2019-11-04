@@ -9,7 +9,7 @@ class QuestionsCallback(
 ) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return mOldList[oldItemPosition] == mNewList[newItemPosition]
+        return mOldList[oldItemPosition].docId == mNewList[newItemPosition].docId
     }
 
     override fun getOldListSize(): Int {
@@ -21,10 +21,18 @@ class QuestionsCallback(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val oldLabel = mOldList[oldItemPosition]
-        val newLabel = mNewList[newItemPosition]
+        val old = mOldList[oldItemPosition]
+        val new = mNewList[newItemPosition]
 
-        return oldLabel == newLabel
+        return (old.docId == new.docId &&
+                old.question == new.question &&
+                old.askedBy == new.askedBy &&
+                old.askedOnDate == new.askedOnDate &&
+                old.askedOnTime == new.askedOnTime &&
+                old.yesVote == new.yesVote &&
+                old.noVote == new.noVote &&
+                old.imageUrl == new.imageUrl &&
+                old.imageName == new.imageName)
     }
 
 }

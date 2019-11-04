@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
@@ -21,24 +22,33 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.LabelModel
+import com.project.pradyotprakash.polking.utility.diffUtilCallbacks.LabelQuestionCallback
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 import rm.com.longpresspopup.*
-import java.util.*
 
 class LabelsQuestionAdapter(
-    private val allLablesData: ArrayList<LabelModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<LabelsQuestionAdapter.ViewAdapter>(), PopupInflaterListener,
     PopupStateListener,
     PopupOnHoverListener {
 
+    private val allLablesData: ArrayList<LabelModel> = ArrayList()
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var questionFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var question_image: ImageView? = null
+
+    fun updateListItems(labels: ArrayList<LabelModel>) {
+        val diffCallback = LabelQuestionCallback(this.allLablesData, labels)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.allLablesData.clear()
+        this.allLablesData.addAll(labels)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewAdapter {
         val view =

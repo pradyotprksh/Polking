@@ -21,19 +21,16 @@ class InnerCommentCallback(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val oldLabel = mOldList[oldItemPosition]
-        val newLabel = mNewList[newItemPosition]
+        val old = mOldList[oldItemPosition]
+        val new = mNewList[newItemPosition]
 
-        return (oldLabel.comment == newLabel.comment &&
-                oldLabel.commentedOn == newLabel.commentedOn &&
-                oldLabel.commentedOnDate == newLabel.commentedOnDate &&
-                oldLabel.givenBy == newLabel.givenBy &&
-                oldLabel.dislikes == newLabel.dislikes &&
-                oldLabel.likes == newLabel.likes &&
-                oldLabel.commentedOnTime == newLabel.commentedOnTime &&
-                oldLabel.innerComment == newLabel.innerComment &&
-                oldLabel.docId == newLabel.docId &&
-                oldLabel.parentComment == newLabel.parentComment &&
-                oldLabel.isEdited == newLabel.isEdited)
+        return (old.comment == new.comment &&
+                old.commentedOn == new.commentedOn &&
+                old.commentedOnDate == new.commentedOnDate &&
+                old.givenBy == new.givenBy &&
+                old.commentedOnTime == new.commentedOnTime &&
+                old.docId == new.docId &&
+                old.parentComment == new.parentComment &&
+                old.isEdited == new.isEdited)
     }
 }

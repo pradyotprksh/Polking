@@ -34,6 +34,23 @@ class BackgroundAdapter(
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
+        setImage(p0, p1)
+
+        setOnClickListners(p0, p1)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private fun setOnClickListners(p0: ViewHolder, p1: Int) {
+        p0.itemView.setOnClickListener {
+            if (activity is ProfileActivity) {
+                if (p0.progressBar.visibility == View.GONE) {
+                    activity.setBgImage(bgList[p1].imageUrl, bgList[p1].docId)
+                }
+            }
+        }
+    }
+
+    private fun setImage(p0: ViewHolder, p1: Int) {
         p0.bgImage.load(bgList[p1].imageUrl,
             Coil.loader(),
             builder = {
@@ -51,14 +68,6 @@ class BackgroundAdapter(
                     }
                 })
             })
-
-        p0.itemView.setOnClickListener {
-            if (activity is ProfileActivity) {
-                if (p0.progressBar.visibility == View.GONE) {
-                    activity.setBgImage(bgList[p1].imageUrl, bgList[p1].docId)
-                }
-            }
-        }
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {

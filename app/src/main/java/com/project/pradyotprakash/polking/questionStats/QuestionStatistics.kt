@@ -107,14 +107,14 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
 
     private fun initAdapter(view: View) {
         allVoteList.clear()
-        votesAdapter = VotesAdapter(allVoteList, context!!, activity!!)
+        votesAdapter = VotesAdapter(context!!, activity!!)
         view.userYesVotesRv.setHasFixedSize(true)
         view.userYesVotesRv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
         view.userYesVotesRv.adapter = votesAdapter
 
         allNoVoteList.clear()
-        noVotesAdapter = VotesAdapter(allNoVoteList, context!!, activity!!)
+        noVotesAdapter = VotesAdapter(context!!, activity!!)
         view.userNoVotesRv.setHasFixedSize(true)
         view.userNoVotesRv.layoutManager =
             LinearLayoutManager(context!!, RecyclerView.HORIZONTAL, false)
@@ -198,7 +198,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                             getString(R.string.people_who_think_ike_you)
                         this.allVoteList.clear()
                         this.allVoteList.addAll(voteList)
-                        votesAdapter?.notifyDataSetChanged()
+                        votesAdapter?.updateListItems(allVoteList)
                     } else {
                         view.votesUserTv.visibility = View.GONE
                     }
@@ -210,7 +210,6 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private fun getNoVoteIfSameUser(view: View) {
         context.whatIfNotNull {
             this.allNoVoteList.clear()
-            noVotesAdapter?.notifyDataSetChanged()
             getNoVotesList(view)
         }
     }
@@ -248,7 +247,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                         view.votesUserTv2.text = getString(R.string.voted_no_for_your_question)
                         this.allNoVoteList.clear()
                         this.allNoVoteList.addAll(noVoteList)
-                        noVotesAdapter?.notifyDataSetChanged()
+                        noVotesAdapter?.updateListItems(allNoVoteList)
                     } else {
                         view.votesUserTv2.visibility = View.GONE
                     }
@@ -260,7 +259,6 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     private fun getYesVoteIfSameUser(view: View) {
         context.whatIfNotNull {
             this.allVoteList.clear()
-            votesAdapter?.notifyDataSetChanged()
             getYesVotesList(view)
         }
     }
@@ -298,7 +296,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                         view.votesUserTv.text = getString(R.string.voted_yes_for_your_question)
                         this.allVoteList.clear()
                         this.allVoteList.addAll(voteList)
-                        votesAdapter?.notifyDataSetChanged()
+                        votesAdapter?.updateListItems(allVoteList)
                     } else {
                         view.votesUserTv.visibility = View.GONE
                     }

@@ -67,22 +67,33 @@ class QuestionsAdapter(
 
         holder.question_tv.text = mQuestionList[pos].question
 
-        mAuth.currentUser.whatIfNotNull(
-            whatIf = {
-                if (mAuth.currentUser!!.uid == mQuestionList[pos].askedBy) {
-                    holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
-                    holder.seeStsts_tv.text = context.getString(R.string.see_stats)
-                    showStats(holder, pos)
-                } else {
-                    checkIfVoteExists(holder, pos)
-                }
-            },
-            whatIfNot = {
-                holder.seeStsts_tv.text = context.getString(R.string.please_login)
-                showStats(holder, pos)
-            }
-        )
+        getVotes(holder, pos)
 
+        setImageIfPresent(holder, pos)
+
+        setPopUpForImage(holder, pos)
+
+        setOnClickListners(holder, pos)
+
+    }
+
+    private fun setPopUpForImage(holder: ViewAdapter, pos: Int) {
+        val popUp: LongPressPopup = LongPressPopupBuilder(context)
+            .setTarget(holder.question_image_Iv)
+            .setPopupView(R.layout.question_image_popup, this)
+            .setLongPressDuration(1005)
+            .setTag(mQuestionList[pos].imageUrl)
+            .setDismissOnLongPressStop(true)
+            .setDismissOnTouchOutside(true)
+            .setDismissOnBackPressed(true)
+            .setCancelTouchOnDragOutsideView(true)
+            .setPopupListener(this)
+            .setAnimationType(LongPressPopup.ANIMATION_TYPE_FROM_CENTER)
+            .build()
+        popUp.register()
+    }
+
+    private fun setImageIfPresent(holder: ViewAdapter, pos: Int) {
         if (mQuestionList[pos].imageUrl == "") {
             holder.question_image_Iv.visibility = View.GONE
             holder.question_loading.visibility = View.GONE
@@ -123,21 +134,27 @@ class QuestionsAdapter(
                     })
                 })
         }
+    }
 
-        val popUp: LongPressPopup = LongPressPopupBuilder(context)
-            .setTarget(holder.question_image_Iv)
-            .setPopupView(R.layout.question_image_popup, this)
-            .setLongPressDuration(2000)
-            .setTag(mQuestionList[pos].imageUrl)
-            .setDismissOnLongPressStop(true)
-            .setDismissOnTouchOutside(true)
-            .setDismissOnBackPressed(true)
-            .setCancelTouchOnDragOutsideView(true)
-            .setPopupListener(this)
-            .setAnimationType(LongPressPopup.ANIMATION_TYPE_FROM_CENTER)
-            .build()
-        popUp.register()
+    private fun getVotes(holder: ViewAdapter, pos: Int) {
+        mAuth.currentUser.whatIfNotNull(
+            whatIf = {
+                if (mAuth.currentUser!!.uid == mQuestionList[pos].askedBy) {
+                    holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+                    holder.seeStsts_tv.text = context.getString(R.string.see_stats)
+                    showStats(holder, pos)
+                } else {
+                    checkIfVoteExists(holder, pos)
+                }
+            },
+            whatIfNot = {
+                holder.seeStsts_tv.text = context.getString(R.string.please_login)
+                showStats(holder, pos)
+            }
+        )
+    }
 
+    private fun setOnClickListners(holder: ViewAdapter, pos: Int) {
         holder.profile_iv.setOnClickListener {
             if (context is MainActivity) {
                 mAuth.currentUser.whatIfNotNull(
@@ -244,7 +261,6 @@ class QuestionsAdapter(
                 )
             }
         }
-
     }
 
     override fun onViewInflated(popupTag: String?, root: View?) {

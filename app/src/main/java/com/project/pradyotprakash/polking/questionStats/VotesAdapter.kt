@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
@@ -17,17 +18,27 @@ import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.home.MainActivity
 import com.project.pradyotprakash.polking.profile.ProfileActivity
 import com.project.pradyotprakash.polking.utility.VotesModel
+import com.project.pradyotprakash.polking.utility.diffUtilCallbacks.VotesCallback
 import com.skydoves.whatif.whatIfNotNull
 import de.hdodenhof.circleimageview.CircleImageView
 
 class VotesAdapter(
-    private val allVotesModel: ArrayList<VotesModel>,
     private val context: Context,
     private val activity: Activity
 ) : RecyclerView.Adapter<VotesAdapter.ViewHolder>() {
 
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val allVotesModel: ArrayList<VotesModel> = ArrayList()
+
+    fun updateListItems(list: ArrayList<VotesModel>) {
+        val diffCallback = VotesCallback(this.allVotesModel, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.allVotesModel.clear()
+        this.allVotesModel.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val view =
@@ -41,6 +52,22 @@ class VotesAdapter(
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
 
+        setUserData(p0, p1)
+
+        setOnClickListners(p0, p1)
+
+    }
+
+    private fun setOnClickListners(p0: ViewHolder, p1: Int) {
+        p0.nameTv.setOnClickListener {
+            openProfileOptions(p0, p1)
+        }
+        p0.itemView.setOnClickListener {
+            openProfileOptions(p0, p1)
+        }
+    }
+
+    private fun setUserData(p0: ViewHolder, p1: Int) {
         userFirestore.collection("users").document(allVotesModel[p1].votedBy)
             .addSnapshotListener { snapshot, exception ->
 
@@ -81,14 +108,6 @@ class VotesAdapter(
                 }
 
             }
-
-        p0.nameTv.setOnClickListener {
-            openProfileOptions(p0, p1)
-        }
-        p0.itemView.setOnClickListener {
-            openProfileOptions(p0, p1)
-        }
-
     }
 
     private fun openProfileOptions(p0: ViewHolder, p1: Int) {
