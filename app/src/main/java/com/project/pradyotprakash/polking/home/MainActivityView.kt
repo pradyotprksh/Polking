@@ -58,4 +58,7 @@ interface MainActivityView: BaseView {
     // set labels
     fun loadLabels(allLabelList: ArrayList<String>)
 
+    // clear questions after login
+    fun clearQuestions()
+
 }

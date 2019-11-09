@@ -165,7 +165,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
 
     private fun getSimilarVotesList(view: View, voteText: String) {
         getSimilarVoteFirestore.collection(questionId)
-            .document(mAuth.currentUser!!.uid)
+            .document(questionId)
             .collection(voteText)
             .addSnapshotListener { snapshot, exception ->
                 exception.whatIfNotNull {
@@ -216,7 +216,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
 
     private fun getNoVotesList(view: View) {
         getSimilarVoteFirestore.collection(questionId)
-            .document(mAuth.currentUser!!.uid)
+            .document(questionId)
             .collection("noVotes")
             .addSnapshotListener { snapshot, exception ->
                 exception.whatIfNotNull {
@@ -265,7 +265,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
 
     private fun getYesVotesList(view: View) {
         getSimilarVoteFirestore.collection(questionId)
-            .document(mAuth.currentUser!!.uid)
+            .document(questionId)
             .collection("yesVotes")
             .addSnapshotListener { snapshot, exception ->
                 exception.whatIfNotNull {
@@ -720,10 +720,7 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
                                         whatIf = {
                                             if (e is FirebaseFunctionsException) {
                                                 view.progressBar8.visibility = View.GONE
-                                                showMessage(
-                                                    "Something Went Wrong." +
-                                                            " ${e.localizedMessage}", 1
-                                                )
+                                                deleteQuestion(imageName, view)
                                             } else {
                                                 deleteQuestion(imageName, view)
                                             }

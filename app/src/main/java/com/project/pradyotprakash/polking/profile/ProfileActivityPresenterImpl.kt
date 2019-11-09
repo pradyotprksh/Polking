@@ -261,10 +261,7 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
                                 whatIf = {
                                     if (e is FirebaseFunctionsException) {
                                         mView.hideLoading()
-                                        mView.showMessage(
-                                            "Something Went Wrong. ${e.localizedMessage}",
-                                            1
-                                        )
+                                        openStats(docId)
                                     } else {
                                         openStats(docId)
                                     }

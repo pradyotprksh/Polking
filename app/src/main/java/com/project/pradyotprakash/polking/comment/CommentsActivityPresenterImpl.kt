@@ -62,10 +62,7 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
                                         whatIf = {
                                             if (e is FirebaseFunctionsException) {
                                                 mView.hideLoading()
-                                                mView.showMessage(
-                                                    "Something Went Wrong." +
-                                                            " ${e.localizedMessage}", 1
-                                                )
+                                                openStats(questionId)
                                             } else {
                                                 openStats(questionId)
                                             }

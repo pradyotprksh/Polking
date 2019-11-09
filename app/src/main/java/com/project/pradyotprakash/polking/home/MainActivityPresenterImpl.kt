@@ -542,6 +542,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             mAuth.currentUser.whatIfNotNull(
                 whatIf = {
                     currentUser = mAuth.currentUser
+                    mView.clearQuestions()
                     getUserData()
                     getQuestions()
                     setDynamicShortcuts()
@@ -713,10 +714,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                                 whatIf = {
                                     if (e is FirebaseFunctionsException) {
                                         mView.hideLoading()
-                                        mView.showMessage(
-                                            "Something Went Wrong." +
-                                                    " ${e.localizedMessage}", 1
-                                        )
+                                        openStats(docId)
                                     } else {
                                         openStats(docId)
                                     }

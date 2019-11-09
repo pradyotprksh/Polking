@@ -571,12 +571,17 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     }
 
+    override fun clearQuestions() {
+        this.allQues.clear()
+        questionsAdapter!!.updateListItems(allQues)
+    }
+
     override fun loadQuestions(allQuestionList: ArrayList<QuestionModel>) {
         this.allQues.clear()
         if (allQuestionList.size > 0) {
             recentQ_rv.visibility = View.VISIBLE
             allQues.addAll(allQuestionList)
-            questionsAdapter!!.updateListItems(allQuestionList)
+            questionsAdapter!!.updateListItems(allQues)
         } else {
             recentQ_rv.visibility = View.GONE
         }
