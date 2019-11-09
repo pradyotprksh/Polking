@@ -71,12 +71,14 @@ class SplashActivity : InternetActivity(), SplashView {
         messageBtmSheet = ShowMessage.newInstance()
         if (!messageBtmSheet.isAdded) {
             messageBtmSheet.show(supportFragmentManager, "btmSheet")
+            messageBtmSheet.isCancelable = false
             messageBtmSheet.setMessage(message, type)
         } else {
             messageBtmSheet.dismiss()
             Handler().postDelayed({
                 if (!messageBtmSheet.isAdded) {
                     messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                    messageBtmSheet.isCancelable = false
                     messageBtmSheet.setMessage(message, type)
                 }
             }, 1500)
