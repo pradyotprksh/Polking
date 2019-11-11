@@ -633,6 +633,7 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
 
     private fun getUserQuestionsList() {
         firestore.collection("question")
+            .whereEqualTo("askedBy", askedBy)
             .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
                 exception.whatIfNotNull {
@@ -647,20 +648,15 @@ class OtherProfileOptions @Inject constructor() : TransparentBottomSheet(), Prof
                     for (doc in snapshot!!.documentChanges) {
                         showLoading()
                         if (doc.type == DocumentChange.Type.ADDED) {
-
                             val docId = doc.document.id
                             val quesList: QuestionModel =
                                 doc.document.toObject<QuestionModel>(QuestionModel::class.java)
                                     .withId(docId)
-                            if (quesList.askedBy == askedBy) {
-                                this.allQuestionList.add(quesList)
-                            }
-
+                            this.allQuestionList.add(quesList)
                         }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    showMessage(e.localizedMessage, 1)
                 }
 
                 if (allQuestionList.size > 0) {

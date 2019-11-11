@@ -66,6 +66,7 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
                 showLoading()
 
                 firestore.collection("question")
+                    .whereEqualTo("askedBy", mAuth.currentUser!!.uid)
                     .orderBy("askedOn", Query.Direction.DESCENDING)
                     .addSnapshotListener { snapshot, exception ->
                         exception.whatIfNotNull {
@@ -83,13 +84,10 @@ class QuestionsBottomSheet @Inject constructor() : TransparentBottomSheet(), Pro
                                 val quesList: QuestionModel =
                                     doc.document.toObject<QuestionModel>(QuestionModel::class.java)
                                         .withId(docId)
-                                if (quesList.askedBy == mAuth.currentUser!!.uid) {
-                                    this.allQuestionList.add(quesList)
-                                }
+                                this.allQuestionList.add(quesList)
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            showMessage(e.localizedMessage, 1)
                         }
 
                         if (allQuestionList.size > 0) {
