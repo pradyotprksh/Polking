@@ -198,4 +198,6 @@
     <string name="dislikes">Dislikes</string>
     <string name="see_comment_list">See Comment List</string>
     <string name="no_replies_yet">No Replies Yet</string>
+    <string name="server_in_developemnt">The Server is in development.</string>
+    <string name="try_some_time">Please try after some time.</string>
 </resources>
