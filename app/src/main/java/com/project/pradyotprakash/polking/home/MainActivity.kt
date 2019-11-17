@@ -23,11 +23,15 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
 import coil.request.Request
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.tasks.Task
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.chatWindow.ChatWindow
+import com.project.pradyotprakash.polking.comment.CommentsAcrivity
+import com.project.pradyotprakash.polking.home.adapter.ChatRequestAdapter
 import com.project.pradyotprakash.polking.home.adapter.LabelsAdapter
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
 import com.project.pradyotprakash.polking.labelsBtmSheet.LabelsBtmSheet
@@ -57,6 +61,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     lateinit var updateBtmSheet: UpdateBtmSheet
     private var questionsAdapter: QuestionsAdapter? = null
     private var labelAdapter: LabelsAdapter? = null
+    private var chatRequestAdapter: ChatRequestAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
     private var imageLabel: ArrayList<String> = ArrayList()
     private var allLabelList: ArrayList<String> = ArrayList()
@@ -123,7 +128,6 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     private fun getDataForUser() {
         presenter.addAuthStateListener()
-        presenter.getProfileData()
     }
 
     private fun getQuestions() {
@@ -146,6 +150,14 @@ class MainActivity : InternetActivity(), MainActivityView {
             RecyclerView.HORIZONTAL, false
         )
         labels_rv.adapter = labelAdapter
+
+        chatRequestAdapter = ChatRequestAdapter(this, this)
+        chats_rv.setHasFixedSize(true)
+        chats_rv.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.HORIZONTAL, false
+        )
+        chats_rv.adapter = chatRequestAdapter
     }
 
     private fun textChangeListners() {
@@ -392,6 +404,15 @@ class MainActivity : InternetActivity(), MainActivityView {
         }
     }
 
+    override fun loadChatRequest(allChatRequestList: java.util.ArrayList<String>) {
+        if (allChatRequestList.size > 0) {
+            chats_rv.visibility = View.VISIBLE
+            chatRequestAdapter?.updateListItems(allChatRequestList)
+        } else {
+            chats_rv.visibility = View.GONE
+        }
+    }
+
     override fun loadLabels(allLabelList: ArrayList<String>) {
         this.allLabelList.clear()
         if (allLabelList.size > 0) {
@@ -496,6 +517,7 @@ class MainActivity : InternetActivity(), MainActivityView {
                         this.listener(object : Request.Listener {
                             override fun onError(data: Any, throwable: Throwable) {
                                 imageProgressBar.visibility = View.GONE
+                                user_iv.load(R.drawable.ic_default_pic)
                             }
 
                             override fun onSuccess(
@@ -505,7 +527,7 @@ class MainActivity : InternetActivity(), MainActivityView {
                                 super.onSuccess(data, source)
                                 imageProgressBar.visibility = View.GONE
                                 user_iv.borderWidth = 2
-                                user_iv.borderColor = resources.getColor(R.color.colorPrimary)
+                                user_iv.borderColor = resources.getColor(R.color.white)
                             }
                         })
                     })
@@ -632,6 +654,50 @@ class MainActivity : InternetActivity(), MainActivityView {
             labelsBtmSheet.addLabelsList(allLabelList, position)
             labelsBtmSheet.addQuestions(allQues)
         }
+    }
+
+    fun openComment(docId: String) {
+        val bundle = Bundle()
+        bundle.putString("questionId", docId)
+        openActivity(CommentsAcrivity::class.java, "questionId", bundle)
+    }
+
+    fun checkForChat(docId: String, askedBy: String) {
+        presenter.checkForChatRequest(docId, askedBy)
+    }
+
+    override fun showChatRequestOption(docId: String, askedBy: String) {
+        MaterialDialog(this)
+            .title(text = getString(R.string.chat_request))
+            .message(text = "Request for one-to-one conversation?")
+            .show {
+                noAutoDismiss()
+                icon(R.drawable.chat_iv)
+                positiveButton(text = getString(R.string.yes)) {
+                    presenter.callGenerateChatRequest(docId, askedBy)
+                    dismiss()
+                }
+            }
+    }
+
+    fun showOptionForAcceptRequest(requestBy: String) {
+        MaterialDialog(this)
+            .title(text = getString(R.string.chat_request))
+            .message(text = "Accept Chat Request for one-to-one conversation?")
+            .show {
+                noAutoDismiss()
+                icon(R.drawable.chat_iv)
+                positiveButton(text = getString(R.string.yes)) {
+                    presenter.acceptChatRequest(requestBy)
+                    dismiss()
+                }
+            }
+    }
+
+    fun openChatWindow(chatWindowId: String) {
+        val bundle = Bundle()
+        bundle.putString("chatWindowId", chatWindowId)
+        openActivity(ChatWindow::class.java, "chatWindowId", bundle)
     }
 
 }

@@ -42,4 +42,16 @@ interface MainActivityPresenter: BasePresenter {
     // get image labels
     fun getImageLabels()
 
+    // get request for chats
+    fun getRequestForChats()
+
+    // check for chat request
+    fun checkForChatRequest(docId: String, askedBy: String)
+
+    // generate chat request
+    fun callGenerateChatRequest(docId: String, askedBy: String)
+
+    // accept chat request
+    fun acceptChatRequest(requestBy: String)
+
 }

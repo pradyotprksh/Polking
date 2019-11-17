@@ -1,5 +1,7 @@
 package com.project.pradyotprakash.polking.dagger
 
+import com.project.pradyotprakash.polking.chatWindow.ChatWindow
+import com.project.pradyotprakash.polking.chatWindow.ChatWindowModule
 import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.comment.CommentsActivityModule
 import com.project.pradyotprakash.polking.home.MainActivity
@@ -47,4 +49,8 @@ abstract class BuildersModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = [CommentsActivityModule::class])
     abstract fun commentsActivity(): CommentsAcrivity
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = [ChatWindowModule::class])
+    abstract fun chatsActivity(): ChatWindow
 }

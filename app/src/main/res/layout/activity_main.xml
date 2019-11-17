@@ -165,6 +165,17 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/user_iv" />
 
+                    <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/chats_rv"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clipToPadding="false"
+                            android:padding="10dp"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/labels_rv" />
+
                     <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
@@ -177,7 +188,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/labels_rv" />
+                            app:layout_constraintTop_toBottomOf="@+id/chats_rv" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

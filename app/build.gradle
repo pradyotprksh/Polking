@@ -62,10 +62,10 @@ dependencies {
 
     // Firebase
     implementation "com.google.firebase:firebase-auth:$firebase_version"
-    implementation "com.google.firebase:firebase-firestore:$firestore_version"
+    implementation "com.google.firebase:firebase-firestore:21.3.0"
     implementation "com.google.firebase:firebase-storage:$firebase_version"
     implementation "com.google.android.gms:play-services-auth:$play_service"
-    implementation "com.google.firebase:firebase-ml-vision:24.0.0"
+    implementation "com.google.firebase:firebase-ml-vision:24.0.1"
     implementation "com.google.firebase:firebase-ml-vision-face-model:19.0.0"
     implementation 'com.google.firebase:firebase-ml-vision-image-label-model:19.0.0'
     implementation 'com.google.firebase:firebase-ml-natural-language-smart-reply-model:20.0.7'
@@ -83,7 +83,7 @@ dependencies {
     api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
 
     //Lotte Animation
-    implementation 'com.airbnb.android:lottie:3.1.0'
+    implementation 'com.airbnb.android:lottie:3.2.0'
 
     // slider
     implementation 'com.ramotion.fluidslider:fluid-slider:0.3.1'
@@ -102,6 +102,8 @@ dependencies {
 
     // material design popup
     implementation 'com.afollestad.material-dialogs:core:3.1.1'
+
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

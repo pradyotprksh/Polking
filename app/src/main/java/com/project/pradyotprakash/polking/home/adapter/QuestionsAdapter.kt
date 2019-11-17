@@ -1,5 +1,6 @@
 package com.project.pradyotprakash.polking.home.adapter
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -18,6 +19,7 @@ import coil.transform.BlurTransformation
 import coil.transform.GrayscaleTransformation
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.chip.Chip
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.pradyotprakash.polking.R
@@ -261,6 +263,44 @@ class QuestionsAdapter(
                 )
             }
         }
+
+        holder.seeComnets_tv.setOnClickListener {
+            if (context is MainActivity) {
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        context.openComment(mQuestionList[pos].docId)
+                    },
+                    whatIfNot = {
+                        context.startLogin()
+                    }
+                )
+            } else if (context is ProfileActivity) {
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        context.openComment(mQuestionList[pos].docId)
+                    }
+                )
+            }
+        }
+
+        holder.startChat_fb.setOnClickListener {
+            if (context is MainActivity) {
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        context.checkForChat(mQuestionList[pos].docId, mQuestionList[pos].askedBy)
+                    },
+                    whatIfNot = {
+                        context.startLogin()
+                    }
+                )
+            } else if (context is ProfileActivity) {
+                mAuth.currentUser.whatIfNotNull(
+                    whatIf = {
+                        context.checkForChat(mQuestionList[pos].docId, mQuestionList[pos].askedBy)
+                    }
+                )
+            }
+        }
     }
 
     override fun onViewInflated(popupTag: String?, root: View?) {
@@ -298,6 +338,7 @@ class QuestionsAdapter(
 
     }
 
+    @SuppressLint("RestrictedApi")
     private fun checkIfVoteExists(holder: ViewAdapter, pos: Int) {
         getVotesFirestore
             .collection("users")
@@ -329,8 +370,12 @@ class QuestionsAdapter(
                         holder.seeStsts_tv.text = context.getString(R.string.see_stats)
                         holder.seeStsts_tv.setChipBackgroundColorResource(R.color.disagree_color)
                     }
+                    holder.seeComnets_tv.visibility = View.VISIBLE
+                    holder.startChat_fb.visibility = View.VISIBLE
                     showStats(holder, pos)
                 } else {
+                    holder.seeComnets_tv.visibility = View.GONE
+                    holder.startChat_fb.visibility = View.GONE
                     hideStats(holder, pos)
                 }
             }
@@ -419,6 +464,8 @@ class QuestionsAdapter(
         val seeStsts_tv: Chip = context.findViewById(R.id.seeStsts_tv)
         val question_loading: LottieAnimationView = context.findViewById(R.id.question_loading)
         val question_image_Iv: ImageView = context.findViewById(R.id.question_image_Iv)
+        val seeComnets_tv: FloatingActionButton = context.findViewById(R.id.seeComnets_tv)
+        val startChat_fb: FloatingActionButton = context.findViewById(R.id.startChat_fb)
     }
 
 }

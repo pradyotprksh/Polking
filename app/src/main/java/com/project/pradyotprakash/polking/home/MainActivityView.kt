@@ -61,4 +61,10 @@ interface MainActivityView: BaseView {
     // clear questions after login
     fun clearQuestions()
 
+    // load chat request
+    fun loadChatRequest(allChatRequestList: ArrayList<String>)
+
+    // show chat request
+    fun showChatRequestOption(docId: String, askedBy: String)
+
 }

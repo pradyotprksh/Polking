@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        tools:context=".chatWindow.ChatWindow">
+
+    <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/chats_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingTop="175dp"
+                    android:paddingBottom="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+            android:id="@+id/view11"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="20dp"
+            android:alpha="0.9"
+            android:background="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="@+id/commentVal_rt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+            android:id="@+id/close_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="50dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:tint="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/close_icon"
+            tools:ignore="VectorDrawableCompat" />
+
+    <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:fontFamily="@font/muli_bold"
+            android:text="@string/loading"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/close_iv"
+            app:layout_constraintStart_toEndOf="@+id/close_iv"
+            app:layout_constraintTop_toTopOf="@+id/close_iv" />
+
+    <EditText
+            android:id="@+id/commentVal_rt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/edittext_bg"
+            android:focusable="true"
+            android:fontFamily="@font/muli_semi_bold"
+            android:hint="@string/type_a_message"
+            android:imeActionLabel="Send"
+            android:imeOptions="actionSend"
+            android:inputType="textCapSentences"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/close_iv" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:clickable="true"
+            android:tint="@color/colorPrimary"
+            app:backgroundTint="@color/white"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/commentVal_rt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/commentVal_rt"
+            app:maxImageSize="24dp"
+            app:rippleColor="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/ic_send"
+            tools:ignore="VectorDrawableCompat" />
+
+    <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="20dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/close_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/close_iv"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_menu"
+            tools:ignore="VectorDrawableCompat" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

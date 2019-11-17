@@ -21,4 +21,10 @@ interface ProfileActivityPresenter: BasePresenter {
 
     // call the method to make all the notifications marked as read
     fun callNotificationIsReadMethod()
+
+    // check for chat request
+    fun checkForChatRequest(docId: String, askedBy: String)
+
+    // generate chat request
+    fun callGenerateChatRequest(docId: String, askedBy: String)
 }

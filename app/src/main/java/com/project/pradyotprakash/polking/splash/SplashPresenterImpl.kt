@@ -24,37 +24,37 @@ class SplashPresenterImpl @Inject constructor() : SplashPresenter {
 
 
     override fun start() {
-        mAuth.currentUser.whatIfNotNull(
-            whatIf = {
-                if (mAuth.currentUser!!.uid == DEVELOPER_UID) {
-                    mView.showLoading()
-                }
-            },
-            whatIfNot = {
-                dataBase.collection("status").document("status").get()
-                    .addOnSuccessListener { result ->
-                        if (result.exists()) {
-                            if (result.data!!["isInDevelopment"].toString() == "true") {
+        dataBase.collection("status").document("status").get()
+            .addOnSuccessListener { result ->
+                if (result.exists()) {
+                    if (result.data!!["isInDevelopment"].toString() == "true") {
+                        mAuth.currentUser.whatIfNotNull(
+                            whatIf = {
+                                if (mAuth.currentUser!!.uid == DEVELOPER_UID) {
+                                    mView.showLoading()
+                                }
+                            },
+                            whatIfNot = {
                                 mView.showMessage(
                                     mContext.getString(R.string.server_in_developemnt) +
                                             mContext.getString(R.string.try_some_time) +
                                             "Sorry for the inconvenience. \uD83D\uDE4F",
                                     2
                                 )
-                            } else {
-                                mView.showLoading()
                             }
-                        } else {
-                            mView.showLoading()
-                        }
-
-                    }.addOnFailureListener {
-                        mView.showLoading()
-                    }.addOnCanceledListener {
+                        )
+                    } else {
                         mView.showLoading()
                     }
+                } else {
+                    mView.showLoading()
+                }
+
+            }.addOnFailureListener {
+                mView.showLoading()
+            }.addOnCanceledListener {
+                mView.showLoading()
             }
-        )
     }
 
     override fun stop() {

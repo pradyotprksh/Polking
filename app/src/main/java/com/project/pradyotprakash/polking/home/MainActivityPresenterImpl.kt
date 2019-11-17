@@ -38,15 +38,19 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
 
     private val allQuestionList = ArrayList<QuestionModel>()
     private val allLabelList = ArrayList<String>()
+    private val allChatRequestList = ArrayList<String>()
     lateinit var mContext: Activity
     @Inject lateinit var mView: MainActivityView
     private lateinit var mAuth: FirebaseAuth
     private var currentUser: FirebaseUser? = null
     private lateinit var dataBase: FirebaseFirestore
     private lateinit var addVotesDataBase: FirebaseFirestore
+    private lateinit var getQuestionFirestore: FirebaseFirestore
     private lateinit var getbestfriendfirestore: FirebaseFirestore
+    private lateinit var isChatRequestAlreadyMade: FirebaseFirestore
     private lateinit var firebaseFunctions: FirebaseFunctions
     private lateinit var labelsFirestore: FirebaseFirestore
+    private lateinit var generateChatRequest: FirebaseFirestore
 
     @SuppressLint("SimpleDateFormat")
     var dateFormat: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd")
@@ -65,6 +69,9 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         labelsFirestore = FirebaseFirestore.getInstance()
         addVotesDataBase = FirebaseFirestore.getInstance()
         getbestfriendfirestore = FirebaseFirestore.getInstance()
+        isChatRequestAlreadyMade = FirebaseFirestore.getInstance()
+        generateChatRequest = FirebaseFirestore.getInstance()
+        getQuestionFirestore = FirebaseFirestore.getInstance()
     }
 
     override fun start() {
@@ -195,6 +202,29 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             }
     }
 
+    override fun getRequestForChats() {
+        currentUser.whatIfNotNull {
+            dataBase
+                .collection("request")
+                .document(mAuth.currentUser!!.uid)
+                .collection("messageRequest")
+                .addSnapshotListener { snapshot, _ ->
+                    allChatRequestList.clear()
+
+                    try {
+                        for (doc in snapshot!!) {
+                            allChatRequestList.add(doc.id)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    mView.loadChatRequest(allChatRequestList)
+
+                }
+        }
+    }
+
     private fun uploadQuestionImage(
         task: Task<Uri>,
         imagePath: StorageReference,
@@ -292,6 +322,155 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                             .document(label.toLowerCase(Locale.ENGLISH))
                             .set(dummyLabeldata)
                     }
+            }
+        }
+    }
+
+    override fun callGenerateChatRequest(docId: String, askedBy: String) {
+        mAuth.currentUser.whatIfNotNull {
+            mView.showLoading()
+            generateChatRequest
+                .collection("request")
+                .document(mAuth.currentUser!!.uid)
+                .collection("messageRequest")
+                .document(askedBy)
+                .set(
+                    hashMapOf(
+                        "requestBy" to mAuth.currentUser!!.uid,
+                        "requestTo" to askedBy,
+                        "questionId" to docId,
+                        "isRequestAccepted" to "false",
+                        "isCompleted" to "false",
+                        "isUserTyping" to "false"
+                    )
+                )
+                .addOnCompleteListener {
+                    getQuestionFirestore
+                        .collection("request")
+                        .document(askedBy)
+                        .collection("messageRequest")
+                        .document(mAuth.currentUser!!.uid)
+                        .set(
+                            hashMapOf(
+                                "requestBy" to mAuth.currentUser!!.uid,
+                                "requestTo" to askedBy,
+                                "questionId" to docId,
+                                "isCompleted" to "false",
+                                "isRequestAccepted" to "false",
+                                "isUserTyping" to "false"
+                            )
+                        )
+                        .addOnCompleteListener {
+                            mView.hideLoading()
+                        }
+                }
+                .addOnFailureListener {
+                    mView.hideLoading()
+                }
+        }
+    }
+
+    override fun acceptChatRequest(requestBy: String) {
+        mAuth.currentUser.whatIfNotNull {
+            mView.showLoading()
+            val data = HashMap<String, Any>()
+            data["isRequestAccepted"] = "true"
+            generateChatRequest
+                .collection("request")
+                .document(mAuth.currentUser!!.uid)
+                .collection("messageRequest")
+                .document(requestBy)
+                .update(data)
+                .addOnCompleteListener {
+                    getQuestionFirestore
+                        .collection("request")
+                        .document(requestBy)
+                        .collection("messageRequest")
+                        .document(mAuth.currentUser!!.uid)
+                        .update(data)
+                        .addOnCompleteListener {
+                            mView.hideLoading()
+                        }
+                }
+                .addOnFailureListener {
+                    mView.hideLoading()
+                }
+        }
+    }
+
+    override fun checkForChatRequest(docId: String, askedBy: String) {
+        mContext.whatIfNotNull {
+            mAuth.currentUser.whatIfNotNull {
+                isChatRequestAlreadyMade
+                    .collection("request")
+                    .document(mAuth.currentUser!!.uid)
+                    .collection("messageRequest")
+                    .document(askedBy)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        if (result.exists()) {
+
+                            dataBase.collection("users").document(askedBy)
+                                .addSnapshotListener { snapshot, exception ->
+                                    exception.whatIfNotNull {
+                                        mView.showMessage(
+                                            "Something Went Wrong. ${exception!!.localizedMessage}",
+                                            1
+                                        )
+                                    }
+
+                                    snapshot.whatIfNotNull {
+                                        if (snapshot!!.exists()) {
+                                            if (result["questionId"] == docId) {
+                                                mView.showMessage(
+                                                    "Request already sent. " +
+                                                            snapshot.data!!["name"].toString() +
+                                                            " needs to accept your chat request to start this conversation",
+                                                    2
+                                                )
+                                            } else {
+                                                if (result["requestBy"] == askedBy) {
+                                                    if (result["isRequestAccepted"] == "false") {
+                                                        mView.showMessage(
+                                                            "You already have a request from " +
+                                                                    snapshot.data!!["name"].toString(),
+                                                            2
+                                                        )
+                                                    } else {
+                                                        mView.showMessage(
+                                                            "You already in a conversation with " +
+                                                                    snapshot.data!!["name"].toString() + " related to another question.",
+                                                            2
+                                                        )
+                                                    }
+                                                } else {
+                                                    if (result["isRequestAccepted"] == "false") {
+                                                        mView.showMessage(
+                                                            "You already made a request for another question.",
+                                                            2
+                                                        )
+                                                    } else {
+                                                        mView.showMessage(
+                                                            "You already in a conversation with " +
+                                                                    snapshot.data!!["name"].toString() + " related to another question.",
+                                                            2
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            mView.showChatRequestOption(docId, askedBy)
+                                        }
+                                    }
+                                }
+                        } else {
+                            mView.showChatRequestOption(docId, askedBy)
+                        }
+                    }
+                    .addOnFailureListener {
+                        mView.showChatRequestOption(docId, askedBy)
+                    }
+
             }
         }
     }
@@ -545,6 +724,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     mView.clearQuestions()
                     getUserData()
                     getQuestions()
+                    getRequestForChats()
                     setDynamicShortcuts()
                 },
                 whatIfNot = {
@@ -572,26 +752,30 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     }
 
     private fun getUserData() {
-        dataBase.collection("users").document(currentUser!!.uid).get()
-            .addOnSuccessListener { result ->
-
-                if (result.exists()) {
-                    mView.setUserProfileImage(result.data!!["imageUrl"].toString())
-                    mView.setUserName(result.data!!["name"].toString())
-                    mView.hideLoading()
-                } else {
-                    mView.hideOptions()
+        dataBase.collection("users").document(currentUser!!.uid)
+            .addSnapshotListener { snapshot, exception ->
+                exception.whatIfNotNull {
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                    )
                 }
 
-            }.addOnFailureListener { exception ->
-                mView.showMessage(
-                    "Something Went Wrong. ${exception.localizedMessage}",
-                    1
+                snapshot.whatIfNotNull(
+                    whatIf = {
+                        if (snapshot!!.exists()) {
+                            mView.setUserProfileImage(snapshot.data!!["imageUrl"].toString())
+                            mView.setUserName(snapshot.data!!["name"].toString())
+                            mView.hideLoading()
+                        } else {
+                            mView.openAddProfileDetails()
+                            mView.hideLoading()
+                        }
+                    },
+                    whatIfNot = {
+                        mView.openAddProfileDetails()
+                        mView.hideLoading()
+                    }
                 )
-                mView.hideLoading()
-            }.addOnCanceledListener {
-                mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                mView.hideLoading()
             }
     }
 
@@ -662,9 +846,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     mView.showMessage(e.localizedMessage, 1)
                 }
 
-                if (allQuestionList.size > 0) {
-                    mView.loadQuestions(allQuestionList)
-                }
+                mView.loadQuestions(allQuestionList)
 
                 mView.hideLoading()
 

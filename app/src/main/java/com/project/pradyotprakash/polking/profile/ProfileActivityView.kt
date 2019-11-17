@@ -35,4 +35,7 @@ interface ProfileActivityView: BaseView {
 
     // set notification view
     fun setNotificationIcon(notificationCount: String, notificaitonMsg: String)
+
+    // show chat request
+    fun showChatRequestOption(docId: String, askedBy: String)
 }

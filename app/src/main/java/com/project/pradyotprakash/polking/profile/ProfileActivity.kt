@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.Coil
 import coil.api.load
 import coil.request.Request
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.comment.CommentsAcrivity
@@ -447,7 +448,7 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         notificationCount: String,
         notificaitonMsg: String
     ) {
-        if (notificationCount == "0") {
+        if (notificationCount == "0" || notificaitonMsg == "null") {
             notification_tv.visibility = View.GONE
         } else {
             notification_tv.visibility = View.VISIBLE
@@ -479,4 +480,29 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         bundle.putString("notificationCommentId", notificationCommentId)
         openActivity(CommentsAcrivity::class.java, "questionId", bundle)
     }
+
+    fun openComment(docId: String) {
+        val bundle = Bundle()
+        bundle.putString("questionId", docId)
+        openActivity(CommentsAcrivity::class.java, "questionId", bundle)
+    }
+
+    fun checkForChat(docId: String, askedBy: String) {
+        presenter.checkForChatRequest(docId, askedBy)
+    }
+
+    override fun showChatRequestOption(docId: String, askedBy: String) {
+        MaterialDialog(this)
+            .title(text = getString(R.string.chat_request))
+            .message(text = "Request for one-to-one conversation?")
+            .show {
+                noAutoDismiss()
+                icon(R.drawable.chat_iv)
+                positiveButton(text = getString(R.string.yes)) {
+                    presenter.callGenerateChatRequest(docId, askedBy)
+                    dismiss()
+                }
+            }
+    }
+
 }

@@ -257,7 +257,7 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     }
 
     override fun setNotificationIcon(notificationCount: String) {
-        if (notificationCount == "0") {
+        if (notificationCount == "0" || notificationCount == "null") {
             notification_iv.visibility = View.GONE
         } else {
             notification_iv.visibility = View.VISIBLE
@@ -327,9 +327,4 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     fun addReviewForComment(voteType: Int, commnetId: String) {
         presenter.setVoteForComment(voteType, commnetId, questionId)
     }
-
-    fun addReviewForInnerComment(voteType: Int, innerCommnetId: String, parentComment: String) {
-        presenter.setVoteForComment(voteType, parentComment, innerCommnetId, questionId)
-    }
-
 }

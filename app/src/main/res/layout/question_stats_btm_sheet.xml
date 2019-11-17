@@ -156,7 +156,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="100dp">
+                android:paddingBottom="150dp">
 
             <TextView
                     android:id="@+id/textView9"
@@ -372,18 +372,32 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.chip.Chip
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/seeComnets_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text="@string/see_comment"
-            android:textColor="@color/white"
-            android:theme="@style/Theme.MaterialComponents.Light"
-            app:chipBackgroundColor="@color/colorPrimaryDark"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/startChat_fb"
+            app:layout_constraintEnd_toStartOf="@+id/startChat_fb"
+            app:layout_constraintTop_toTopOf="@+id/startChat_fb"
+            app:srcCompat="@drawable/comment_iv" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/startChat_fb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintBottom_toTopOf="@+id/userVote"
-            app:layout_constraintEnd_toEndOf="@+id/view3"
-            app:layout_constraintStart_toStartOf="@+id/view3"
-            app:rippleColor="@color/colorPrimary" />
+            app:backgroundTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/chat_iv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
