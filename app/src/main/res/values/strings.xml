@@ -202,4 +202,5 @@
     <string name="try_some_time">Please try after some time.</string>
     <string name="chat_request">Chat Request!</string>
     <string name="type_a_message">Type a message</string>
+    <string name="delete_chat">Delete Chat</string>
 </resources>
