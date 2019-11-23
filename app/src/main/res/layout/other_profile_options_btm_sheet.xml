@@ -72,30 +72,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginLeft="15dp"
-            android:layout_marginEnd="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
             android:theme="@style/Theme.MaterialComponents.Light"
             app:layout_constraintBottom_toBottomOf="@+id/user_iv"
-            app:layout_constraintEnd_toStartOf="@+id/makeBfChip"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/user_iv"
             app:layout_constraintTop_toTopOf="@+id/user_iv"
             app:rippleColor="@color/colorPrimary" />
-
-    <com.google.android.material.chip.Chip
-            android:id="@+id/makeBfChip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:text="@string/add_as_bestfriend"
-            android:textColor="@color/white"
-            android:theme="@style/Theme.MaterialComponents.Light"
-            android:visibility="gone"
-            app:chipBackgroundColor="@color/colorAccent"
-            app:layout_constraintBottom_toBottomOf="@+id/user_iv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/user_iv"
-            app:rippleColor="@color/agree_color" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/details_cl"
@@ -128,88 +112,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
                 android:fontFamily="@font/muli_light"
-                android:text="@string/questions"
+                android:text="@string/questions_asked"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="@+id/questionVal_tv"
                 app:layout_constraintStart_toEndOf="@+id/questionVal_tv" />
-
-        <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/muli_bold"
-                android:text="@string/or_string"
-                android:textColor="@color/white"
-                android:textSize="25sp"
-                app:layout_constraintStart_toEndOf="@+id/question_tv"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-                android:id="@+id/friendsVal_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/muli_bold"
-                android:text="@string/zero_string"
-                android:textColor="@color/white"
-                android:textSize="25sp"
-                app:layout_constraintStart_toEndOf="@+id/textView8"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-                android:id="@+id/friends_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/muli_light"
-                android:text="@string/friends"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/friendsVal_tv"
-                app:layout_constraintStart_toEndOf="@+id/friendsVal_tv" />
-
-        <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/muli_bold"
-                android:text="@string/or_string"
-                android:textColor="@color/white"
-                android:textSize="25sp"
-                app:layout_constraintStart_toEndOf="@+id/friends_tv"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-                android:id="@+id/bestFrndVal_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/muli_bold"
-                android:text="@string/zero_string"
-                android:textColor="@color/white"
-                android:textSize="25sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/questionVal_tv" />
-
-        <TextView
-                android:id="@+id/bestFrnd_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:fontFamily="@font/muli_light"
-                android:text="@string/best_friends"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/bestFrndVal_tv"
-                app:layout_constraintStart_toEndOf="@+id/bestFrndVal_tv" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -222,54 +129,7 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/friends_rv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/friends_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:clipToPadding="false"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/bestFriends_rv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/bestFriends_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:clipToPadding="false"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/connectTv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.chip.Chip
-            android:id="@+id/connectTv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:text="@string/follow_as_a_friend"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:theme="@style/Theme.MaterialComponents.Light"
-            app:chipBackgroundColor="@color/agree_color"
-            app:closeIconTint="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/chip4"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -298,8 +158,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/connectTv" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.chip.Chip
             android:id="@+id/chip5"

@@ -436,44 +436,48 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                                             }
                                     }
                             } else {
-                                dataBase.collection("users").document(askedBy)
-                                    .addSnapshotListener { snapshot, exception ->
-                                        exception.whatIfNotNull {
-                                            mView.showMessage(
-                                                "Something Went Wrong. ${exception!!.localizedMessage}",
-                                                1
-                                            )
-                                        }
+                                if (result["isRequestAccepted"] == "true") {
+                                    mView.openChatWindow(askedBy)
+                                } else {
+                                    dataBase.collection("users").document(askedBy)
+                                        .addSnapshotListener { snapshot, exception ->
+                                            exception.whatIfNotNull {
+                                                mView.showMessage(
+                                                    "Something Went Wrong. ${exception!!.localizedMessage}",
+                                                    1
+                                                )
+                                            }
 
-                                        snapshot.whatIfNotNull {
-                                            if (snapshot!!.exists()) {
-                                                if (result["questionId"] == docId) {
-                                                    mView.showMessage(
-                                                        "Request already sent. " +
-                                                                snapshot.data!!["name"].toString() +
-                                                                " needs to accept your chat request to start this conversation",
-                                                        2
-                                                    )
-                                                } else {
-                                                    if (result["requestBy"] == askedBy) {
-                                                        if (result["isRequestAccepted"] == "false") {
-                                                            mView.showMessage(
-                                                                "You already have a request from " +
-                                                                        snapshot.data!!["name"].toString(),
-                                                                2
-                                                            )
+                                            snapshot.whatIfNotNull {
+                                                if (snapshot!!.exists()) {
+                                                    if (result["questionId"] == docId) {
+                                                        mView.showMessage(
+                                                            "Request already sent. " +
+                                                                    snapshot.data!!["name"].toString() +
+                                                                    " needs to accept your chat request to start this conversation",
+                                                            2
+                                                        )
+                                                    } else {
+                                                        if (result["requestBy"] == askedBy) {
+                                                            if (result["isRequestAccepted"] == "false") {
+                                                                mView.showMessage(
+                                                                    "You already have a request from " +
+                                                                            snapshot.data!!["name"].toString(),
+                                                                    2
+                                                                )
+                                                            } else {
+                                                                mView.openChatWindow(askedBy)
+                                                            }
                                                         } else {
                                                             mView.openChatWindow(askedBy)
                                                         }
-                                                    } else {
-                                                        mView.openChatWindow(askedBy)
                                                     }
+                                                } else {
+                                                    mView.showChatRequestOption(docId, askedBy)
                                                 }
-                                            } else {
-                                                mView.showChatRequestOption(docId, askedBy)
                                             }
                                         }
-                                    }
+                                }
                             }
 
                         } else {

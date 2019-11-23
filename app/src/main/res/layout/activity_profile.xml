@@ -123,7 +123,7 @@
                 android:text="@string/zero_string"/>
 
         <TextView
-                android:text="@string/questions"
+                android:text="@string/questions_asked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/question_tv"
@@ -131,83 +131,6 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/questionVal_tv"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/muli_light"/>
-
-        <TextView
-                android:text="@string/or_string"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView8"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textSize="25sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/muli_bold"
-                app:layout_constraintStart_toEndOf="@+id/question_tv"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"/>
-
-        <TextView
-                android:text="@string/zero_string"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/friendsVal_tv"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textSize="25sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/muli_bold"
-                app:layout_constraintStart_toEndOf="@+id/textView8"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"/>
-
-        <TextView
-                android:text="@string/friends"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/friends_tv"
-                app:layout_constraintStart_toEndOf="@+id/friendsVal_tv"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/friendsVal_tv"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/muli_light"/>
-
-        <TextView
-                android:text="@string/or_string"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView11"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textSize="25sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/muli_bold"
-                app:layout_constraintStart_toEndOf="@+id/friends_tv"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"/>
-
-        <TextView
-                android:text="@string/zero_string"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bestFrndVal_tv"
-                android:textSize="25sp"
-                android:textColor="@color/white"
-                android:fontFamily="@font/muli_bold"
-                app:layout_constraintTop_toBottomOf="@+id/questionVal_tv"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginTop="8dp"/>
-
-        <TextView
-                android:text="@string/best_friends"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bestFrnd_tv"
-                app:layout_constraintStart_toEndOf="@+id/bestFrndVal_tv"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/bestFrndVal_tv"
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/muli_light"/>
@@ -347,40 +270,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                        android:id="@+id/yourFrnd_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginTop="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:fontFamily="@font/muli_semi_bold"
-                        android:text="@string/see_your_friends"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/yourPosts_tv" />
-
-                <TextView
-                        android:id="@+id/yourBestFrnd_tview17"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginTop="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:fontFamily="@font/muli_semi_bold"
-                        android:text="@string/see_your_best_friends"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/yourFrnd_tv" />
-
                 <View
                         android:id="@+id/view4"
                         android:layout_width="match_parent"
@@ -393,7 +282,7 @@
                         android:background="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/yourBestFrnd_tview17" />
+                        app:layout_constraintTop_toBottomOf="@+id/yourPosts_tv" />
 
                 <TextView
                         android:id="@+id/edit_tv"
@@ -498,8 +387,8 @@
                         android:fontFamily="@font/muli_extra_light"
                         android:text="@string/notification_info"
                         android:textColor="@color/white"
-                        android:visibility="invisible"
                         android:textSize="12sp"
+                        android:visibility="invisible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

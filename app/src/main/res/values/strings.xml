@@ -203,4 +203,5 @@
     <string name="chat_request">Chat Request!</string>
     <string name="type_a_message">Type a message</string>
     <string name="delete_chat">Delete Chat</string>
+    <string name="questions_asked">Questions Asked</string>
 </resources>

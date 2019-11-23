@@ -22,7 +22,6 @@ import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.aboutUs.AboutUsBottomSheet
 import com.project.pradyotprakash.polking.profile.backgroundAdapter.BackgroundAdapter
-import com.project.pradyotprakash.polking.profile.friends.FriendsBottomSheet
 import com.project.pradyotprakash.polking.profile.notification.NotificationBottomSheet
 import com.project.pradyotprakash.polking.profile.questions.QuestionsBottomSheet
 import com.project.pradyotprakash.polking.profile.reviewUs.ReviewUsBtmSheet
@@ -47,7 +46,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
     private lateinit var aboutUsBottomSheet: AboutUsBottomSheet
     private lateinit var reviewUsBottomSheet: ReviewUsBtmSheet
     private lateinit var questionBottomSheet: QuestionsBottomSheet
-    private lateinit var friendsBottomSheet: FriendsBottomSheet
     private lateinit var notificationBottomSheet: NotificationBottomSheet
     private lateinit var otherProfileOptions: OtherProfileOptions
     private lateinit var questionStatistics: QuestionStatistics
@@ -90,7 +88,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
 
         setAdapters()
 
-        getIntentData()
     }
 
     private fun setBehaviorListner() {
@@ -109,18 +106,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
                     }
                 }
             })
-        }
-    }
-
-    private fun getIntentData() {
-        intent.whatIfNotNull {
-            if (intent.getStringExtra("openBestFriend") != null
-                && intent.getStringExtra("openBestFriend") != ""
-            ) {
-                if (intent.getStringExtra("openBestFriend") == "yes") {
-                    openFriendSheet(2)
-                }
-            }
         }
     }
 
@@ -159,30 +144,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
             openQuestionSheet()
         }
 
-        bestFrndVal_tv.setOnClickListener {
-            openFriendSheet(2)
-        }
-
-        bestFrnd_tv.setOnClickListener {
-            openFriendSheet(2)
-        }
-
-        yourBestFrnd_tview17.setOnClickListener {
-            openFriendSheet(2)
-        }
-
-        friendsVal_tv.setOnClickListener {
-            openFriendSheet(1)
-        }
-
-        friends_tv.setOnClickListener {
-            openFriendSheet(1)
-        }
-
-        yourFrnd_tv.setOnClickListener {
-            openFriendSheet(1)
-        }
-
         faq_tv.setOnClickListener {
             showMessage("We are working on this.", 2)
         }
@@ -211,7 +172,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         aboutUsBottomSheet = AboutUsBottomSheet.newInstance()
         reviewUsBottomSheet = ReviewUsBtmSheet.newInstance()
         questionBottomSheet = QuestionsBottomSheet.newInstance()
-        friendsBottomSheet = FriendsBottomSheet.newInstance()
         notificationBottomSheet = NotificationBottomSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
         questionStatistics = QuestionStatistics.newInstance()
@@ -233,26 +193,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
             Handler().postDelayed({
                 presenter.callNotificationIsReadMethod()
             }, 3500)
-        }
-    }
-
-    private fun openFriendSheet(type: Int) {
-        if (!friendsBottomSheet.isAdded) {
-            if (type == 1) {
-                if (friendsVal_tv.text != "0") {
-                    friendsBottomSheet.show(supportFragmentManager, "btmSheet")
-                    friendsBottomSheet.setType(type)
-                } else {
-                    showMessage(getString(R.string.no_friend), 2)
-                }
-            } else {
-                if (bestFrndVal_tv.text != "0") {
-                    friendsBottomSheet.show(supportFragmentManager, "btmSheet")
-                    friendsBottomSheet.setType(type)
-                } else {
-                    showMessage(getString(R.string.no_best_friend), 2)
-                }
-            }
         }
     }
 
@@ -405,22 +345,6 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
                 yourPosts_tv.visibility = View.VISIBLE
             }
             questionVal_tv.text = question
-        }
-        if (!friends.isNullOrEmpty()) {
-            if (friends == "0") {
-                yourFrnd_tv.visibility = View.GONE
-            } else {
-                yourFrnd_tv.visibility = View.VISIBLE
-            }
-            friendsVal_tv.text = friends
-        }
-        if (!bestFriends.isNullOrEmpty()) {
-            if (bestFriends == "0") {
-                yourBestFrnd_tview17.visibility = View.GONE
-            } else {
-                yourBestFrnd_tview17.visibility = View.VISIBLE
-            }
-            bestFrndVal_tv.text = bestFriends
         }
     }
 

@@ -30,15 +30,6 @@ data class FAQsQuestionModel(
     val answer: String = ""
 ) : GetId()
 
-// Friend List
-data class FriendsListModel(
-    val userId: String = "",
-    val madeFriendOn: String = "",
-    val madeBestFriendOn: String = "",
-    val isBestFriend: String = "",
-    val isFriend: String = ""
-) : GetId()
-
 // Notification List
 data class NotificationModel(
     val notificationMessageBy: String = "",
