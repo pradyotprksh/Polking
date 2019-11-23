@@ -526,52 +526,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
-    override fun uploadQuestionWithImage(question: String, picOptionUri: Uri) {
-        mView.showLoading()
-        currentUser.whatIfNotNull(
-            whatIf = {
-                val randomString = (1..32).map { ('0'..'z').toList().toTypedArray().random() }
-                    .joinToString("")
-                val storage = FirebaseStorage.getInstance().reference
-                val imagePath: StorageReference =
-                    storage.child("user_question_images")
-                        .child("${mAuth.currentUser!!.uid}$randomString.jpg")
-                imagePath.putFile(picOptionUri)
-                    .continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                        if (!task.isSuccessful) {
-                            task.exception?.let { exception ->
-                                mView.showMessage(
-                                    "Something Went Wrong. ${exception.localizedMessage}",
-                                    1
-                                )
-                                mView.hideLoading()
-                                throw exception
-                            }
-                        }
-                        return@Continuation imagePath.downloadUrl
-                    }).addOnCanceledListener {
-                        mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
-                        mView.hideLoading()
-                    }.addOnFailureListener { exception ->
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}"
-                            , 1
-                        )
-                        mView.hideLoading()
-                    }.addOnCompleteListener { task ->
-                        uploadQuestionImage(
-                            task,
-                            imagePath,
-                            question,
-                            "${mAuth.currentUser!!.uid}$randomString.jpg"
-                        )
-                    }.addOnSuccessListener {
-                        mView.showMessage(mContext.getString(R.string.save_properly), 3)
-                    }
-            }
-        )
-    }
-
     override fun checkIfHumanFace(picOptionUri: Uri) {
         mView.showLoading()
         val image: FirebaseVisionImage
@@ -697,76 +651,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
-    private fun uploadQuestionImage(
-        task: Task<Uri>,
-        imagePath: StorageReference,
-        question: String,
-        imageName: String
-    ) {
-        if (task.isComplete) {
-            if (task.isSuccessful) {
-
-                imagePath.downloadUrl.addOnSuccessListener { uri ->
-
-                    val imageUrl = uri.toString()
-
-                    addDataToDatabase(imageUrl, question, imageName)
-
-                }.addOnFailureListener { exception ->
-                    mView.showMessage(
-                        "Something Went Wrong. ${exception.localizedMessage}",
-                        1
-                    )
-                    mView.hideLoading()
-                }.addOnCanceledListener {
-                    mView.showMessage(mContext.getString(R.string.not_uploaded), 1)
-                    mView.hideLoading()
-                }
-
-            } else if (task.isCanceled) {
-                mView.showMessage(mContext.getString(R.string.not_uploaded), 1)
-                mView.hideLoading()
-            }
-        } else {
-            mView.showMessage(mContext.getString(R.string.something_went_wrong), 1)
-            mView.hideLoading()
-        }
-    }
-
-    private fun addDataToDatabase(
-        imageUrl: String,
-        question: String,
-        imageName: String
-    ) {
-        val date = Date()
-        val questionData = HashMap<String, Any>()
-        questionData["question"] = question
-        questionData["imageUrl"] = imageUrl
-        questionData["imageName"] = imageName
-        questionData["askedBy"] = currentUser!!.uid
-        questionData["askedOn"] = dateTimeFormat.format(date)
-        questionData["askedOnDate"] = dateFormat.format(date)
-        questionData["askedOnTime"] = timeFormat.format(date)
-        questionData["yesVote"] = "0"
-        questionData["noVote"] = "0"
-
-        dataBase.collection("question").add(questionData)
-            .addOnSuccessListener {
-                mView.hideLoading()
-                mView.showUploadedSuccess()
-                mView.showMessage("Successfully Uploaded.", 3)
-            }.addOnFailureListener { exception ->
-                mView.showMessage(
-                    "Something Went Wrong. ${exception.localizedMessage}",
-                    1
-                )
-                mView.hideLoading()
-            }.addOnCanceledListener {
-                mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                mView.hideLoading()
-            }
-    }
-
     override fun addAuthStateListener() {
         mAuth.addAuthStateListener { mAuth ->
             mAuth.currentUser.whatIfNotNull(
@@ -838,18 +722,19 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         mView.showLoading()
         currentUser.whatIfNotNull(
             whatIf = {
-                val date = Date()
-                val questionData = HashMap<String, Any>()
-                questionData["question"] = question
-                questionData["askedBy"] = currentUser!!.uid
-                questionData["askedOn"] = dateTimeFormat.format(date)
-                questionData["askedOnDate"] = dateFormat.format(date)
-                questionData["askedOnTime"] = timeFormat.format(date)
-                questionData["yesVote"] = "0"
-                questionData["noVote"] = "0"
-                questionData["label"] = "all"
-
-                dataBase.collection("question").add(questionData)
+                dataBase.collection("question")
+                    .add(
+                        hashMapOf(
+                            "question" to question,
+                            "askedBy" to currentUser!!.uid,
+                            "askedOn" to dateTimeFormat.format(Date()),
+                            "askedOnDate" to dateFormat.format(Date()),
+                            "askedOnTime" to timeFormat.format(Date()),
+                            "yesVote" to "0",
+                            "noVote" to "0",
+                            "label" to "all"
+                        )
+                    )
                     .addOnSuccessListener {
                         mView.hideLoading()
                         mView.showUploadedSuccess()
@@ -908,17 +793,47 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         mView.showLoading()
         currentUser.whatIfNotNull(
             whatIf = {
-                val voteData = HashMap<String, Any>()
-                voteData["voteType"] = voteType
-                voteData["questionId"] = docId
-
                 addVotesDataBase
                     .collection("users")
                     .document(currentUser!!.uid)
                     .collection("votes")
                     .document(docId)
-                    .set(voteData).addOnSuccessListener {
-                        mView.hideLoading()
+                    .set(
+                        hashMapOf(
+                            "voteType" to voteType,
+                            "questionId" to docId
+                        )
+                    )
+                    .addOnSuccessListener {
+
+                        dataBase
+                            .collection("question")
+                            .document(docId)
+                            .collection("votes")
+                            .document(mAuth.currentUser!!.uid)
+                            .set(
+                                hashMapOf(
+                                    "voteType" to voteType,
+                                    "userId" to mAuth.currentUser!!.uid
+                                )
+                            )
+                            .addOnSuccessListener {
+
+                                mView.hideLoading()
+
+                            }.addOnFailureListener { exception ->
+                                mView.showMessage(
+                                    "Something Went Wrong. ${exception.localizedMessage}",
+                                    1
+                                )
+                                mView.hideLoading()
+                            }.addOnCanceledListener {
+                                mView.showMessage(
+                                    mContext.getString(R.string.not_uploaded_question),
+                                    4
+                                )
+                                mView.hideLoading()
+                            }
                     }.addOnFailureListener { exception ->
                         mView.showMessage(
                             "Something Went Wrong. ${exception.localizedMessage}",

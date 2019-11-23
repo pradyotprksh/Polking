@@ -29,9 +29,6 @@ interface MainActivityPresenter: BasePresenter {
     // show stats
     fun showStats(docId: String)
 
-    // upload question with images
-    fun uploadQuestionWithImage(question: String, picOptionUri: Uri)
-
     // check if human face
     fun checkIfHumanFace(picOptionUri: Uri)
 
