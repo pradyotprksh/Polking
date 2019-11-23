@@ -1,6 +1,5 @@
 package com.project.pradyotprakash.polking.chatWindow
 
-import android.text.Editable
 import com.project.pradyotprakash.polking.BasePresenter
 
 interface ChatWindowPresenter : BasePresenter {
@@ -12,7 +11,7 @@ interface ChatWindowPresenter : BasePresenter {
     fun updateTypingStatus(typingStarted: Boolean, chatWindowId: String)
 
     // upload message
-    fun uploadMessage(text: Editable?, chatWindowId: String)
+    fun uploadMessage(text: String, chatWindowId: String)
 
     // get chat list
     fun getChatList(chatWindowId: String)

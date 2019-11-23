@@ -16,6 +16,8 @@ import coil.Coil
 import coil.api.load
 import coil.transform.CircleCropTransformation
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.chip.Chip
+import com.google.firebase.ml.naturallanguage.smartreply.SmartReplySuggestion
 import com.project.pradyotprakash.polking.R
 import com.project.pradyotprakash.polking.chatWindow.adapter.ChatAdapter
 import com.project.pradyotprakash.polking.message.ShowMessage
@@ -89,7 +91,7 @@ class ChatWindow : InternetActivity(), ChatWindowView,
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_SEND -> {
                     if (commentVal_rt.text.toString().isNotEmpty()) {
-                        presenter.uploadMessage(commentVal_rt.text, this.chatWindowId)
+                        presenter.uploadMessage(commentVal_rt.text.toString(), this.chatWindowId)
                         commentVal_rt.setText("")
                     }
                     true
@@ -120,8 +122,19 @@ class ChatWindow : InternetActivity(), ChatWindowView,
 
         sendMsg_fb.setOnClickListener {
             if (commentVal_rt.text.isNotEmpty()) {
-                presenter.uploadMessage(commentVal_rt.text, this.chatWindowId)
+                presenter.uploadMessage(commentVal_rt.text.toString(), this.chatWindowId)
                 commentVal_rt.setText("")
+            }
+        }
+
+        smartReply_group.setOnCheckedChangeListener { chipGroup, i ->
+            val chip = chipGroup.findViewById<Chip>(i)
+            chip.whatIfNotNull {
+                if (it.text != "") {
+                    val message = it.text.toString()
+                    presenter.uploadMessage(message, this.chatWindowId)
+                    commentVal_rt.setText("")
+                }
             }
         }
     }
@@ -230,6 +243,42 @@ class ChatWindow : InternetActivity(), ChatWindowView,
 
     override fun hideDeleteOption() {
         options_iv.visibility = View.GONE
+    }
+
+    override fun showSmartReply() {
+        horizontalSv.visibility = View.VISIBLE
+    }
+
+    override fun hideSmartReply() {
+        horizontalSv.visibility = View.GONE
+    }
+
+    override fun enterHardcodeReply(commonReply: ArrayList<String>) {
+        for (common in commonReply) {
+            val chip = Chip(smartReply_group.context)
+            chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+            chip.setChipStrokeColorResource(R.color.white)
+            chip.chipStrokeWidth = 1f
+            chip.isClickable = true
+            chip.isCheckable = true
+            chip.text = common
+            smartReply_group.addView(chip)
+        }
+    }
+
+    override fun enterSmartReplies(suggestions: List<SmartReplySuggestion>) {
+        smartReply_group.removeAllViews()
+        for (suggestion in suggestions) {
+            val replyText = suggestion.text
+            val chip = Chip(smartReply_group.context)
+            chip.setChipBackgroundColorResource(R.color.colorPrimaryDark)
+            chip.setChipStrokeColorResource(R.color.white)
+            chip.chipStrokeWidth = 1f
+            chip.isClickable = true
+            chip.isCheckable = true
+            chip.text = replyText
+            smartReply_group.addView(chip)
+        }
     }
 
     override fun setUserData(userDetails: String) {

@@ -13,7 +13,7 @@
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false"
-            android:paddingTop="155dp"
+            android:paddingTop="175dp"
             android:paddingBottom="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -31,6 +31,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+    <HorizontalScrollView
+            android:id="@+id/horizontalSv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:clipToPadding="false"
+            android:paddingStart="20dp"
+            android:paddingLeft="20dp"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:scrollbars="none"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/commentVal_rt">
+
+        <com.google.android.material.chip.ChipGroup
+                android:id="@+id/smartReply_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:theme="@style/Theme.MaterialComponents.Light"
+                app:singleLine="true"
+                app:singleSelection="true" />
+
+    </HorizontalScrollView>
 
     <ImageView
             android:id="@+id/close_iv"
