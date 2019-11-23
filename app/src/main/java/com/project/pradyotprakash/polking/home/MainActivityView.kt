@@ -67,4 +67,5 @@ interface MainActivityView: BaseView {
     // show chat request
     fun showChatRequestOption(docId: String, askedBy: String)
 
+    fun openChatWindow(chatWindowId: String)
 }

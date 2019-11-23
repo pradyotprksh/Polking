@@ -66,11 +66,10 @@ class ShowMessage @Inject constructor() : TransparentBottomSheet(), ProfileEditV
         view.message_tv.text = message
         when (type) {
             1 -> {
-                view.error_animation.visibility = View.VISIBLE
-                view.information_animation.visibility = View.GONE
-                view.success_animation.visibility = View.GONE
-                view.no_network_animation.visibility = View.GONE
-                dismissAfterOnePointFiveSec(view)
+                dismiss()
+                activity.whatIfNotNull {
+                    activity!!.logd("error-message: $message")
+                }
             }
             2 -> {
                 view.error_animation.visibility = View.GONE

@@ -7,18 +7,25 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import androidx.appcompat.widget.PopupMenu
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.Coil
 import coil.api.load
 import coil.transform.CircleCropTransformation
+import com.afollestad.materialdialogs.MaterialDialog
 import com.project.pradyotprakash.polking.R
+import com.project.pradyotprakash.polking.chatWindow.adapter.ChatAdapter
 import com.project.pradyotprakash.polking.message.ShowMessage
+import com.project.pradyotprakash.polking.utility.ChatModel
 import com.project.pradyotprakash.polking.utility.InternetActivity
 import com.project.pradyotprakash.polking.utility.Utility
 import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_chat_window.*
+import java.util.*
 import javax.inject.Inject
 
 class ChatWindow : InternetActivity(), ChatWindowView,
@@ -26,6 +33,7 @@ class ChatWindow : InternetActivity(), ChatWindowView,
 
     @Inject
     lateinit var presenter: ChatWindowPresenter
+    private var chatAdapter: ChatAdapter? = null
 
     private var chatWindowId: String = ""
 
@@ -67,7 +75,38 @@ class ChatWindow : InternetActivity(), ChatWindowView,
 
         setOnClickListners()
 
+        setAdapter()
+
+        setSendMessageListner()
+
         presenter.getChatDetails(chatWindowId)
+
+        presenter.getChatList(chatWindowId)
+    }
+
+    private fun setSendMessageListner() {
+        commentVal_rt.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    if (commentVal_rt.text.toString().isNotEmpty()) {
+                        presenter.uploadMessage(commentVal_rt.text, this.chatWindowId)
+                        commentVal_rt.setText("")
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun setAdapter() {
+        chatAdapter = ChatAdapter(this, this)
+        chats_rv.setHasFixedSize(true)
+        chats_rv.layoutManager = LinearLayoutManager(
+            this,
+            RecyclerView.VERTICAL, false
+        )
+        chats_rv.adapter = chatAdapter
     }
 
     private fun setOnClickListners() {
@@ -77,6 +116,13 @@ class ChatWindow : InternetActivity(), ChatWindowView,
 
         options_iv.setOnClickListener {
             showPopUpMenu(options_iv)
+        }
+
+        sendMsg_fb.setOnClickListener {
+            if (commentVal_rt.text.isNotEmpty()) {
+                presenter.uploadMessage(commentVal_rt.text, this.chatWindowId)
+                commentVal_rt.setText("")
+            }
         }
     }
 
@@ -91,10 +137,25 @@ class ChatWindow : InternetActivity(), ChatWindowView,
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.deleteChat -> {
+                showDeleteChatOption()
                 true
             }
             else -> false
         }
+    }
+
+    private fun showDeleteChatOption() {
+        MaterialDialog(this)
+            .title(text = getString(R.string.delete_chat))
+            .message(text = "Are you sure you want to delete the chat?")
+            .show {
+                noAutoDismiss()
+                icon(R.drawable.chat_iv)
+                positiveButton(text = getString(R.string.yes)) {
+                    presenter.deleteChat(chatWindowId)
+                    dismiss()
+                }
+            }
     }
 
     private fun setTextChangeListner() {
@@ -154,6 +215,23 @@ class ChatWindow : InternetActivity(), ChatWindowView,
         }
     }
 
+    override fun messageUploaded() {
+        commentVal_rt.setText("")
+    }
+
+    override fun setChatList(allChatList: ArrayList<ChatModel>) {
+        chats_rv.smoothScrollToPosition(0)
+        chatAdapter?.updateListItems(allChatList)
+    }
+
+    override fun showDeleteOption() {
+        options_iv.visibility = View.VISIBLE
+    }
+
+    override fun hideDeleteOption() {
+        options_iv.visibility = View.GONE
+    }
+
     override fun setUserData(userDetails: String) {
         name_tv.text = userDetails
     }
@@ -167,7 +245,7 @@ class ChatWindow : InternetActivity(), ChatWindowView,
     }
 
     override fun stopAct() {
-
+        finish()
     }
 
     override fun showMessage(message: String, type: Int) {

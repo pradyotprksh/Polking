@@ -75,6 +75,14 @@ data class LabelModel(
 ) : GetId()
 
 // Label
+data class ChatModel(
+    val message: String = "",
+    val messageOn: String = "",
+    val messageTo: String = "",
+    val messageBy: String = ""
+) : GetId()
+
+// Comment Model
 data class CommentModel(
     val comment: String = "",
     val commentedOn: String = "",

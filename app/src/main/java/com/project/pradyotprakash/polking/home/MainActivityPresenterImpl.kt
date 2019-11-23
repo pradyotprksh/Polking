@@ -208,6 +208,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 .collection("request")
                 .document(mAuth.currentUser!!.uid)
                 .collection("messageRequest")
+                .whereEqualTo("isCompleted", "false")
                 .addSnapshotListener { snapshot, _ ->
                     allChatRequestList.clear()
 
@@ -410,59 +411,71 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     .addOnSuccessListener { result ->
                         if (result.exists()) {
 
-                            dataBase.collection("users").document(askedBy)
-                                .addSnapshotListener { snapshot, exception ->
-                                    exception.whatIfNotNull {
-                                        mView.showMessage(
-                                            "Something Went Wrong. ${exception!!.localizedMessage}",
-                                            1
+                            if (result.data!!["isCompleted"] == "true") {
+                                dataBase
+                                    .collection("request")
+                                    .document(mAuth.currentUser!!.uid)
+                                    .collection("messageRequest")
+                                    .document(askedBy)
+                                    .update(
+                                        mapOf(
+                                            "isCompleted" to "false"
                                         )
-                                    }
-
-                                    snapshot.whatIfNotNull {
-                                        if (snapshot!!.exists()) {
-                                            if (result["questionId"] == docId) {
-                                                mView.showMessage(
-                                                    "Request already sent. " +
-                                                            snapshot.data!!["name"].toString() +
-                                                            " needs to accept your chat request to start this conversation",
-                                                    2
+                                    ).addOnCompleteListener {
+                                        addVotesDataBase
+                                            .collection("request")
+                                            .document(askedBy)
+                                            .collection("messageRequest")
+                                            .document(mAuth.currentUser!!.uid)
+                                            .update(
+                                                mapOf(
+                                                    "isCompleted" to "false"
                                                 )
-                                            } else {
-                                                if (result["requestBy"] == askedBy) {
-                                                    if (result["isRequestAccepted"] == "false") {
-                                                        mView.showMessage(
-                                                            "You already have a request from " +
-                                                                    snapshot.data!!["name"].toString(),
-                                                            2
-                                                        )
-                                                    } else {
-                                                        mView.showMessage(
-                                                            "You already in a conversation with " +
-                                                                    snapshot.data!!["name"].toString() + " related to another question.",
-                                                            2
-                                                        )
-                                                    }
+                                            ).addOnCompleteListener {
+                                                mView.openChatWindow(askedBy)
+                                            }
+                                    }
+                            } else {
+                                dataBase.collection("users").document(askedBy)
+                                    .addSnapshotListener { snapshot, exception ->
+                                        exception.whatIfNotNull {
+                                            mView.showMessage(
+                                                "Something Went Wrong. ${exception!!.localizedMessage}",
+                                                1
+                                            )
+                                        }
+
+                                        snapshot.whatIfNotNull {
+                                            if (snapshot!!.exists()) {
+                                                if (result["questionId"] == docId) {
+                                                    mView.showMessage(
+                                                        "Request already sent. " +
+                                                                snapshot.data!!["name"].toString() +
+                                                                " needs to accept your chat request to start this conversation",
+                                                        2
+                                                    )
                                                 } else {
-                                                    if (result["isRequestAccepted"] == "false") {
-                                                        mView.showMessage(
-                                                            "You already made a request for another question.",
-                                                            2
-                                                        )
+                                                    if (result["requestBy"] == askedBy) {
+                                                        if (result["isRequestAccepted"] == "false") {
+                                                            mView.showMessage(
+                                                                "You already have a request from " +
+                                                                        snapshot.data!!["name"].toString(),
+                                                                2
+                                                            )
+                                                        } else {
+                                                            mView.openChatWindow(askedBy)
+                                                        }
                                                     } else {
-                                                        mView.showMessage(
-                                                            "You already in a conversation with " +
-                                                                    snapshot.data!!["name"].toString() + " related to another question.",
-                                                            2
-                                                        )
+                                                        mView.openChatWindow(askedBy)
                                                     }
                                                 }
+                                            } else {
+                                                mView.showChatRequestOption(docId, askedBy)
                                             }
-                                        } else {
-                                            mView.showChatRequestOption(docId, askedBy)
                                         }
                                     }
-                                }
+                            }
+
                         } else {
                             mView.showChatRequestOption(docId, askedBy)
                         }

@@ -27,13 +27,11 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.google.firebase.storage.FirebaseStorage
 import com.project.pradyotprakash.polking.R
-import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.profileDetails.ProfileEditView
 import com.project.pradyotprakash.polking.utility.TransparentBottomSheet
 import com.project.pradyotprakash.polking.utility.VotesModel
 import com.project.pradyotprakash.polking.utility.logd
-import com.project.pradyotprakash.polking.utility.openActivity
 import com.skydoves.whatif.whatIfNotNull
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.question_stats_btm_sheet.view.*
@@ -669,140 +667,6 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
             }
         }
 
-        view.seeComnets_tv.setOnClickListener {
-            if (context is CommentsAcrivity) {
-                dismiss()
-            } else {
-                context.whatIfNotNull {
-                    val bundle = Bundle()
-                    bundle.putString("questionId", questionId)
-                    it.openActivity(CommentsAcrivity::class.java, "questionId", bundle)
-                }
-            }
-        }
-
-        view.startChat_fb.setOnClickListener {
-            context.whatIfNotNull {
-                mAuth.currentUser.whatIfNotNull {
-                    isChatRequestAlreadyMade
-                        .collection("request")
-                        .document(mAuth.currentUser!!.uid)
-                        .collection("messageRequest")
-                        .document(askedBy)
-                        .get()
-                        .addOnSuccessListener { result ->
-                            if (result.exists()) {
-                                if (result["questionId"] == questionId) {
-                                    showMessage(
-                                        "Request already sent. " +
-                                                view.username_tv.text +
-                                                " needs to accept your chat request to start this conversation",
-                                        2
-                                    )
-                                } else {
-                                    if (result["requestBy"] == askedBy) {
-                                        if (result["isRequestAccepted"] == "false") {
-                                            showMessage(
-                                                "You already have a request from " +
-                                                        view.username_tv.text,
-                                                2
-                                            )
-                                        } else {
-                                            showMessage(
-                                                "You already in a conversation with " +
-                                                        view.username_tv.text + " related to another question.",
-                                                2
-                                            )
-                                        }
-                                    } else {
-                                        if (result["isRequestAccepted"] == "false") {
-                                            showMessage(
-                                                "You already made a request for another question.",
-                                                2
-                                            )
-                                        } else {
-                                            showMessage(
-                                                "You already in a conversation with " +
-                                                        view.username_tv.text + " related to another question.",
-                                                2
-                                            )
-                                        }
-                                    }
-                                }
-                            } else {
-                                showChatRequestOption(view, questionId)
-                            }
-                        }
-                        .addOnFailureListener {
-                            showChatRequestOption(view, questionId)
-                        }
-
-                }
-            }
-        }
-
-    }
-
-    private fun showChatRequestOption(view: View, questionId: String) {
-        context.whatIfNotNull {
-            MaterialDialog(context!!)
-                .title(text = getString(R.string.chat_request))
-                .message(text = "Request " + view.username_tv.text + " for one-to-one conversation?")
-                .show {
-                    noAutoDismiss()
-                    icon(R.drawable.chat_iv)
-                    positiveButton(text = getString(R.string.yes)) {
-                        callGenerateChatRequest(questionId, view)
-                        dismiss()
-                    }
-                }
-        }
-    }
-
-    private fun callGenerateChatRequest(questionId: String, view: View) {
-        context.whatIfNotNull {
-            mAuth.currentUser.whatIfNotNull {
-                view.progressBar8.visibility = View.VISIBLE
-                generateChatRequest
-                    .collection("request")
-                    .document(mAuth.currentUser!!.uid)
-                    .collection("messageRequest")
-                    .document(askedBy)
-                    .set(
-                        hashMapOf(
-                            "requestBy" to mAuth.currentUser!!.uid,
-                            "requestTo" to askedBy,
-                            "questionId" to questionId,
-                            "isCompleted" to "false",
-                            "isRequestAccepted" to "false",
-                            "isUserTyping" to "false"
-                        )
-                    )
-                    .addOnCompleteListener {
-                        getQuestionFirestore
-                            .collection("request")
-                            .document(askedBy)
-                            .collection("messageRequest")
-                            .document(mAuth.currentUser!!.uid)
-                            .set(
-                                hashMapOf(
-                                    "requestBy" to mAuth.currentUser!!.uid,
-                                    "requestTo" to askedBy,
-                                    "questionId" to questionId,
-                                    "isCompleted" to "false",
-                                    "isRequestAccepted" to "false",
-                                    "isUserTyping" to "false"
-                                )
-                            )
-                            .addOnCompleteListener {
-                                view.progressBar8.visibility = View.GONE
-                            }
-                    }
-                    .addOnFailureListener {
-                        view.progressBar8.visibility = View.GONE
-                    }
-            }
-        }
     }
 
     private fun showDeleteDialog(view: View) {

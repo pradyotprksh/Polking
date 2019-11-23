@@ -694,7 +694,7 @@ class MainActivity : InternetActivity(), MainActivityView {
             }
     }
 
-    fun openChatWindow(chatWindowId: String) {
+    override fun openChatWindow(chatWindowId: String) {
         val bundle = Bundle()
         bundle.putString("chatWindowId", chatWindowId)
         openActivity(ChatWindow::class.java, "chatWindowId", bundle)
