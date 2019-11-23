@@ -93,8 +93,6 @@ class SignInPresenterImpl @Inject constructor() : SignInPresenter {
         userData["birthDay"] = ""
         userData["gender"] = "-1"
         userData["questions"] = "0"
-        userData["friends"] = "0"
-        userData["best_friends"] = "0"
         userData["bg_option"] = "bg_one"
         firestore.collection("users")
             .document(mAuth.currentUser!!.uid)

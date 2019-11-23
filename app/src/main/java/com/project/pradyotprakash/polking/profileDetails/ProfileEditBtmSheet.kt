@@ -41,8 +41,6 @@ import javax.inject.Inject
 class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), ProfileEditView {
 
     private var questions: String? = "0"
-    private var friends: String? = "0"
-    private var best_friends: String? = "0"
     private var bg_option: String? = "bg_one"
     private var count = 0
     private var count1 = 0
@@ -276,9 +274,6 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
         userData["birthDay"] = view.age_et.text.toString()
         userData["gender"] = genderType.toString()
         userData["questions"] = questions!!
-        userData["friends"] = friends!!
-        userData["best_friends"] =
-            best_friends!!
         userData["bg_option"] = bg_option!!
 
         firestore.collection("users")
@@ -369,8 +364,6 @@ class ProfileEditBtmSheet @Inject constructor() : TransparentBottomSheet(), Prof
                 view.age_et.setText(result.getString("birthDay"))
 
                 questions = result.getString("questions")
-                friends = result.getString("friends")
-                best_friends = result.getString("best_friends")
                 bg_option = result.getString("bg_option")
 
                 /*
