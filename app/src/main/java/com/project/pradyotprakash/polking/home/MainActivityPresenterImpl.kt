@@ -133,7 +133,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     override fun uploadQuestionWithImage(
         question: String,
         picOptionUri: Uri,
-        imageLabel: java.util.ArrayList<String>
+        imageLabel: String
     ) {
         mView.showLoading()
         currentUser.whatIfNotNull(
@@ -231,7 +231,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         imagePath: StorageReference,
         question: String,
         imageName: String,
-        imageLabel: java.util.ArrayList<String>
+        imageLabel: String
     ) {
         if (task.isComplete) {
             if (task.isSuccessful) {
@@ -267,7 +267,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         imageUrl: String,
         question: String,
         imageName: String,
-        imageLabel: java.util.ArrayList<String>
+        imageLabel: String
     ) {
         val date = Date()
         val questionData = HashMap<String, Any>()
@@ -280,6 +280,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         questionData["askedOnTime"] = timeFormat.format(date)
         questionData["yesVote"] = "0"
         questionData["noVote"] = "0"
+        questionData["label"] = imageLabel.toLowerCase(Locale.ENGLISH)
 
         dataBase.collection("question").add(questionData)
             .addOnSuccessListener {
@@ -300,30 +301,28 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
     }
 
     private fun addLabels(
-        imageLabel: ArrayList<String>,
+        imageLabel: String,
         id: String,
         imageUrl: String
     ) {
         currentUser.whatIfNotNull {
-            for (label in imageLabel) {
-                val labeldata = HashMap<String, Any>()
-                labeldata["questionId"] = id
-                labeldata["imageUrl"] = imageUrl
-                labeldata["labelName"] = label
-                labelsFirestore
-                    .collection("labels")
-                    .document(label.toLowerCase(Locale.ENGLISH))
-                    .collection(id)
-                    .add(labeldata)
-                    .addOnCompleteListener {
-                        val dummyLabeldata = HashMap<String, Any>()
-                        labeldata["labelName"] = label
-                        getbestfriendfirestore
-                            .collection("labels")
-                            .document(label.toLowerCase(Locale.ENGLISH))
-                            .set(dummyLabeldata)
-                    }
-            }
+            val labeldata = HashMap<String, Any>()
+            labeldata["questionId"] = id
+            labeldata["imageUrl"] = imageUrl
+            labeldata["labelName"] = imageLabel
+            labelsFirestore
+                .collection("labels")
+                .document(imageLabel.toLowerCase(Locale.ENGLISH))
+                .collection(id)
+                .add(labeldata)
+                .addOnCompleteListener {
+                    val dummyLabeldata = HashMap<String, Any>()
+                    labeldata["labelName"] = imageLabel
+                    getbestfriendfirestore
+                        .collection("labels")
+                        .document(imageLabel.toLowerCase(Locale.ENGLISH))
+                        .set(dummyLabeldata)
+                }
         }
     }
 
@@ -397,6 +396,41 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     mView.hideLoading()
                 }
         }
+    }
+
+    override fun callGetQuestionsForLabel(labelName: String) {
+        mView.showLoading()
+        mView.clearQuestions()
+        dataBase.collection("question")
+            .whereEqualTo("label", labelName)
+            .orderBy("askedOn", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, exception ->
+                exception.whatIfNotNull {
+                    mView.showMessage(
+                        "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                    )
+                }
+
+                allQuestionList.clear()
+                snapshot.whatIfNotNull {
+                    try {
+                        for (doc in snapshot!!) {
+                            val docId = doc.id
+                            val quesList: QuestionModel =
+                                doc.toObject<QuestionModel>(QuestionModel::class.java).withId(docId)
+                            this.allQuestionList.add(quesList)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    mView.loadQuestions(allQuestionList)
+
+                    mView.hideLoading()
+
+                }
+
+            }
     }
 
     override fun checkForChatRequest(docId: String, askedBy: String) {
@@ -617,17 +651,17 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     mView.hideLoading()
                     mView.showMessage(
                         "Something Went Wrong ${e.localizedMessage}. " +
-                                "You can upload the image we will manually look for this.", 1
+                                "You can upload the image, we will manually look for this.", 1
                     )
-                    mView.setQuestionImage(picOptionUri)
+                    checkForLabel(picOptionUri)
                 }
         } catch (e: IOException) {
             mView.hideLoading()
             mView.showMessage(
                 "Something Went Wrong ${e.localizedMessage}. " +
-                        "You can upload the image we will manually look for this.", 1
+                        "You can upload the image, we will manually look for this.", 1
             )
-            mView.setQuestionImage(picOptionUri)
+            checkForLabel(picOptionUri)
             e.printStackTrace()
         }
     }
@@ -645,9 +679,9 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                         imageLabel.add(text)
                     }
                     if (imageLabel.size > 0) {
-                        mView.setQuestionImage(picOptionUri, imageLabel)
+                        mView.setQuestionImage(picOptionUri, imageLabel[0])
                     } else {
-                        mView.setQuestionImage(picOptionUri)
+                        mView.setQuestionImage(picOptionUri, "all")
                     }
                     mView.hideLoading()
                 }
@@ -813,6 +847,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 questionData["askedOnTime"] = timeFormat.format(date)
                 questionData["yesVote"] = "0"
                 questionData["noVote"] = "0"
+                questionData["label"] = "all"
 
                 dataBase.collection("question").add(questionData)
                     .addOnSuccessListener {
@@ -860,7 +895,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    mView.showMessage(e.localizedMessage, 1)
                 }
 
                 mView.loadQuestions(allQuestionList)

@@ -34,7 +34,6 @@ import com.project.pradyotprakash.polking.comment.CommentsAcrivity
 import com.project.pradyotprakash.polking.home.adapter.ChatRequestAdapter
 import com.project.pradyotprakash.polking.home.adapter.LabelsAdapter
 import com.project.pradyotprakash.polking.home.adapter.QuestionsAdapter
-import com.project.pradyotprakash.polking.labelsBtmSheet.LabelsBtmSheet
 import com.project.pradyotprakash.polking.message.ShowMessage
 import com.project.pradyotprakash.polking.otherProfileOptions.OtherProfileOptions
 import com.project.pradyotprakash.polking.profile.ProfileActivity
@@ -55,7 +54,6 @@ class MainActivity : InternetActivity(), MainActivityView {
     @Inject
     lateinit var presenter: MainActivityPresenter
     lateinit var profileEditBtmSheet: ProfileEditBtmSheet
-    lateinit var labelsBtmSheet: LabelsBtmSheet
     lateinit var otherProfileOptions: OtherProfileOptions
     lateinit var questionStatistics: QuestionStatistics
     lateinit var updateBtmSheet: UpdateBtmSheet
@@ -63,7 +61,7 @@ class MainActivity : InternetActivity(), MainActivityView {
     private var labelAdapter: LabelsAdapter? = null
     private var chatRequestAdapter: ChatRequestAdapter? = null
     private val allQues = ArrayList<QuestionModel>()
-    private var imageLabel: ArrayList<String> = ArrayList()
+    private var imageLabel: String = "all"
     private var allLabelList: ArrayList<String> = ArrayList()
     private var picOptionUri: Uri? = null
     private var count = 0
@@ -307,7 +305,6 @@ class MainActivity : InternetActivity(), MainActivityView {
     private fun initVariables() {
         profileEditBtmSheet = ProfileEditBtmSheet.newInstance()
         otherProfileOptions = OtherProfileOptions.newInstance()
-        labelsBtmSheet = LabelsBtmSheet.newInstance()
         questionStatistics = QuestionStatistics.newInstance()
         updateBtmSheet = UpdateBtmSheet.newInstance()
         profileEditBtmSheet.isCancelable = false
@@ -424,14 +421,13 @@ class MainActivity : InternetActivity(), MainActivityView {
         }
     }
 
-    override fun setQuestionImage(picOptionUri: Uri, imageLabel: ArrayList<String>) {
+    override fun setQuestionImage(picOptionUri: Uri, imageLabel: String) {
         add_iv.load(R.drawable.ic_add)
         camera_iv.setImageURI(picOptionUri)
         this.picOptionUri = picOptionUri
         camera_iv.borderColor = resources.getColor(R.color.white)
         camera_iv.borderWidth = 2
         isOptionForQuestion = false
-        this.imageLabel.clear()
         this.imageLabel = imageLabel
     }
 
@@ -648,14 +644,6 @@ class MainActivity : InternetActivity(), MainActivityView {
         }
     }
 
-    fun openLabelsBtmSheet(allLabelList: java.util.ArrayList<String>, position: Int) {
-        if (!labelsBtmSheet.isAdded) {
-            labelsBtmSheet.show(supportFragmentManager, "btmSheet")
-            labelsBtmSheet.addLabelsList(allLabelList, position)
-            labelsBtmSheet.addQuestions(allQues)
-        }
-    }
-
     fun openComment(docId: String) {
         val bundle = Bundle()
         bundle.putString("questionId", docId)
@@ -698,6 +686,14 @@ class MainActivity : InternetActivity(), MainActivityView {
         val bundle = Bundle()
         bundle.putString("chatWindowId", chatWindowId)
         openActivity(ChatWindow::class.java, "chatWindowId", bundle)
+    }
+
+    fun updateQuestion(labelName: String) {
+        presenter.callGetQuestionsForLabel(labelName.toLowerCase())
+    }
+
+    fun getAllQuestions() {
+        presenter.getQuestions()
     }
 
 }

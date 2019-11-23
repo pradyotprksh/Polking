@@ -20,6 +20,7 @@ class LabelsAdapter(
 ) : RecyclerView.Adapter<LabelsAdapter.ViewHolder>() {
 
     private val mLabelList: ArrayList<String> = ArrayList()
+    private var selectedPos = -1
 
     fun updateListItems(labels: ArrayList<String>) {
         val diffCallback = LabelCallback(this.mLabelList, labels)
@@ -45,7 +46,19 @@ class LabelsAdapter(
 
         p0.label_tv.setOnClickListener {
             if (context is MainActivity) {
-                context.openLabelsBtmSheet(mLabelList, p1)
+                context.updateQuestion(mLabelList[p1].toUpperCase(Locale.ENGLISH))
+                selectedPos = p1
+                notifyDataSetChanged()
+            }
+        }
+
+        p0.label_tv.isCloseIconVisible = selectedPos == p1
+
+        p0.label_tv.setOnCloseIconClickListener {
+            if (context is MainActivity) {
+                context.getAllQuestions()
+                selectedPos = -1
+                notifyDataSetChanged()
             }
         }
     }

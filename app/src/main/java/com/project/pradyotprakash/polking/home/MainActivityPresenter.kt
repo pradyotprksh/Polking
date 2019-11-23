@@ -2,7 +2,6 @@ package com.project.pradyotprakash.polking.home
 
 import android.net.Uri
 import com.project.pradyotprakash.polking.BasePresenter
-import java.util.*
 
 interface MainActivityPresenter: BasePresenter {
 
@@ -37,7 +36,7 @@ interface MainActivityPresenter: BasePresenter {
     fun checkIfHumanFace(picOptionUri: Uri)
 
     // upload question with labels
-    fun uploadQuestionWithImage(question: String, picOptionUri: Uri, imageLabel: ArrayList<String>)
+    fun uploadQuestionWithImage(question: String, picOptionUri: Uri, imageLabel: String)
 
     // get image labels
     fun getImageLabels()
@@ -53,5 +52,8 @@ interface MainActivityPresenter: BasePresenter {
 
     // accept chat request
     fun acceptChatRequest(requestBy: String)
+
+    // get questions related to that label
+    fun callGetQuestionsForLabel(labelName: String)
 
 }

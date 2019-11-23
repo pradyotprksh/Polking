@@ -121,7 +121,7 @@
                             android:focusable="auto"
                             android:fontFamily="@font/muli_light"
                             android:hint="@string/enter_your_question"
-                            android:inputType="textNoSuggestions"
+                            android:inputType="textNoSuggestions|textCapSentences"
                             android:paddingLeft="15dp"
                             android:paddingTop="10dp"
                             android:paddingRight="15dp"

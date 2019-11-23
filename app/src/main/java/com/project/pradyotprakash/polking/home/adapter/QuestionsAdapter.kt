@@ -138,12 +138,14 @@ class QuestionsAdapter(
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private fun getVotes(holder: ViewAdapter, pos: Int) {
         mAuth.currentUser.whatIfNotNull(
             whatIf = {
                 if (mAuth.currentUser!!.uid == mQuestionList[pos].askedBy) {
                     holder.seeStsts_tv.setChipBackgroundColorResource(R.color.colorPrimaryDark)
                     holder.seeStsts_tv.text = context.getString(R.string.see_stats)
+                    holder.seeComnets_tv.visibility = View.VISIBLE
                     showStats(holder, pos)
                 } else {
                     checkIfVoteExists(holder, pos)

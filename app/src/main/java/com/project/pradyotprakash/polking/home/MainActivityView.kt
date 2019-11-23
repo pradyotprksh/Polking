@@ -53,7 +53,7 @@ interface MainActivityView: BaseView {
     fun deleteQuestionImageUri()
 
     // set image label
-    fun setQuestionImage(picOptionUri: Uri, imageLabel: ArrayList<String>)
+    fun setQuestionImage(picOptionUri: Uri, imageLabel: String)
 
     // set labels
     fun loadLabels(allLabelList: ArrayList<String>)
