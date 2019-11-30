@@ -155,6 +155,8 @@ class ProfileActivity : InternetActivity(), ProfileActivityView {
         back_tv.setOnClickListener {
             if (!bgDocId.isNullOrEmpty()) {
                 presenter.changeBgId(bgDocId!!)
+            } else {
+                stopAct()
             }
         }
 

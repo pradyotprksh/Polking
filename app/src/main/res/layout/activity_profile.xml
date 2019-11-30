@@ -24,19 +24,19 @@
             android:scaleType="centerCrop" />
 
     <TextView
-            android:text="@string/back"
+            android:id="@+id/back_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/back_tv"
-            android:visibility="invisible"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="45dp"
             android:fontFamily="@font/muli"
+            android:text="@string/back"
+            android:textColor="@color/white"
             android:textSize="15sp"
-            android:textColor="@color/white"/>
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"

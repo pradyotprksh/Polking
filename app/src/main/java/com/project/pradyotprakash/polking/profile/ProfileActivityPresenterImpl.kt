@@ -316,7 +316,6 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
             .document(mAuth.currentUser!!.uid)
             .update(userData).addOnSuccessListener {
                 mView.hideLoading()
-                mView.stopAct()
             }.addOnFailureListener { exception ->
                 mView.hideLoading()
                 mView.showMessage(
@@ -326,6 +325,8 @@ class ProfileActivityPresenterImpl @Inject constructor() : ProfileActivityPresen
             }.addOnCanceledListener {
                 mView.hideLoading()
                 mView.showMessage(mContext.getString(R.string.not_uploaded), 4)
+            }.addOnCompleteListener {
+                mView.stopAct()
             }
     }
 
