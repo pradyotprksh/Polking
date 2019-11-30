@@ -1,4 +1,4 @@
-package com.project.pradyotprakash.polking.profile.faq
+package com.project.pradyotprakash.polking.faq
 
 import android.app.Activity
 import com.project.pradyotprakash.polking.dagger.ActivityScoped
