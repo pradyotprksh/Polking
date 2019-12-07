@@ -51,6 +51,6 @@ interface MainActivityPresenter: BasePresenter {
     fun acceptChatRequest(requestBy: String)
 
     // get questions related to that label
-    fun callGetQuestionsForLabel(labelName: String)
+    fun callGetQuestionsForLabel(labelName: ArrayList<String>)
 
 }

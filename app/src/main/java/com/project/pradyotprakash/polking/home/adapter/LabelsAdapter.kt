@@ -20,7 +20,7 @@ class LabelsAdapter(
 ) : RecyclerView.Adapter<LabelsAdapter.ViewHolder>() {
 
     private val mLabelList: ArrayList<String> = ArrayList()
-    private var selectedPos = -1
+    private val mSelectedLabelList: ArrayList<String> = ArrayList()
 
     fun updateListItems(labels: ArrayList<String>) {
         val diffCallback = LabelCallback(this.mLabelList, labels)
@@ -46,19 +46,24 @@ class LabelsAdapter(
 
         p0.label_tv.setOnClickListener {
             if (context is MainActivity) {
-                context.updateQuestion(mLabelList[p1].toUpperCase(Locale.ENGLISH))
-                selectedPos = p1
-                notifyDataSetChanged()
-            }
-        }
-
-        p0.label_tv.isCloseIconVisible = selectedPos == p1
-
-        p0.label_tv.setOnCloseIconClickListener {
-            if (context is MainActivity) {
-                context.getAllQuestions()
-                selectedPos = -1
-                notifyDataSetChanged()
+                if (mLabelList[p1].toLowerCase(Locale.ENGLISH) == "all") {
+                    mSelectedLabelList.clear()
+                    context.getAllQuestions()
+                } else {
+                    if (mSelectedLabelList.contains(mLabelList[p1].toLowerCase(Locale.ENGLISH))) {
+                        mSelectedLabelList.remove(mLabelList[p1].toLowerCase(Locale.ENGLISH))
+                    } else {
+                        if (mSelectedLabelList.size <= 10) {
+                            mSelectedLabelList.add(mLabelList[p1].toLowerCase(Locale.ENGLISH))
+                        } else {
+                            mSelectedLabelList.add(mSelectedLabelList.size - 1, mLabelList[p1])
+                        }
+                    }
+                    if (mSelectedLabelList.size > 0)
+                        context.updateQuestion(mSelectedLabelList)
+                    else
+                        context.getAllQuestions()
+                }
             }
         }
     }
