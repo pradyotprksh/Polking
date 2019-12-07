@@ -313,8 +313,12 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
         }
     }
 
-    fun addCommentInner(commnetVal: String, commentId: String) {
-        presenter.addInnerComment(commnetVal, commentId, questionId!!)
+    fun addCommentInner(
+        commnetVal: String,
+        commentId: String,
+        repliesCount: Int
+    ) {
+        presenter.addInnerComment(commnetVal, commentId, questionId!!, repliesCount)
     }
 
     fun openProfileDetails(givenBy: String) {

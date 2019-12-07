@@ -79,9 +79,11 @@ class MainCommentsAdpater(
         holder.like_tv.text = allCommentList[pos].likes
         holder.dislike_tv.text = allCommentList[pos].dislikes
 
+        setInnerRvAdapter(holder, pos)
+
         getVotes(holder, pos)
 
-        setNumReplies(holder, pos)
+        getInnerCommentsFun(holder, pos)
 
         setListnerorInnerCommnet(holder, pos)
 
@@ -127,10 +129,12 @@ class MainCommentsAdpater(
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_SEND -> {
                     if (holder.commentVal_rt.text.toString().isNotEmpty()) {
+                        holder.innerComment_rv.smoothScrollToPosition(0)
                         if (context is CommentsAcrivity) {
                             context.addCommentInner(
                                 holder.commentVal_rt.text.toString(),
-                                allCommentList[pos].docId
+                                allCommentList[pos].docId,
+                                allInnerCommentList.size
                             )
                             Handler().postDelayed({
                                 holder.commentVal_rt.setText("")
@@ -156,16 +160,14 @@ class MainCommentsAdpater(
     }
 
     private fun setNumReplies(holder: ViewHolder, pos: Int) {
-        if (allCommentList[pos].innerComment == "0" || allCommentList[pos].innerComment == "") {
+        if (allInnerCommentList.size == 0) {
             holder.view_replies_tv.text = context.getString(R.string.no_replies_yet)
         } else {
-            if (allCommentList[pos].innerComment == "1") {
-                holder.view_replies_tv.text = "${allCommentList[pos].innerComment} Reply"
+            if (allInnerCommentList.size == 1) {
+                holder.view_replies_tv.text = "${allInnerCommentList.size} Reply"
             } else {
-                holder.view_replies_tv.text = "${allCommentList[pos].innerComment} Replies"
+                holder.view_replies_tv.text = "${allInnerCommentList.size} Replies"
             }
-            setInnerRvAdapter(holder, pos)
-            getInnerCommentsFun(holder, pos)
         }
     }
 
@@ -220,6 +222,8 @@ class MainCommentsAdpater(
                             if (context is CommentsAcrivity) {
                                 context.hideLoading()
                             }
+
+                            setNumReplies(holder, pos)
 
                         }
                 }
@@ -280,7 +284,8 @@ class MainCommentsAdpater(
                     if (context is CommentsAcrivity) {
                         context.addCommentInner(
                             it.text.toString(),
-                            allCommentList[pos].docId
+                            allCommentList[pos].docId,
+                            allInnerCommentList.size
                         )
                     }
             }

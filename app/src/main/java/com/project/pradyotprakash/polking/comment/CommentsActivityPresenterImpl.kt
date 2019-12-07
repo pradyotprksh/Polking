@@ -137,7 +137,12 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
         )
     }
 
-    override fun addInnerComment(commnetVal: String, commentId: String, questionId: String) {
+    override fun addInnerComment(
+        commnetVal: String,
+        commentId: String,
+        questionId: String,
+        repliesCount: Int
+    ) {
         mAuth.currentUser.whatIfNotNull(
             whatIf = {
                 questionId.whatIfNotNull {
@@ -170,6 +175,15 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
                         }.addOnCanceledListener {
                             mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
                             mView.hideLoading()
+                        }.addOnCompleteListener {
+                            val commentData = HashMap<String, Any>()
+                            commentData["innerComment"] = "${repliesCount + 1}"
+                            addCommentFirestore
+                                .collection("question")
+                                .document(questionId)
+                                .collection("comments")
+                                .document(commentId)
+                                .update(commentData)
                         }
                 }
             },

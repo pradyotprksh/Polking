@@ -20,7 +20,12 @@ interface CommentsActivityPresenter : BasePresenter {
     fun isLoggedIn()
 
     // add inner comment
-    fun addInnerComment(commnetVal: String, commentId: String, questionId: String)
+    fun addInnerComment(
+        commnetVal: String,
+        commentId: String,
+        questionId: String,
+        repliesCount: Int
+    )
 
     // add vote for main comment
     fun setVoteForComment(voteType: Int, commnetId: String, questionId: String?)
