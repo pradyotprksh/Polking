@@ -13,30 +13,52 @@
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:nestedScrollingEnabled="false"
-            android:paddingTop="175dp"
-            android:paddingBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingTop="100dp"
+            android:paddingBottom="140dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view12"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
     <View
             android:id="@+id/view11"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="20dp"
             android:alpha="0.9"
             android:background="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="@+id/commentVal_rt"
+            app:layout_constraintBottom_toBottomOf="@+id/name_tv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+            android:id="@+id/view13"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:alpha="0.9"
+            android:background="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view11" />
+
+    <View
+            android:id="@+id/view12"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:alpha="0.9"
+            android:background="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/commentVal_rt" />
 
     <HorizontalScrollView
             android:id="@+id/horizontalSv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginBottom="20dp"
             android:clipToPadding="false"
             android:paddingStart="20dp"
             android:paddingLeft="20dp"
@@ -44,10 +66,10 @@
             android:paddingRight="20dp"
             android:scrollbars="none"
             android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/commentVal_rt">
+            app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.chip.ChipGroup
                 android:id="@+id/smartReply_group"
@@ -92,15 +114,24 @@
             app:layout_constraintTop_toTopOf="@+id/close_iv"
             app:rippleColor="@color/colorPrimaryDark" />
 
+    <TextView
+            android:id="@+id/typing_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/muli_light"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/commentVal_rt"
+            app:layout_constraintStart_toStartOf="@+id/commentVal_rt" />
+
     <EditText
             android:id="@+id/commentVal_rt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/edittext_bg"
             android:focusable="true"
             android:fontFamily="@font/muli_semi_bold"
@@ -112,9 +143,9 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/horizontalSv"
             app:layout_constraintEnd_toStartOf="@+id/sendMsg_fb"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/close_iv" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/sendMsg_fb"

@@ -106,7 +106,7 @@ class ChatWindow : InternetActivity(), ChatWindowView,
         chats_rv.setHasFixedSize(true)
         chats_rv.layoutManager = LinearLayoutManager(
             this,
-            RecyclerView.VERTICAL, false
+            RecyclerView.VERTICAL, true
         )
         chats_rv.adapter = chatAdapter
     }
@@ -245,14 +245,6 @@ class ChatWindow : InternetActivity(), ChatWindowView,
         options_iv.visibility = View.GONE
     }
 
-    override fun showSmartReply() {
-        horizontalSv.visibility = View.VISIBLE
-    }
-
-    override fun hideSmartReply() {
-        horizontalSv.visibility = View.GONE
-    }
-
     override fun enterHardcodeReply(commonReply: ArrayList<String>) {
         for (common in commonReply) {
             val chip = Chip(smartReply_group.context)
@@ -279,6 +271,17 @@ class ChatWindow : InternetActivity(), ChatWindowView,
             chip.text = replyText
             smartReply_group.addView(chip)
         }
+    }
+
+    override fun showUserTyping(message: String) {
+        typing_tv.visibility = View.VISIBLE
+        typing_tv.animation = Utility().inFromLeftAnimation()
+        typing_tv.text = message
+    }
+
+    override fun hideUserTyping() {
+        typing_tv.animation = Utility().outToLeftAnimation()
+        typing_tv.visibility = View.GONE
     }
 
     override fun setUserData(userDetails: String) {

@@ -82,13 +82,15 @@ class ChatWindowPresenterImpl @Inject constructor() : ChatWindowPresenter {
                                                 try {
 
                                                     if (snapshot.data!!["isUserTyping"] == "true") {
-                                                        mView.setUserData(
+                                                        mView.showUserTyping(
                                                             usersnapshot.data!!["name"].toString()
-                                                                    + " is typing..."
+                                                                    + " typing..."
                                                         )
                                                     } else {
-                                                        mView.setUserData(usersnapshot.data!!["name"].toString())
+                                                        mView.hideUserTyping()
                                                     }
+
+                                                    mView.setUserData(usersnapshot.data!!["name"].toString())
 
                                                     mView.setUserImage(usersnapshot.data!!["imageUrl"].toString())
 
@@ -133,7 +135,7 @@ class ChatWindowPresenterImpl @Inject constructor() : ChatWindowPresenter {
                 .document()
                 .set(
                     hashMapOf(
-                        "message" to text.toString(),
+                        "message" to text,
                         "messageOn" to (System.currentTimeMillis() / 1000).toString(),
                         "messageBy" to mAuth.currentUser!!.uid,
                         "messageTo" to chatWindowId
@@ -148,7 +150,7 @@ class ChatWindowPresenterImpl @Inject constructor() : ChatWindowPresenter {
                         .document()
                         .set(
                             hashMapOf(
-                                "message" to text.toString(),
+                                "message" to text,
                                 "messageOn" to (System.currentTimeMillis() / 1000).toString(),
                                 "messageBy" to mAuth.currentUser!!.uid,
                                 "messageTo" to chatWindowId
@@ -186,12 +188,7 @@ class ChatWindowPresenterImpl @Inject constructor() : ChatWindowPresenter {
                             this.allChatList.add(chatList)
                         }
 
-                        if (allChatList[0].messageBy == mAuth.currentUser!!.uid) {
-                            mView.hideSmartReply()
-                        } else {
-                            mView.showSmartReply()
-                            callSmartReplyMethod(allChatList[0].message, allChatList[0].docId)
-                        }
+                        callSmartReplyMethod(allChatList[0].message, allChatList[0].docId)
 
                         mView.setChatList(allChatList)
                     } catch (e: Exception) {

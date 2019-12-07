@@ -25,15 +25,15 @@ interface ChatWindowView : BaseView {
     // hide delete option
     fun hideDeleteOption()
 
-    // show smart reply
-    fun showSmartReply()
-
-    // hide smart reply
-    fun hideSmartReply()
-
     // enter hardcoded smart reply
     fun enterHardcodeReply(commonReply: ArrayList<String>)
 
     // enter smart replies
     fun enterSmartReplies(suggestions: List<SmartReplySuggestion>)
+
+    // user is typing
+    fun showUserTyping(message: String)
+
+    // hide is typing
+    fun hideUserTyping()
 }
