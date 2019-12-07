@@ -47,7 +47,9 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class MainActivity : InternetActivity(), MainActivityView {
 
@@ -682,11 +684,17 @@ class MainActivity : InternetActivity(), MainActivityView {
         openActivity(ChatWindow::class.java, "chatWindowId", bundle)
     }
 
-    fun updateQuestion(labelName: String) {
-        presenter.callGetQuestionsForLabel(labelName.toLowerCase())
+    fun updateQuestion(labelName: ArrayList<String>) {
+        recent_tv.visibility = View.VISIBLE
+        var recentText = ""
+        for (label in labelName)
+            recentText = "${label.toUpperCase(Locale.ENGLISH)} / $recentText"
+        recent_tv.text = recentText
+        presenter.callGetQuestionsForLabel(labelName)
     }
 
     fun getAllQuestions() {
+        recent_tv.visibility = View.GONE
         presenter.getQuestions()
     }
 

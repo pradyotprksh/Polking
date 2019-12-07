@@ -186,7 +186,6 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
             .collection("labels")
             .addSnapshotListener { snapshot, _ ->
                 allLabelList.clear()
-
                 try {
                     for (doc in snapshot!!) {
                         allLabelList.add(doc.id)
@@ -196,6 +195,7 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
                 }
 
                 if (allLabelList.size > 0) {
+                    allLabelList.add(0, "all")
                     mView.loadLabels(allLabelList)
                 }
 
@@ -398,11 +398,11 @@ class MainActivityPresenterImpl @Inject constructor() : MainActivityPresenter {
         }
     }
 
-    override fun callGetQuestionsForLabel(labelName: String) {
+    override fun callGetQuestionsForLabel(labelName: ArrayList<String>) {
         mView.showLoading()
         mView.clearQuestions()
         dataBase.collection("question")
-            .whereEqualTo("label", labelName)
+            .whereIn("label", labelName)
             .orderBy("askedOn", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, exception ->
                 exception.whatIfNotNull {
