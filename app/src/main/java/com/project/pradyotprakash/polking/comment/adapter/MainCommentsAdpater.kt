@@ -48,6 +48,7 @@ class MainCommentsAdpater(
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var userFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var getInnerComments: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var addVoteForComment: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var getVotesFirestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val allInnerCommentList: ArrayList<CommentModel> = ArrayList()
     private var innerCommentAdapter: InnerCommentAdapter? = null
@@ -91,6 +92,70 @@ class MainCommentsAdpater(
 
         addSmartReply(holder, pos)
 
+        getCommentVotes(holder, pos)
+
+    }
+
+    private fun getCommentVotes(holder: ViewHolder, pos: Int) {
+        addVoteForComment
+            .collection("question")
+            .document(questionId)
+            .collection("comments")
+            .document(allCommentList[pos].docId)
+            .collection("commentVotes")
+            .whereEqualTo("voteType", 1)
+            .addSnapshotListener { snapshot, exception ->
+
+                exception.whatIfNotNull {
+                    if (activity is CommentsAcrivity) {
+                        activity.showMessage(
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                        )
+                    }
+                }
+
+                snapshot.whatIfNotNull {
+                    try {
+                        holder.like_tv.text = "${snapshot!!.size()}"
+                    } catch (exception: Exception) {
+                        if (activity is CommentsAcrivity) {
+                            activity.showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}", 1
+                            )
+                        }
+                    }
+                }
+            }
+
+        getInnerComments
+            .collection("question")
+            .document(questionId)
+            .collection("comments")
+            .document(allCommentList[pos].docId)
+            .collection("commentVotes")
+            .whereEqualTo("voteType", 0)
+            .addSnapshotListener { snapshot, exception ->
+
+                exception.whatIfNotNull {
+                    if (activity is CommentsAcrivity) {
+                        activity.showMessage(
+                            "Something Went Wrong. ${exception!!.localizedMessage}", 1
+                        )
+                    }
+                }
+
+                snapshot.whatIfNotNull {
+                    try {
+                        holder.dislike_tv.text = "${snapshot!!.size()}"
+                    } catch (exception: Exception) {
+                        if (activity is CommentsAcrivity) {
+                            activity.showMessage(
+                                "Something Went Wrong. ${exception.localizedMessage}", 1
+                            )
+                        }
+                    }
+                }
+            }
     }
 
     private fun setOnClickListner(holder: ViewHolder, pos: Int) {
@@ -113,13 +178,39 @@ class MainCommentsAdpater(
 
         holder.like_tv.setOnClickListener {
             if (context is CommentsAcrivity) {
-                context.addReviewForComment(1, allCommentList[pos].docId)
+                context.addReviewForComment(
+                    1, allCommentList[pos].docId,
+                    holder.like_tv.text.toString()
+                )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.like_tv.compoundDrawables[0].setTint(
+                    context
+                        .resources.getColor(R.color.light_green)
+                )
+                holder.dislike_tv.compoundDrawables[0].setTint(
+                    context
+                        .resources.getColor(R.color.gray)
+                )
             }
         }
 
         holder.dislike_tv.setOnClickListener {
             if (context is CommentsAcrivity) {
-                context.addReviewForComment(0, allCommentList[pos].docId)
+                context.addReviewForComment(
+                    0, allCommentList[pos].docId,
+                    holder.dislike_tv.text.toString()
+                )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                holder.like_tv.compoundDrawables[0].setTint(
+                    context
+                        .resources.getColor(R.color.gray)
+                )
+                holder.dislike_tv.compoundDrawables[0].setTint(
+                    context
+                        .resources.getColor(R.color.disagree_color)
+                )
             }
         }
     }

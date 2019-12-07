@@ -797,18 +797,22 @@ class QuestionStatistics @Inject constructor() : TransparentBottomSheet(), Profi
     }
 
     override fun showMessage(message: String, type: Int) {
-        messageBtmSheet = ShowMessage.newInstance()
-        if (!messageBtmSheet.isAdded) {
-            messageBtmSheet.show(childFragmentManager, "btmSheet")
-            messageBtmSheet.setMessage(message, type)
-        } else {
-            messageBtmSheet.dismiss()
-            Handler().postDelayed({
-                if (!messageBtmSheet.isAdded) {
-                    messageBtmSheet.show(childFragmentManager, "btmSheet")
-                    messageBtmSheet.setMessage(message, type)
-                }
-            }, 1500)
+        try {
+            messageBtmSheet = ShowMessage.newInstance()
+            if (!messageBtmSheet.isAdded) {
+                messageBtmSheet.show(childFragmentManager, "btmSheet")
+                messageBtmSheet.setMessage(message, type)
+            } else {
+                messageBtmSheet.dismiss()
+                Handler().postDelayed({
+                    if (!messageBtmSheet.isAdded) {
+                        messageBtmSheet.show(childFragmentManager, "btmSheet")
+                        messageBtmSheet.setMessage(message, type)
+                    }
+                }, 1500)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

@@ -328,7 +328,11 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
         }
     }
 
-    fun addReviewForComment(voteType: Int, commnetId: String) {
-        presenter.setVoteForComment(voteType, commnetId, questionId)
+    fun addReviewForComment(
+        voteType: Int,
+        commnetId: String,
+        voteCount: String
+    ) {
+        presenter.setVoteForComment(voteType, commnetId, questionId, voteCount)
     }
 }

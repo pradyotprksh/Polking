@@ -263,7 +263,12 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
         )
     }
 
-    override fun setVoteForComment(voteType: Int, commnetId: String, questionId: String?) {
+    override fun setVoteForComment(
+        voteType: Int,
+        commnetId: String,
+        questionId: String?,
+        voteCount: String
+    ) {
         mAuth.currentUser.whatIfNotNull {
             questionId.whatIfNotNull {
                 mView.showLoading()
@@ -291,47 +296,29 @@ class CommentsActivityPresenterImpl @Inject constructor() : CommentsActivityPres
                     }.addOnCanceledListener {
                         mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
                         mView.hideLoading()
-                    }
-            }
-        }
-    }
-
-    override fun setVoteForComment(
-        voteType: Int,
-        commnetId: String,
-        innerCommentId: String,
-        questionId: String?
-    ) {
-        mAuth.currentUser.whatIfNotNull {
-            questionId.whatIfNotNull {
-                mView.showLoading()
-                val voteData = HashMap<String, Any>()
-                voteData["questionId"] = questionId!!
-                voteData["voteType"] = voteType
-                voteData["commentId"] = commnetId
-                voteData["parentCommentId"] = commnetId
-
-                addCommentFirestore
-                    .collection("users")
-                    .document(mAuth.currentUser!!.uid)
-                    .collection("commentVotes")
-                    .document(questionId)
-                    .collection(commnetId)
-                    .document("innerCommentVotes")
-                    .collection(innerCommentId)
-                    .document(innerCommentId)
-                    .set(voteData)
-                    .addOnSuccessListener {
-                        mView.hideLoading()
-                    }.addOnFailureListener { exception ->
-                        mView.showMessage(
-                            "Something Went Wrong. ${exception.localizedMessage}",
-                            1
-                        )
-                        mView.hideLoading()
-                    }.addOnCanceledListener {
-                        mView.showMessage(mContext.getString(R.string.not_uploaded_question), 4)
-                        mView.hideLoading()
+                    }.addOnCompleteListener {
+                        addVoteForComment
+                            .collection("question")
+                            .document(questionId)
+                            .collection("comments")
+                            .document(commnetId)
+                            .collection("commentVotes")
+                            .document()
+                            .set(voteData)
+                            .addOnCompleteListener {
+                                var votesCount = HashMap<String, Any>()
+                                if (voteType == 0) {
+                                    votesCount["dislikes"] = (voteCount.toInt() + 1).toString()
+                                } else {
+                                    votesCount["likes"] = (voteCount.toInt() + 1).toString()
+                                }
+                                addCommentFirestore
+                                    .collection("question")
+                                    .document(questionId)
+                                    .collection("comments")
+                                    .document(commnetId)
+                                    .update(votesCount)
+                            }
                     }
             }
         }

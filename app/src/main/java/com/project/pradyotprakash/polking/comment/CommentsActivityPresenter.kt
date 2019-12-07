@@ -28,13 +28,10 @@ interface CommentsActivityPresenter : BasePresenter {
     )
 
     // add vote for main comment
-    fun setVoteForComment(voteType: Int, commnetId: String, questionId: String?)
-
-    // add vote for inner comment
     fun setVoteForComment(
         voteType: Int,
         commnetId: String,
-        innerCommentId: String,
-        questionId: String?
+        questionId: String?,
+        voteCount: String
     )
 }
