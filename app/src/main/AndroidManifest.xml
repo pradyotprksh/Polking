@@ -46,7 +46,7 @@
                 android:name=".verifyOTP.VerifyOTPActivity"
                 android:screenOrientation="portrait" />
         <activity
-                android:name=".profile.faq.FAQsActivity"
+                android:name=".faq.FAQsActivity"
                 android:screenOrientation="portrait" />
         <activity
                 android:name=".profile.ProfileActivity"
