@@ -298,18 +298,22 @@ class CommentsAcrivity : InternetActivity(), CommentsActivityView,
     }
 
     override fun showMessage(message: String, type: Int) {
-        messageBtmSheet = ShowMessage.newInstance()
-        if (!messageBtmSheet.isAdded) {
-            messageBtmSheet.show(supportFragmentManager, "btmSheet")
-            messageBtmSheet.setMessage(message, type)
-        } else {
-            messageBtmSheet.dismiss()
-            Handler().postDelayed({
-                if (!messageBtmSheet.isAdded) {
-                    messageBtmSheet.show(supportFragmentManager, "btmSheet")
-                    messageBtmSheet.setMessage(message, type)
-                }
-            }, 1500)
+        try {
+            messageBtmSheet = ShowMessage.newInstance()
+            if (!messageBtmSheet.isAdded) {
+                messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                messageBtmSheet.setMessage(message, type)
+            } else {
+                messageBtmSheet.dismiss()
+                Handler().postDelayed({
+                    if (!messageBtmSheet.isAdded) {
+                        messageBtmSheet.show(supportFragmentManager, "btmSheet")
+                        messageBtmSheet.setMessage(message, type)
+                    }
+                }, 1500)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
