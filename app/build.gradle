@@ -16,7 +16,7 @@ android {
     }
     defaultConfig {
         applicationId "com.project.pradyotprakash.polking"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 20
         versionName "1.1.8"
@@ -104,6 +104,9 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:3.1.1'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // in app updates
+    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.5-alpha.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
