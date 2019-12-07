@@ -42,6 +42,8 @@ import com.project.pradyotprakash.polking.questionStats.QuestionStatistics
 import com.project.pradyotprakash.polking.signin.SignInActivity
 import com.project.pradyotprakash.polking.updateTheApp.UpdateBtmSheet
 import com.project.pradyotprakash.polking.utility.*
+import com.sanojpunchihewa.updatemanager.UpdateManager
+import com.sanojpunchihewa.updatemanager.UpdateManagerConstant
 import com.skydoves.whatif.whatIfNotNull
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -72,6 +74,8 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
     private val appUpdateInfo: Task<AppUpdateInfo> by lazy { appUpdateManager.appUpdateInfo }
+
+    private var updateManager: UpdateManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
@@ -442,7 +446,14 @@ class MainActivity : InternetActivity(), MainActivityView {
 
     override fun onResume() {
         super.onResume()
-        checkNewAppVersionState()
+        updateManager.whatIfNotNull(
+            whatIf = {
+                updateManager!!.continueUpdate()
+            },
+            whatIfNot = {
+                checkNewAppVersionState()
+            }
+        )
         logd(getString(R.string.resume))
     }
 
@@ -464,11 +475,21 @@ class MainActivity : InternetActivity(), MainActivityView {
     }
 
     private fun checkForUpdates() {
-        appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
-                showUpdate()
+        updateManager.whatIfNotNull(
+            whatIf = {
+                // Initialize the Update Manager with the Activity and the Update Mode
+                updateManager = UpdateManager.Builder(this).mode(UpdateManagerConstant.IMMEDIATE)
+                // Call start() to check for updates and install them
+                updateManager!!.start()
+            },
+            whatIfNot = {
+                appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+                    if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                        showUpdate()
+                    }
+                }
             }
-        }
+        )
     }
 
     override fun startProfileAct() {
