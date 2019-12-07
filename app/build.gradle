@@ -16,10 +16,10 @@ android {
     }
     defaultConfig {
         applicationId "com.project.pradyotprakash.polking"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20
-        versionName "1.1.8"
+        versionCode 21
+        versionName "1.1.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
